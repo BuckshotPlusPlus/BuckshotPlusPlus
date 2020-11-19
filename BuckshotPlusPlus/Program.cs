@@ -8,7 +8,7 @@ namespace BuckshotPlusPlus
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("--------------------");
+            Console.WriteLine("----------||  BUCKSHOT++  ||----------");
             if (args.Length > 0)
             {
                 string FilePath = args[0];
@@ -20,12 +20,11 @@ namespace BuckshotPlusPlus
                 }
                 else
                 {
-                    Console.WriteLine("File not found");
-                    return;
+                    Formater.CriticalError("File not found");
                 }
                 
             } else {
-                Console.WriteLine("USAGE : ./BuckshotPlusPlus \"/File/path\"");
+                Formater.CriticalError("USAGE : ./BuckshotPlusPlus /File/path");
                 return;
             }
         }
