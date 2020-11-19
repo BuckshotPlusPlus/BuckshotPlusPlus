@@ -5,24 +5,11 @@ using System.Text;
 namespace BuckshotPlusPlus
 {
     // TokenData is the main class for all tokens
-    class TokenData
+    abstract class TokenData
     {
-
     }
 
     // TodataVariable holds TokenData for bpp variables
-    class TokenDataVariable : TokenData
-    {
-        public string VariableType { get; set; }
-        public string VariableData { get; set; }
-        public string VariableName { get; set; }
-    }
-
-    class TokenDataFunctionCall : TokenData
-    {
-        public string FuncName { get; set; }
-        public TokenDataVariable[] FuncArgs { get; set; }
-    }
     class Tokenizer
     {
         string UnprocessedFileData { get; }
