@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BuckshotPlusPlus
 {
-    class Token
+    public class Token
     {
         public string Type { get; set; }
         public TokenData Data { get; set; }
@@ -17,6 +17,9 @@ namespace BuckshotPlusPlus
             if (TokenDataVariable.IsTokenDataVariable(LineData))
             {
                 new TokenDataVariable(this, LineData, LineNumber);
+            }else if (TokenDataFunctionCall.IsTokenDataFunctionCall(LineData))
+            {
+                new TokenDataFunctionCall(this, LineData, LineNumber);
             }
 
         }

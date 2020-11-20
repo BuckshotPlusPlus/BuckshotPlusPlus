@@ -16,13 +16,22 @@ namespace BuckshotPlusPlus
             string[] MyVariableParams = Formater.SafeSplit(LineData, ' ').ToArray();
             Console.WriteLine(MyVariableParams.Length);
             // check if all parameters of a vriables are present
-            if (MyVariableParams.Length != 4)
+            if (MyVariableParams.Length == 3)
+            {
+                this.VariableType = FindVariableType(MyVariableParams[2], LineNumber);
+                this.VariableName = MyVariableParams[0];
+                this.VariableData = MyVariableParams[2];
+            }else if (MyVariableParams.Length == 1)
+            {
+                this.VariableName = "";
+                this.VariableData = MyVariableParams[0];
+                this.VariableType = FindVariableType(MyVariableParams[0], LineNumber);
+            }
+            else
             {
                 Formater.CriticalError("Invalid variable init line : " + LineNumber + Environment.NewLine + "=> " + LineData);
             }
-            this.VariableType = MyVariableParams[0];
-            this.VariableName = MyVariableParams[1];
-            this.VariableData = MyVariableParams[3];
+            
 
 
 
@@ -32,26 +41,7 @@ namespace BuckshotPlusPlus
                 {
                     Formater.CriticalError("Invalid string value line : " + LineNumber + Environment.NewLine + "=> " + LineData);
                 }
-                this.VariableData = MyVariableParams[3].Substring(1, MyVariableParams[3].Length - 2);
-            }
-
-            int VariableIntData = 0;
-
-            if(this.VariableType == "int" && !int.TryParse(this.VariableData,out VariableIntData))
-            {
-                Formater.CriticalError("Invalid int value line : " + LineNumber + Environment.NewLine + "=> " + LineData);
-            }
-
-            float VariableFloatData = 0;
-            if (this.VariableType == "float" && !float.TryParse(this.VariableData, out VariableFloatData))
-            {
-                Formater.CriticalError("Invalid float value line : " + LineNumber + Environment.NewLine + "=> " + LineData);
-            }
-
-            bool VariableBoolData = false;
-            if (this.VariableType == "bool" && !bool.TryParse(this.VariableData, out VariableBoolData))
-            {
-                Formater.CriticalError("Invalid bool value line : " + LineNumber + Environment.NewLine + "=> " + LineData);
+                this.VariableData = this.VariableData.Substring(1, this.VariableData.Length - 2);
             }
 
 
@@ -59,6 +49,30 @@ namespace BuckshotPlusPlus
 
             Console.WriteLine("I found a variable of type " + this.VariableType + " and name : " + this.VariableName + " Value : " + this.VariableData);
 
+        }
+
+        public static string FindVariableType(string LineData, int LineNumber)
+        {
+
+            int VariableIntData = 0;
+            float VariableFloatData = 0;
+            bool VariableBoolData = false;
+
+            if (LineData.Contains('"'))
+            {
+                return "string";
+            }else if (int.TryParse(LineData, out VariableIntData))
+            {
+                return "int";
+            }else if (float.TryParse(LineData, out VariableFloatData))
+            {
+                return "float";
+            }else if(bool.TryParse(LineData, out VariableBoolData))
+            {
+                return "bool";
+            }
+            Formater.CriticalError("Unknown variable type at line : " + LineNumber + Environment.NewLine + "=> " + LineData);
+            return "";
         }
 
         public static bool IsTokenDataVariable(string LineData)

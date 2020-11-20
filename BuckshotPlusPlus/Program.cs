@@ -17,6 +17,14 @@ namespace BuckshotPlusPlus
                     Console.WriteLine("File Found!");
                     string FileData = File.ReadAllText(FilePath, System.Text.Encoding.UTF8);
                     Tokenizer FileTokenizer = new Tokenizer(FileData);
+                    string CFileData = Compiler.C.TokenToC(FileTokenizer.FileTokens);
+                    string CFilePath = Compiler.C.AbsolutePath("test.c");
+                    Compiler.C.CompileFile(CFilePath, CFileData);
+
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("Compilation done!");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine("----------||  BUCKSHOT++  ||----------");
                 }
                 else
                 {
@@ -25,6 +33,7 @@ namespace BuckshotPlusPlus
                 
             } else {
                 Formater.CriticalError("USAGE : ./BuckshotPlusPlus /File/path");
+                Console.WriteLine("----------||  BUCKSHOT++  ||----------");
                 return;
             }
         }

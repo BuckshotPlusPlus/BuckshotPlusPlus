@@ -1,3 +1,4 @@
-﻿string montest = "lol m(((()))a grosse b)ite"
-int test = 5
-bool coucou = trddue
+﻿montest = "lol m(((()))a grosse b)ite"
+test = 5
+IsItTrue = true
+Print("Hi :D")
