@@ -61,7 +61,7 @@ namespace BuckshotPlusPlus
                     SubPar--;
                     if(SubPar == 0)
                     {
-                        Token MyNewToken = new Token(MyToken.FileName,CurrentVar, MyToken.LineNumber);
+                        Token MyNewToken = new Token(MyToken.FileName,CurrentVar, MyToken.LineNumber,MyToken.MyTokenizer);
                         new TokenDataVariable(MyNewToken);
                         FunctionArgs.Add(MyNewToken);
                         return FunctionArgs;
@@ -71,7 +71,7 @@ namespace BuckshotPlusPlus
                 {
                     if (isArgs && c == ',')
                     {
-                        Token MyNewToken = new Token(MyToken.FileName,CurrentVar, MyToken.LineNumber);
+                        Token MyNewToken = new Token(MyToken.FileName,CurrentVar, MyToken.LineNumber, MyToken.MyTokenizer);
                         new TokenDataVariable(MyNewToken);
                         FunctionArgs.Add(MyNewToken);
                         CurrentVar = "";

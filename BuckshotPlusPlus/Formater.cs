@@ -19,9 +19,9 @@ namespace BuckshotPlusPlus
                 {
                     isQuote = !isQuote;
                 }
-                if (FileData[i] == ' ' && isQuote == false)
+                if (FileData[i] == ' ' || FileData[i] == '\t' && isQuote == false)
                 {
-                    while (FileData[spaceCount + i] == ' ')
+                    while (FileData[spaceCount + i] == ' ' || FileData[spaceCount + i] == '\t')
                     {
                         spaceCount++;
                     }
@@ -159,13 +159,18 @@ namespace BuckshotPlusPlus
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("Warning : " + error);
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("----------||  BUCKSHOT++  ||----------");
-            Environment.Exit(-1);
         }
 
         public static void TokenCriticalError(string Error, Token MyToken)
         {
             Formater.CriticalError(Error + " in file : " + MyToken.FileName + " at line : " + MyToken.LineNumber + Environment.NewLine + "=> " + MyToken.LineData);
+        }
+
+        public static void DebugMessage(string msg)
+        {
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine("Debug : " + msg);
+            Console.ForegroundColor = ConsoleColor.White;
         }
     }
 }

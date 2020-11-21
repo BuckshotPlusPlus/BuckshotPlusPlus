@@ -20,6 +20,7 @@ namespace BuckshotPlusPlus
         public List<Token> FileTokens { get;}
 
         string RelativePath { get; }
+        public int CurrentLineNumber { get; set; }
         public Tokenizer(string FilePath)
         {
             FileTokens = new List<Token>();
@@ -35,18 +36,21 @@ namespace BuckshotPlusPlus
             if (this.UnprocessedFileDataDictionary.ContainsKey(FileName))
             {
                 Formater.Warn("Circular dependency detected of " + FileName);
-            }
+            } 
             else
             {
                 this.UnprocessedFileDataDictionary.Add(FileName, FileData);
                 this.FileDataDictionary.Add(FileName, FileData);
 
                 List<string> MyFileLines = FileData.Split('\n').OfType<string>().ToList();
-                int i = 0;
-                while (i < MyFileLines.Count)
+                CurrentLineNumber = 0;
+                int ContainerCount = 0;
+                List<string> ContainerData = new List<string>();
+
+                while (CurrentLineNumber < MyFileLines.Count)
                 {
                     // Check if last char is a new line \n / char 13
-                    string LineData = MyFileLines[i];
+                    string LineData = MyFileLines[CurrentLineNumber];
                     if (LineData.Length > 1)
                     {
                         if ((int)LineData[LineData.Length - 1] == 13)
@@ -60,11 +64,33 @@ namespace BuckshotPlusPlus
                         }
                         else
                         {
-                            FileTokens.Add(new Token(FileName,LineData, i));
+                            List<string> MyString = Formater.SafeSplit(LineData, ' ');
+                            if (MyString[0] == "object" || MyString[0] == "function")
+                            {
+                                ContainerCount++;
+                            }
+
+                            if (ContainerCount > 0)
+                            {
+                                ContainerData.Add(LineData);
+                                if (Formater.SafeContains(LineData, '}')){
+                                    ContainerCount--;
+                                    if(ContainerCount == 0)
+                                    {
+                                        FileTokens.Add(new Token(FileName, String.Join('\n', ContainerData), CurrentLineNumber, this));
+                                        ContainerData = new List<string>();
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                FileTokens.Add(new Token(FileName, LineData, CurrentLineNumber, this));
+                            }
+                            
                         }
 
                     }
-                    i++;
+                    CurrentLineNumber++;
                 }
             }
         }
