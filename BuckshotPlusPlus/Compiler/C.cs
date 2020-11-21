@@ -23,7 +23,6 @@ namespace BuckshotPlusPlus.Compiler
         {
             string CFileData = "#include <stdio.h>" + Environment.NewLine +
                 "#include <stdbool.h>" + Environment.NewLine +
-                "#include <process.h>" + Environment.NewLine +
                 "int main()" + Environment.NewLine + 
                 "{" + Environment.NewLine;
             foreach(Token MyToken in Tokens)

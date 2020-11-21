@@ -1,4 +1,9 @@
-﻿montest = "lol m(((()))a grosse b)ite"
+﻿montest = "lol it works"
+
+object MyTest{
+	myVar = 52
+}
+
 test = 5
 IsItTrue = true
 Print("Hi :D")

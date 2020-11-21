@@ -12,25 +12,14 @@ namespace BuckshotPlusPlus
             if (args.Length > 0)
             {
                 string FilePath = args[0];
-                if (File.Exists(FilePath))
-                {
-                    Console.WriteLine("File Found!");
-                    string FileData = File.ReadAllText(FilePath, System.Text.Encoding.UTF8);
-                    Tokenizer FileTokenizer = new Tokenizer(FileData);
-                    string CFileData = Compiler.C.TokenToC(FileTokenizer.FileTokens);
-                    string CFilePath = Compiler.C.AbsolutePath("test.c");
-                    Compiler.C.CompileFile(CFilePath, CFileData);
 
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("Compilation done!");
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine("----------||  BUCKSHOT++  ||----------");
-                }
-                else
-                {
-                    Formater.CriticalError("File not found");
-                }
-                
+                Tokenizer MyTokenizer = new Tokenizer(FilePath);
+                Console.WriteLine("----------||  BUCKSHOT++  ||----------");
+                /*string CFileData = Compiler.C.TokenToC(FileTokenizer.FileTokens);
+                string CFilePath = Compiler.C.AbsolutePath("test.c");
+                Compiler.C.CompileFile(CFilePath, CFileData);*/
+
+
             } else {
                 Formater.CriticalError("USAGE : ./BuckshotPlusPlus /File/path");
                 Console.WriteLine("----------||  BUCKSHOT++  ||----------");

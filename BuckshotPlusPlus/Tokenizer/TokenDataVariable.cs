@@ -10,26 +10,26 @@ namespace BuckshotPlusPlus
         public string VariableData { get; set; }
         public string VariableName { get; set; }
 
-        public TokenDataVariable(Token MyToken, string LineData, int LineNumber)
+        public TokenDataVariable(Token MyToken)
         {
             MyToken.Type = "variable";
-            string[] MyVariableParams = Formater.SafeSplit(LineData, ' ').ToArray();
+            string[] MyVariableParams = Formater.SafeSplit(MyToken.LineData, ' ').ToArray();
             Console.WriteLine(MyVariableParams.Length);
             // check if all parameters of a vriables are present
             if (MyVariableParams.Length == 3)
             {
-                this.VariableType = FindVariableType(MyVariableParams[2], LineNumber);
+                this.VariableType = FindVariableType(MyVariableParams[2], MyToken);
                 this.VariableName = MyVariableParams[0];
                 this.VariableData = MyVariableParams[2];
             }else if (MyVariableParams.Length == 1)
             {
                 this.VariableName = "";
                 this.VariableData = MyVariableParams[0];
-                this.VariableType = FindVariableType(MyVariableParams[0], LineNumber);
+                this.VariableType = FindVariableType(MyVariableParams[0], MyToken);
             }
             else
             {
-                Formater.CriticalError("Invalid variable init line : " + LineNumber + Environment.NewLine + "=> " + LineData);
+                Formater.TokenCriticalError("Invalid variable init ", MyToken);
             }
             
 
@@ -39,7 +39,7 @@ namespace BuckshotPlusPlus
             {
                 if (this.VariableData[0] != '"' || this.VariableData[this.VariableData.Length - 1] != '"')
                 {
-                    Formater.CriticalError("Invalid string value line : " + LineNumber + Environment.NewLine + "=> " + LineData);
+                    Formater.TokenCriticalError("Invalid string value", MyToken);
                 }
                 this.VariableData = this.VariableData.Substring(1, this.VariableData.Length - 2);
             }
@@ -51,33 +51,33 @@ namespace BuckshotPlusPlus
 
         }
 
-        public static string FindVariableType(string LineData, int LineNumber)
+        public static string FindVariableType(string Value,Token MyToken)
         {
 
             int VariableIntData = 0;
             float VariableFloatData = 0;
             bool VariableBoolData = false;
 
-            if (LineData.Contains('"'))
+            if (Value.Contains('"'))
             {
                 return "string";
-            }else if (int.TryParse(LineData, out VariableIntData))
+            }else if (int.TryParse(Value, out VariableIntData))
             {
                 return "int";
-            }else if (float.TryParse(LineData, out VariableFloatData))
+            }else if (float.TryParse(Value, out VariableFloatData))
             {
                 return "float";
-            }else if(bool.TryParse(LineData, out VariableBoolData))
+            }else if(bool.TryParse(Value, out VariableBoolData))
             {
                 return "bool";
             }
-            Formater.CriticalError("Unknown variable type at line : " + LineNumber + Environment.NewLine + "=> " + LineData);
+            Formater.TokenCriticalError("Unknown variable type ", MyToken);
             return "";
         }
 
-        public static bool IsTokenDataVariable(string LineData)
+        public static bool IsTokenDataVariable(Token MyToken)
         {
-            return Formater.SafeContains(LineData, '=');
+            return Formater.SafeContains(MyToken.LineData, '=');
         }
     }
 }

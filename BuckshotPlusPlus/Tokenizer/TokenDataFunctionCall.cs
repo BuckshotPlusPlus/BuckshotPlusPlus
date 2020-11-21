@@ -9,26 +9,26 @@ namespace BuckshotPlusPlus
         public string FuncName { get; set; }
         public List<Token> FuncArgs { get; set; }
 
-        public TokenDataFunctionCall(Token MyToken, string LineData, int LineNumber)
+        public TokenDataFunctionCall(Token MyToken)
         {
             MyToken.Type = "function_call";
 
-            this.FuncName = GetFunctionCallName(LineData,LineNumber);
-            this.FuncArgs = GetFunctionArgs(LineData, LineNumber);
+            this.FuncName = GetFunctionCallName(MyToken.LineData,MyToken);
+            this.FuncArgs = GetFunctionArgs(MyToken.LineData, MyToken);
 
 
             Console.WriteLine("I found a function call of name : " + this.FuncName + " and " + this.FuncArgs.Count + " args");
         }
 
-        public static bool IsTokenDataFunctionCall(string LineData)
+        public static bool IsTokenDataFunctionCall(Token MyToken)
         {
-            return Formater.SafeContains(LineData, '(');
+            return Formater.SafeContains(MyToken.LineData, '(');
         }
 
-        public static string GetFunctionCallName(string LineData, int LineNumber)
+        public static string GetFunctionCallName(string Value, Token MyToken)
         {
             string FunName = "";
-            foreach(char c in LineData)
+            foreach(char c in Value)
             {
                 if(c != '(')
                 {
@@ -39,19 +39,18 @@ namespace BuckshotPlusPlus
                     return FunName;
                 }
             }
-
-            Formater.CriticalError("Invalid function name line : " + LineNumber + Environment.NewLine + "   => " + LineData);
+            Formater.TokenCriticalError("Invalid function name", MyToken);
             return "";
         }
 
-        public static List<Token> GetFunctionArgs(string LineData, int LineNumber)
+        public static List<Token> GetFunctionArgs(string Value,Token MyToken)
         {
             List<Token> FunctionArgs = new List<Token>();
             string CurrentVar = "";
             bool isArgs = false;
             int SubPar = 0;
 
-            foreach(char c in LineData)
+            foreach(char c in Value)
             {
                 if(c == '(')
                 {
@@ -62,9 +61,9 @@ namespace BuckshotPlusPlus
                     SubPar--;
                     if(SubPar == 0)
                     {
-                        Token MyToken = new Token(CurrentVar, LineNumber);
-                        new TokenDataVariable(MyToken, CurrentVar, LineNumber);
-                        FunctionArgs.Add(MyToken);
+                        Token MyNewToken = new Token(MyToken.FileName,CurrentVar, MyToken.LineNumber);
+                        new TokenDataVariable(MyNewToken);
+                        FunctionArgs.Add(MyNewToken);
                         return FunctionArgs;
                     }
                 }
@@ -72,9 +71,9 @@ namespace BuckshotPlusPlus
                 {
                     if (isArgs && c == ',')
                     {
-                        Token MyToken = new Token(CurrentVar, LineNumber);
-                        new TokenDataVariable(MyToken, CurrentVar, LineNumber);
-                        FunctionArgs.Add(MyToken);
+                        Token MyNewToken = new Token(MyToken.FileName,CurrentVar, MyToken.LineNumber);
+                        new TokenDataVariable(MyNewToken);
+                        FunctionArgs.Add(MyNewToken);
                         CurrentVar = "";
                     }
                     else if(isArgs)
@@ -83,7 +82,7 @@ namespace BuckshotPlusPlus
                     }
                 }
             }
-            Formater.CriticalError("Invalid function args line : " + LineNumber + Environment.NewLine + "   => " + LineData);
+            Formater.TokenCriticalError("Invalid function args", MyToken);
             return FunctionArgs;
         }
     }

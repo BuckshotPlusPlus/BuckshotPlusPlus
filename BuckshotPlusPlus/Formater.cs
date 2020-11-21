@@ -153,5 +153,19 @@ namespace BuckshotPlusPlus
             Console.WriteLine("----------||  BUCKSHOT++  ||----------");
             Environment.Exit(-1);
         }
+
+        public static void Warn(string error)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("Warning : " + error);
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine("----------||  BUCKSHOT++  ||----------");
+            Environment.Exit(-1);
+        }
+
+        public static void TokenCriticalError(string Error, Token MyToken)
+        {
+            Formater.CriticalError(Error + " in file : " + MyToken.FileName + " at line : " + MyToken.LineNumber + Environment.NewLine + "=> " + MyToken.LineData);
+        }
     }
 }

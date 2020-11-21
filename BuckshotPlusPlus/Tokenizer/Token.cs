@@ -9,17 +9,27 @@ namespace BuckshotPlusPlus
         public string Type { get; set; }
         public TokenData Data { get; set; }
 
-        public Token(string LineData, int LineNumber)
+        public string FileName { get; set; }
+        public string LineData { get; set; }
+        public int LineNumber { get; set; }
+
+
+        public Token(string FileName,string LineData, int LineNumber)
         {
-
+            this.FileName = FileName;
+            this.LineData = LineData;
+            this.LineNumber = LineNumber;
             // If Line Contains "=" load data of a variable
-
-            if (TokenDataVariable.IsTokenDataVariable(LineData))
+            if (TokenDataVariable.IsTokenDataVariable(this))
             {
-                new TokenDataVariable(this, LineData, LineNumber);
-            }else if (TokenDataFunctionCall.IsTokenDataFunctionCall(LineData))
+                new TokenDataVariable(this);
+            }else if (TokenDataFunctionCall.IsTokenDataFunctionCall(this))
             {
-                new TokenDataFunctionCall(this, LineData, LineNumber);
+                new TokenDataFunctionCall(this);
+            }
+            else
+            {
+                Formater.TokenCriticalError("Unkown instruction", this);
             }
 
         }

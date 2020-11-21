@@ -1,0 +1,5 @@
+﻿test = "Hi :D"
+
+include "Test.bpp"
+
+monNum = 42
