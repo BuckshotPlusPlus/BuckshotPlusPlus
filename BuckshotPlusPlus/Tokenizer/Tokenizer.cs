@@ -102,7 +102,7 @@ namespace BuckshotPlusPlus
                 Console.WriteLine("File " + FilePath + " Found!");
                 string FileData = File.ReadAllText(FilePath, System.Text.Encoding.UTF8);
 
-                AnalyzeFileData(FilePath, FileData);
+                AnalyzeFileData(FilePath, Formater.FormatFileData(FileData));
 
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("Compilation of " + FilePath + " done");

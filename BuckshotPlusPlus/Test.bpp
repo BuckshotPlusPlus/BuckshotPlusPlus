@@ -4,10 +4,10 @@ object MyTest{
 	myVar = 52
 	lol = 12
 
-object MyProlTest{
-myVar = 52
-lol = 12
-}
+	object MyProlTest{
+		myVar = 52
+		lol = 12
+	}
 
 
 }
