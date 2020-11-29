@@ -4,7 +4,7 @@ using System.Text;
 
 namespace BuckshotPlusPlus
 {
-    class TokenDataVariable : TokenData
+    public class TokenDataVariable : TokenData
     {
         public string VariableType { get; set; }
         public string VariableData { get; set; }
@@ -32,6 +32,10 @@ namespace BuckshotPlusPlus
                 Formater.TokenCriticalError("Invalid variable init ", MyToken);
             }
             
+            if(this.VariableType == "")
+            {
+                Formater.TokenCriticalError("Unknown variable type ", MyToken);
+            }
 
 
 
@@ -44,9 +48,6 @@ namespace BuckshotPlusPlus
                 this.VariableData = this.VariableData.Substring(1, this.VariableData.Length - 2);
             }
 
-
-            MyToken.Data = this;
-
             Console.WriteLine("I found a variable of type " + this.VariableType + " and name : " + this.VariableName + " Value : " + this.VariableData);
 
         }
@@ -58,7 +59,11 @@ namespace BuckshotPlusPlus
             float VariableFloatData = 0;
             bool VariableBoolData = false;
 
-            if (Value.Contains('"'))
+            if(Value[0] == '[' && Value[Value.Length - 1] == ']')
+            {
+                return "array";
+            }
+            else if (Value.Contains('"'))
             {
                 return "string";
             }else if (int.TryParse(Value, out VariableIntData))
@@ -70,14 +75,27 @@ namespace BuckshotPlusPlus
             }else if(bool.TryParse(Value, out VariableBoolData))
             {
                 return "bool";
+            }else if(TokenUtils.FindTokenByName(MyToken.MyTokenizer.FileTokens,Value) != null)
+            {
+                return "ref";
             }
-            Formater.TokenCriticalError("Unknown variable type ", MyToken);
+            //Formater.TokenCriticalError("Unknown variable type ", MyToken);
             return "";
         }
 
         public static bool IsTokenDataVariable(Token MyToken)
         {
-            return Formater.SafeContains(MyToken.LineData, '=');
+            if(Formater.SafeContains(MyToken.LineData, '='))
+            {
+                return true;
+            }else if(FindVariableType(MyToken.LineData, MyToken) != "")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

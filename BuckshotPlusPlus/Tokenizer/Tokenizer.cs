@@ -20,7 +20,6 @@ namespace BuckshotPlusPlus
         public List<Token> FileTokens { get;}
 
         string RelativePath { get; }
-        public int CurrentLineNumber { get; set; }
         public Tokenizer(string FilePath)
         {
             FileTokens = new List<Token>();
@@ -43,7 +42,7 @@ namespace BuckshotPlusPlus
                 this.FileDataDictionary.Add(FileName, FileData);
 
                 List<string> MyFileLines = FileData.Split('\n').OfType<string>().ToList();
-                CurrentLineNumber = 0;
+                int CurrentLineNumber = 0;
                 int ContainerCount = 0;
                 List<string> ContainerData = new List<string>();
 
@@ -53,6 +52,7 @@ namespace BuckshotPlusPlus
                     string LineData = MyFileLines[CurrentLineNumber];
                     if (LineData.Length > 1)
                     {
+                        Formater.DebugMessage( LineData);
                         if ((int)LineData[LineData.Length - 1] == 13)
                         {
                             LineData = LineData.Substring(0, LineData.Length - 1);
@@ -61,13 +61,24 @@ namespace BuckshotPlusPlus
                         if (Formater.SafeSplit(LineData, ' ')[0] == "include")
                         {
                             IncludeFile(Path.Combine(RelativePath, Formater.SafeSplit(LineData, ' ')[1].Substring(1, Formater.SafeSplit(LineData, ' ')[1].Length - 2)));
+                            Formater.DebugMessage(CurrentLineNumber.ToString());
                         }
                         else
                         {
-                            List<string> MyString = Formater.SafeSplit(LineData, ' ');
-                            if (MyString[0] == "object" || MyString[0] == "function")
+                            if(Formater.SafeContains(LineData, '{'))
                             {
-                                ContainerCount++;
+                                List<string> MyString = Formater.SafeSplit(LineData, ' ');
+
+                                foreach (string ContainerType in TokenDataContainer.SupportedContainerTypes)
+                                {
+
+                                    if (MyString[0] == ContainerType)
+                                    {
+                                        Formater.DebugMessage("Container start of type " + ContainerType);
+                                        ContainerCount++;
+                                        break;
+                                    }
+                                }
                             }
 
                             if (ContainerCount > 0)

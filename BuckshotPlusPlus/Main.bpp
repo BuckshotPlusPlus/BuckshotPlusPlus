@@ -2,4 +2,27 @@
 
 include "Test.bpp"
 
-monNum = 42
+page Home{
+	title = "My awesome home page"
+	body = MyBodyView
+}
+
+page Hello{
+	title = "My awesome Hello page!"
+}
+
+route Index{
+	type = "get"
+	path = "/"
+	target = Home
+}
+
+route Test{
+	type = "get"
+	path = "/test"
+	target = Hello
+}
+
+server Main{
+	router = [Index,Test]
+}

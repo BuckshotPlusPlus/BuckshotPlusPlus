@@ -1,0 +1,6 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>My awesome home page</title>
+</head>
+<body  style="background-color:black;"><h1  style="color:white;">Welcome to my website!</h1><a href="/test" style="color:white;">The other page</a></body></html>

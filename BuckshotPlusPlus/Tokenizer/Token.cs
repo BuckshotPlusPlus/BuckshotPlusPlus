@@ -24,18 +24,18 @@ namespace BuckshotPlusPlus
             // If Line Contains "=" load data of a variable
             if (TokenDataContainer.IsTokenDataContainer(this))
             {
-                new TokenDataContainer(this);
+                Data = new TokenDataContainer(this);
             } else if (TokenDataFunctionCall.IsTokenDataFunctionCall(this))
             {
-                new TokenDataFunctionCall(this);
+                Data = new TokenDataFunctionCall(this);
             } else if (TokenDataVariable.IsTokenDataVariable(this)) {
-                new TokenDataVariable(this);
+                Data = new TokenDataVariable(this);
             }
             else
             {
                 Formater.TokenCriticalError("Unkown instruction", this);
             }
-
+            Formater.DebugMessage(Data.GetType().ToString());
         }
     }
 }

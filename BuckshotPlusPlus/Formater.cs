@@ -106,6 +106,7 @@ namespace BuckshotPlusPlus
 
             for (int i = 0; i < Value.Length; i++)
             {
+                Count++;
                 if (LastUnsafeChar.IsUnsafeChar)
                 {
                     UnsafeCharStruct CurrentUnsafeChar = Formater.IsUnsafeChar(UnsafeChars, Value[i]);
@@ -119,6 +120,7 @@ namespace BuckshotPlusPlus
                 }
                 else
                 {
+                    
                     UnsafeCharStruct CurrentUnsafeChar = Formater.IsUnsafeChar(UnsafeChars, Value[i]);
                     if (CurrentUnsafeChar.IsUnsafeChar)
                     {
@@ -126,8 +128,6 @@ namespace BuckshotPlusPlus
                     }
                     else
                     {
-                        Count++;
-
                         if (Value[i] == c)
                         {
                             SplitedString.Add(Value.Substring(i + 1 - Count, Count - 1));

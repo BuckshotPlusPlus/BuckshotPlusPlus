@@ -1,17 +1,38 @@
-﻿montest = "lol it works"
+﻿view WhiteTitle{
+	color = "white"
+	type = "h1"
+	content = "Test text"
+}
 
-object MyTest{
-	myVar = 52
-	lol = 12
+view MyName:WhiteTitle{
+	content = "Welcome to my website!"
+}
 
-	object MyProlTest{
+view MyLink{
+	color = "white"
+	type = "a"
+	content = "The other page"
+	href = "/test"
+}
+
+view MyBodyView{
+	background_color = "black"
+	type = "body"
+	content = [MyName,MyLink]
+}
+
+view MyTestView:MyBodyView{
+	content = "I'm a child body"
+}
+
+view MyOtherTest:MyTestView{
+	backgroundColor = "blue"
+}
+
+object MyProlTest{
 		myVar = 52
 		lol = 12
 	}
-
-
-}
-
 
 
 
