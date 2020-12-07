@@ -1,0 +1,18 @@
+route Index{
+	type = "get"
+	path = "/"
+	target = Home
+}
+
+route DocRoute{
+	type = "get"
+	path = "/doc"
+	target = Documentation
+}
+
+route PricingRoute{
+	type = "get"
+	path = "/pricing"
+	target = Pricing
+}
+

@@ -1,0 +1,41 @@
+event LinkOver{
+    color = "#1971ff"
+}
+
+event LinkOut{
+    color = "#222222"
+}
+
+event BtOver{
+    font_size = "20px"
+    padding_left = "11px"
+    padding_right = "11px"
+}
+
+event BtOut{
+    font_size = "18px"
+    padding_left = "15px"
+    padding_right = "15px"
+}
+
+view Link{
+    type = "a"
+    href = "/"
+    content = "default text"
+    text_decoration = "none"
+    color = "#222222"
+    onmouseover = LinkOver
+    onmouseout = LinkOut
+    transition = "all 0.25s"
+}
+
+view Button:Link{
+    transition = "0.3s all"
+    background_color = "#1971ff"
+    color = "white"
+    padding_left = "15px"
+    padding_right = "15px"
+    font_size = "18px"
+    onmouseover = BtOver
+    onmouseout = BtOut
+}

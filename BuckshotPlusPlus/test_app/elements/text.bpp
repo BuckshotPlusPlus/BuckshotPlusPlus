@@ -1,0 +1,17 @@
+view Title{
+    type = "h1"
+    content = "lol"
+    width = "100%"
+    text_align = "center"
+    color = "#222222"
+}
+
+view Detail:Title{
+    type = "p"
+    content = "default_text"
+
+}
+
+view BlackText{
+    color = "#222222"
+}

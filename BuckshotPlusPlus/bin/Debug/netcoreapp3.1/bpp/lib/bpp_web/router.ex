@@ -13,6 +13,14 @@ end
 scope "/", BppWeb do
 pipe_through :browser
 get "/" , PageController, :vHome
-get "/test" , PageController, :vHello
+get "/doc" , PageController, :vDocumentation
+get "/pricing" , PageController, :vPricing
+end
+if Mix.env() in [:dev, :test] do
+import Phoenix.LiveDashboard.Router
+scope "/" do
+pipe_through :browser
+live_dashboard "/dashboard", metrics: BppWeb.Telemetry
+end
 end
 end

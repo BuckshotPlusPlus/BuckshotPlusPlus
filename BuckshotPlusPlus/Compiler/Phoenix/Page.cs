@@ -26,10 +26,26 @@ namespace BuckshotPlusPlus.Compiler.Phoenix
                 HTML_code += MyPageContainer.ContainerName;
             }
             HTML_code += "</title>" + Environment.NewLine;
+
+            Token MyPageFonts = TokenUtils.FindTokenByName(MyPageContainer.ContainerData, "fonts");
+
+            if(MyPageFonts != null)
+            {
+                HTML_code += "<style>" + Environment.NewLine;
+                foreach(Token ArrayValue in Analyzer.Array.GetArrayValues(MyPageFonts))
+                {
+                    TokenDataVariable ArrayVar = (TokenDataVariable)ArrayValue.Data;
+                    HTML_code += "@import url('" + ArrayVar.VariableData + "');" + Environment.NewLine;
+                }
+                HTML_code += "</style>";
+            }
+
             HTML_code += "</head>" + Environment.NewLine;
 
             if(MyPageBody != null)
             {
+                Formater.DebugMessage(MyPageBody.VariableData);
+                Formater.DebugMessage(TokenUtils.FindTokenByName(MyPage.MyTokenizer.FileTokens, MyPageBody.VariableData).ToString());
                 HTML_code += HTML.View.CompileView(TokenUtils.FindTokenByName(MyPage.MyTokenizer.FileTokens, MyPageBody.VariableData));
             }
             else

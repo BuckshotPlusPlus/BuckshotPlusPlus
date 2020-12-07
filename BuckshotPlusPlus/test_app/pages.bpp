@@ -1,0 +1,20 @@
+
+include "pages/home.bpp"
+
+page Home{
+	title = "Buckshot++"
+	body = MyBodyView
+    fonts = ["https://fonts.googleapis.com/css2?family=Josefin+Sans&family=Nerko+One&family=Poppins&display=swap"]
+}
+
+include "pages/documentation.bpp"
+
+page Documentation:Home{
+	body = DocBody
+}
+
+include "pages/pricing.bpp"
+
+page Pricing:Home{
+	body = PricingBody
+}

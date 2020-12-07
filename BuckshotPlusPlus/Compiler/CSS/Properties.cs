@@ -71,7 +71,7 @@ namespace BuckshotPlusPlus.Compiler.CSS
 		public string flex_grow = "";
 		public string flex_shrink = "";
 		public string flex_wrap = "";
-		public string css_float = "";
+		public string _float = "";
 		public string font_family = "";
 		public string font_size = "";
 		public string font_style = "";
@@ -151,7 +151,36 @@ namespace BuckshotPlusPlus.Compiler.CSS
 					CompiledCSS += CSSProp.Name.Replace('_', '-') + ':' + MyCSSProp.VariableData + ";";
 				}
 			}
+			TokenDataVariable MyFloatProp = TokenUtils.FindTokenDataVariableByName(ViewContainer.ContainerData, "float");
+			if (MyFloatProp != null)
+			{
+				CompiledCSS += "float:" + MyFloatProp.VariableData + ";";
+			}
 			return CompiledCSS;
 		}
+
+		public static bool isCSSProp(Token MyToken)
+        {
+			FieldInfo[] CSSProps = typeof(CSS.Properties).GetFields();
+			TokenDataVariable MyVar = (TokenDataVariable)MyToken.Data;
+			foreach (FieldInfo CSSProp in CSSProps)
+			{
+				if(MyVar.VariableName == CSSProp.Name)
+                {
+					return true;
+                }
+			}
+			return false;
+		}
+
+		public static string toDOMProp(string css_prop_name)
+        {
+			string[] result = css_prop_name.Split('_');
+			for(int i = 1; i < result.Length; i++)
+            {
+				result[i] = char.ToUpper(result[i][0]) + result[i].Substring(1);
+            }
+			return String.Join("", result);
+        }
 	}
 }

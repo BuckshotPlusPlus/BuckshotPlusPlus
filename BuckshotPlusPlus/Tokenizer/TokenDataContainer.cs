@@ -11,7 +11,7 @@ namespace BuckshotPlusPlus
         public List<Token> ContainerData { get; set; }
         public string ContainerType { get; set; }
 
-        public static string[] SupportedContainerTypes = { "object", "function", "view", "server", "route", "page" };
+        public static string[] SupportedContainerTypes = { "object", "function", "view", "server", "route", "page", "event" };
 
         public TokenDataContainer(Token MyToken)
         {

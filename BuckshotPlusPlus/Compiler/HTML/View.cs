@@ -8,18 +8,22 @@ namespace BuckshotPlusPlus.Compiler.HTML
     {
         public static string CompileView(Token MyViewToken)
         {
-            Formater.DebugMessage(MyViewToken.LineData);
+            Formater.DebugMessage("test here");
+            Formater.DebugMessage(MyViewToken.GetType().ToString());
             TokenDataContainer MyContainer = (TokenDataContainer)MyViewToken.Data;
             TokenDataVariable ViewType = TokenUtils.FindTokenDataVariableByName(MyContainer.ContainerData, "type");
             TokenDataVariable ViewContent = TokenUtils.FindTokenDataVariableByName(MyContainer.ContainerData, "content");
             string viewType = "h1";
 
-            if(viewType != null)
+            if(ViewType != null)
             {
                 viewType = ViewType.VariableData;
             }
-
-            string viewHTML = "<" + viewType + " " + HTML.Atributes.GetHTMLAttributes(MyViewToken) + " style=\"" + CSS.Properties.GetCSSString(MyViewToken) + "\">";
+            else
+            {
+                Formater.TokenCriticalError("Missing view type !!!!", MyViewToken);
+            }
+            string viewHTML = "<" + viewType + " " + HTML.Atributes.GetHTMLAttributes(MyViewToken) + " " + HTML.Events.GetHTMLEvents(MyViewToken) + " style=\"" + CSS.Properties.GetCSSString(MyViewToken) + "\">";
 
             if(ViewContent != null)
             {
@@ -34,6 +38,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
                     foreach (Token ChildViewToken in Analyzer.Array.GetArrayValues(TokenUtils.FindTokenByName(MyContainer.ContainerData, "content")))
                     {
                         TokenDataVariable ChildView = (TokenDataVariable)ChildViewToken.Data;
+                        Formater.DebugMessage(ChildView.VariableData);
                         viewHTML += CompileView(TokenUtils.FindTokenByName(MyViewToken.MyTokenizer.FileTokens, ChildView.VariableData));
                     }
                 }

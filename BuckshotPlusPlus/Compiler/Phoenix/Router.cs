@@ -44,6 +44,22 @@ namespace BuckshotPlusPlus.Compiler.Phoenix
             }
 
             RouterFile += "end" + Environment.NewLine;
+
+            RouterFile += "if Mix.env() in [:dev, :test] do" + Environment.NewLine +
+                "import Phoenix.LiveDashboard.Router" + Environment.NewLine +
+                "scope \"/\" do" + Environment.NewLine +
+                "pipe_through :browser" + Environment.NewLine +
+                "live_dashboard \"/dashboard\", metrics: BppWeb.Telemetry" + Environment.NewLine +
+                "end" + Environment.NewLine +
+                "end" + Environment.NewLine;
+
+           /* RouterFile += "if Mix.env() in [:dev, :test] do" + Environment.NewLine +
+                "scope \"/\" do" + Environment.NewLine +
+                "pipe_through :browser" + Environment.NewLine +
+                "get \"/editor\", metrics: BppWeb.Telemetry" + Environment.NewLine +
+                "end" + Environment.NewLine +
+                "end" + Environment.NewLine;*/
+
             RouterFile += "end" + Environment.NewLine;
 
             System.IO.File.WriteAllText("bpp/lib/bpp_web/router.ex", RouterFile);

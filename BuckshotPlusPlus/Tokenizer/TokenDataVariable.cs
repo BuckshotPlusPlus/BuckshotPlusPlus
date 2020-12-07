@@ -75,7 +75,8 @@ namespace BuckshotPlusPlus
             }else if(bool.TryParse(Value, out VariableBoolData))
             {
                 return "bool";
-            }else if(TokenUtils.FindTokenByName(MyToken.MyTokenizer.FileTokens,Value) != null)
+            }//else if(TokenUtils.FindTokenByName(MyToken.MyTokenizer.FileTokens,Value) != null)
+            else
             {
                 return "ref";
             }

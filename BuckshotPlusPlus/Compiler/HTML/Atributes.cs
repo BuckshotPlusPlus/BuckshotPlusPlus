@@ -7,8 +7,9 @@ namespace BuckshotPlusPlus.Compiler.HTML
 {
     public class Atributes
     {
-        public string href = "";
-		public string id = "";
+        public string _href = "";
+		public string _id = "";
+		public string _class = "";
 
 		public static string GetHTMLAttributes(Token MyToken)
 		{
@@ -17,10 +18,10 @@ namespace BuckshotPlusPlus.Compiler.HTML
 			TokenDataContainer ViewContainer = (TokenDataContainer)MyToken.Data;
 			foreach (FieldInfo HTMLAttribute in HTMLAttributes)
 			{
-				TokenDataVariable MyHTMLAttribute = TokenUtils.FindTokenDataVariableByName(ViewContainer.ContainerData, HTMLAttribute.Name);
+				TokenDataVariable MyHTMLAttribute = TokenUtils.FindTokenDataVariableByName(ViewContainer.ContainerData, HTMLAttribute.Name.Substring(1));
 				if (MyHTMLAttribute != null)
 				{
-					CompiledAtributes += HTMLAttribute.Name + "=\"" + MyHTMLAttribute.VariableData + "\"";
+					CompiledAtributes += HTMLAttribute.Name.Substring(1) + "=\"" + MyHTMLAttribute.VariableData + "\"";
 				}
 			}
 			return CompiledAtributes;

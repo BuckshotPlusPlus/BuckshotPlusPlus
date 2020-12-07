@@ -1,0 +1,8 @@
+﻿include "elements/include.bpp"
+
+include "pages.bpp"
+include "router.bpp"
+
+server Main{
+	router = [Index,DocRoute,PricingRoute]
+}

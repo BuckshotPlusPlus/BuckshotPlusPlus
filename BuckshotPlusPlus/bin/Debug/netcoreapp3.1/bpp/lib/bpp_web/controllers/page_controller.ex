@@ -3,7 +3,10 @@ use BppWeb, :controller
 def vHome(conn, _params) do
 render(conn, "Home.html")
 end
-def vHello(conn, _params) do
-render(conn, "Hello.html")
+def vDocumentation(conn, _params) do
+render(conn, "Documentation.html")
+end
+def vPricing(conn, _params) do
+render(conn, "Pricing.html")
 end
 end
