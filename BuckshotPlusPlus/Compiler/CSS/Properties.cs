@@ -148,7 +148,20 @@ namespace BuckshotPlusPlus.Compiler.CSS
 				TokenDataVariable MyCSSProp = TokenUtils.FindTokenDataVariableByName(ViewContainer.ContainerData, CSSProp.Name);
 				if(MyCSSProp != null)
                 {
-					CompiledCSS += CSSProp.Name.Replace('_', '-') + ':' + MyCSSProp.VariableData + ";";
+					if(MyCSSProp.VariableType == "ref" && MyCSSProp.RefData != null)
+                    {
+						if(MyCSSProp.RefData.Data.GetType() == typeof(TokenDataVariable))
+                        {
+							TokenDataVariable MyRefData = (TokenDataVariable)MyCSSProp.RefData.Data;
+							CompiledCSS += CSSProp.Name.Replace('_', '-') + ':' + MyRefData.VariableData + ";";
+						}
+						
+                    }
+                    else
+                    {
+						CompiledCSS += CSSProp.Name.Replace('_', '-') + ':' + MyCSSProp.VariableData + ";";
+					}
+					
 				}
 			}
 			TokenDataVariable MyFloatProp = TokenUtils.FindTokenDataVariableByName(ViewContainer.ContainerData, "float");

@@ -11,7 +11,7 @@ namespace BuckshotPlusPlus
         public List<Token> ContainerData { get; set; }
         public string ContainerType { get; set; }
 
-        public static string[] SupportedContainerTypes = { "object", "function", "view", "server", "route", "page", "event" };
+        public static string[] SupportedContainerTypes = { "object", "function", "view", "server", "route", "page", "event", "table" };
 
         public TokenDataContainer(Token MyToken)
         {
@@ -100,7 +100,7 @@ namespace BuckshotPlusPlus
                 }
                 else if (OpenCount == 1 && !Formater.SafeContains(LineData, '}'))
                 {
-                    Token MyNewToken = new Token(MyToken.FileName, LineData, MyToken.LineNumber + LinesData.IndexOf(LineData) - 1, MyToken.MyTokenizer);
+                    Token MyNewToken = new Token(MyToken.FileName, LineData, MyToken.LineNumber + LinesData.IndexOf(LineData) - 1, MyToken.MyTokenizer, this);
                     AddChildToContainerData(ContainerData, MyNewToken);
                 }
 
@@ -110,7 +110,7 @@ namespace BuckshotPlusPlus
 
                 if (Formater.SafeContains(LineData, '}') && OpenCount == 2) {
                     OpenCount--;
-                    Token MyNewToken = new Token(MyToken.FileName, String.Join('\n', ChildContainerLines), MyToken.LineNumber + LinesData.IndexOf(ChildContainerLines[0]) - 4, MyToken.MyTokenizer);
+                    Token MyNewToken = new Token(MyToken.FileName, String.Join('\n', ChildContainerLines), MyToken.LineNumber + LinesData.IndexOf(ChildContainerLines[0]) - 4, MyToken.MyTokenizer, this);
                     AddChildToContainerData(ContainerData, MyNewToken);
                     ChildContainerLines = new List<string>();
                 }

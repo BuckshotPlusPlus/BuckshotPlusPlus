@@ -9,6 +9,7 @@ namespace BuckshotPlusPlus
         public string VariableType { get; set; }
         public string VariableData { get; set; }
         public string VariableName { get; set; }
+        public Token RefData { get; set; }
 
         public TokenDataVariable(Token MyToken)
         {
@@ -37,7 +38,7 @@ namespace BuckshotPlusPlus
                 Formater.TokenCriticalError("Unknown variable type ", MyToken);
             }
 
-
+            
 
             if (this.VariableType == "string")
             {
@@ -49,6 +50,18 @@ namespace BuckshotPlusPlus
             }
 
             Console.WriteLine("I found a variable of type " + this.VariableType + " and name : " + this.VariableName + " Value : " + this.VariableData);
+
+            if (this.VariableType == "ref")
+            {
+                this.RefData = TokenUtils.FindTokenByName(MyToken.MyTokenizer.FileTokens, this.VariableData);
+                if(RefData == null)
+                {
+                    if(MyToken.Parent != null)
+                    {
+                        this.RefData = TokenUtils.FindTokenByName(MyToken.Parent.ContainerData, this.VariableData);
+                    }
+                }
+            }
 
         }
 

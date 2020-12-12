@@ -10,7 +10,9 @@ namespace BuckshotPlusPlus.Compiler.Phoenix
         {
             string HTML_code = "<!DOCTYPE html>" + Environment.NewLine +
                 "<html lang=\"en\">" + Environment.NewLine +
-                "<head>" + Environment.NewLine + 
+               
+                "<head>" + Environment.NewLine +
+                 "<meta name=\"viewport\" content=\"width = device - width, initial - scale = 1.0\">" + Environment.NewLine +
                 "<title>";
 
             TokenDataContainer MyPageContainer = (TokenDataContainer)MyPage.Data;
