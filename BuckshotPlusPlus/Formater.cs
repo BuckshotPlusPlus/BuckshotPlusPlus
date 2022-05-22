@@ -172,5 +172,12 @@ namespace BuckshotPlusPlus
             Console.WriteLine("Debug : " + msg);
             Console.ForegroundColor = ConsoleColor.White;
         }
+
+        public static void SuccessMessage(string msg)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(msg);
+            Console.ForegroundColor = ConsoleColor.White;
+        }
     }
 }

@@ -15,6 +15,7 @@ pipe_through :browser
 get "/" , PageController, :vHome
 get "/doc" , PageController, :vDocumentation
 get "/pricing" , PageController, :vPricing
+get "/mabite" , PageController, :vPricing
 end
 if Mix.env() in [:dev, :test] do
 import Phoenix.LiveDashboard.Router

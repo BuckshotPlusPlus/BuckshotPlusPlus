@@ -1,26 +1,26 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\victo\\Documents\\GitHub\\BuckshotPlusPlus\\BuckshotPlusPlus\\BuckshotPlusPlus.csproj": {}
+    "C:\\Github\\BuckshotPlusPlus\\BuckshotPlusPlus\\BuckshotPlusPlus.csproj": {}
   },
   "projects": {
-    "C:\\Users\\victo\\Documents\\GitHub\\BuckshotPlusPlus\\BuckshotPlusPlus\\BuckshotPlusPlus.csproj": {
+    "C:\\Github\\BuckshotPlusPlus\\BuckshotPlusPlus\\BuckshotPlusPlus.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\victo\\Documents\\GitHub\\BuckshotPlusPlus\\BuckshotPlusPlus\\BuckshotPlusPlus.csproj",
+        "projectUniqueName": "C:\\Github\\BuckshotPlusPlus\\BuckshotPlusPlus\\BuckshotPlusPlus.csproj",
         "projectName": "BuckshotPlusPlus",
-        "projectPath": "C:\\Users\\victo\\Documents\\GitHub\\BuckshotPlusPlus\\BuckshotPlusPlus\\BuckshotPlusPlus.csproj",
+        "projectPath": "C:\\Github\\BuckshotPlusPlus\\BuckshotPlusPlus\\BuckshotPlusPlus.csproj",
         "packagesPath": "C:\\Users\\victo\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\victo\\Documents\\GitHub\\BuckshotPlusPlus\\BuckshotPlusPlus\\obj\\",
+        "outputPath": "C:\\Github\\BuckshotPlusPlus\\BuckshotPlusPlus\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet\\",
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
           "C:\\Users\\victo\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.1"
@@ -31,6 +31,7 @@
         },
         "frameworks": {
           "netcoreapp3.1": {
+            "targetAlias": "netcoreapp3.1",
             "projectReferences": {}
           }
         },
@@ -42,6 +43,7 @@
       },
       "frameworks": {
         "netcoreapp3.1": {
+          "targetAlias": "netcoreapp3.1",
           "imports": [
             "net461",
             "net462",
@@ -57,7 +59,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.403\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.201\\RuntimeIdentifierGraph.json"
         }
       }
     }

@@ -13,8 +13,8 @@ view DocBt:Link{
 }
 
 view DashboardBt:Button{
-    content = "Dashboard"
-    href = "/dashboard"
+    content = "GitHub repo"
+    href = "https://github.com/BuckshotPlusPlus/BuckshotPlusPlus"
 }
 
 view MenuTitle:BlackText{

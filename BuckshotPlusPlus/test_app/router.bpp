@@ -16,3 +16,7 @@ route PricingRoute{
 	target = Pricing
 }
 
+route TestPrice:PricingRoute{
+	path = "/mabite"
+}
+

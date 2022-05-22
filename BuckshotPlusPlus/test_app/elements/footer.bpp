@@ -1,0 +1,12 @@
+view FooterDiscord:Link{
+    content = "Join us on discord"
+    href = "/doc"
+}
+
+view Footer{
+    type = "footer"
+    width = "100%"
+    font_family = "'Josefin Sans'"
+    content = [FooterDiscord]
+    background_color = "red"
+}

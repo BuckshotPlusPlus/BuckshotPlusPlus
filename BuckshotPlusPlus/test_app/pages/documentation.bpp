@@ -1,5 +1,5 @@
 view DocTitle:Title{
-    content = "Welcome on the doc!"
+    content = "Bienvenue bg"
 }
 
 view DocBody{
@@ -7,4 +7,5 @@ view DocBody{
     margin = "0"
     padding = "0"
     content = [Menu,DocTitle]
+    font_family = "'Poppins', sans-serif"
 }

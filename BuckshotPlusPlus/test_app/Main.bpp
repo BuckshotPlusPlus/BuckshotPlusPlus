@@ -4,5 +4,5 @@ include "pages.bpp"
 include "router.bpp"
 
 server Main{
-	router = [Index,DocRoute,PricingRoute]
+	router = [Index,DocRoute,PricingRoute,TestPrice]
 }

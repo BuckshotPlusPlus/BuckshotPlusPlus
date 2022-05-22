@@ -1,5 +1,5 @@
 view HomeTitle:Title{
-    content = "What is buckshot++!"
+    content = "scalable, production-ready websites in a few minutes"
 }
 
 view HomeDesc:Detail{
@@ -12,6 +12,6 @@ view MyBodyView{
     margin = "0"
     padding = "0"
     font_family = "'Poppins', sans-serif"
-    content = [Menu,HomeTitle,HomeDesc]
+    content = [Menu,HomeTitle,HomeDesc,Footer]
 }
 

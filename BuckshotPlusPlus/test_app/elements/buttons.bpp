@@ -7,15 +7,11 @@ event LinkOut{
 }
 
 event BtOver{
-    font_size = "20px"
-    padding_left = "11px"
-    padding_right = "11px"
+    background_color = "red"
 }
 
 event BtOut{
-    font_size = "18px"
-    padding_left = "15px"
-    padding_right = "15px"
+    background_color = "blue"
 }
 
 view Link{
