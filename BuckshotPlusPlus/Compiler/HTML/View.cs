@@ -10,6 +10,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
         {
             Formater.DebugMessage("test here");
             Formater.DebugMessage(MyViewToken.GetType().ToString());
+            Console.WriteLine(MyViewToken.GetType().ToString());
             TokenDataContainer MyContainer = (TokenDataContainer)MyViewToken.Data;
             TokenDataVariable ViewType = TokenUtils.FindTokenDataVariableByName(MyContainer.ContainerData, "type");
             TokenDataVariable ViewContent = TokenUtils.FindTokenDataVariableByName(MyContainer.ContainerData, "content");

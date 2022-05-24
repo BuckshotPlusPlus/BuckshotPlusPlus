@@ -45,46 +45,27 @@ namespace BuckshotPlusPlus.WebServer
                     runServer = false;
                 }
 
+                bool page_found = false;
+
                 foreach (Token MyToken in MyTokenizer.FileTokens)
                 {
+                    
                     if (MyToken.Data.GetType() == typeof(TokenDataContainer))
                     {
                         TokenDataContainer MyTokenDataContainer = (TokenDataContainer)MyToken.Data;
                         if (MyTokenDataContainer.ContainerType == "page")
                         {
                             string PageName = MyTokenDataContainer.ContainerName;
-                            TokenDataContainer MyPageContainer = (TokenDataContainer)MyToken.Data;
-                            TokenDataVariable MyPageTitle = TokenUtils.FindTokenDataVariableByName(MyPageContainer.ContainerData, "title");
-                            TokenDataVariable MyPageBody = TokenUtils.FindTokenDataVariableByName(MyPageContainer.ContainerData, "body");
-
                             
 
                             if (req.Url.AbsolutePath == "/" + PageName || (req.Url.AbsolutePath == "/" && PageName == "index"))
                             {
+                                page_found = true;
                                 // Write the response info
                                 string disableSubmit = !runServer ? "disabled" : "";
-
-                                string body = "";
-
-                                if (MyPageBody != null)
-                                {
-                                    Formater.DebugMessage(MyPageBody.VariableData);
-                                    Formater.DebugMessage(TokenUtils.FindTokenByName(MyToken.MyTokenizer.FileTokens, MyPageBody.VariableData).ToString());
-                                    body += Compiler.HTML.View.CompileView(TokenUtils.FindTokenByName(MyToken.MyTokenizer.FileTokens, MyPageBody.VariableData));
-                                }
-                                else
-                                {
-                                    body += "<body><h1>" + MyPageContainer.ContainerName + "</h1></body>";
-                                }
-
-                                string pageData =
-            "<!DOCTYPE>" +
-            "<html>" +
-            "  <head>" +
-            "    <title>" + TokenUtils.FindTokenDataVariableByName(MyPageContainer.ContainerData, "title") + "</title>" +
-            "  </head>" +
-            body +
-            "</html>";
+                                Console.WriteLine("start compiling");
+                                string pageData = Page.RenderWebPage(MyToken);
+                                Console.WriteLine(PageName);
 
                                 byte[] data = Encoding.UTF8.GetBytes(String.Format(pageData, pageViews, disableSubmit));
                                 resp.ContentType = "text/html";
@@ -99,16 +80,20 @@ namespace BuckshotPlusPlus.WebServer
                     }
                 }
 
-                // If `shutdown` url requested w/ POST, then shutdown the server after serving the page
-                if ((req.HttpMethod == "POST") && (req.Url.AbsolutePath == "/shutdown"))
+                if (!page_found)
                 {
-                    Console.WriteLine("Shutdown requested");
-                    runServer = false;
-                }
+                    string disableSubmit = !runServer ? "disabled" : "";
+                    string pageData = "404 not found";
 
-                // Make sure we don't increment the page views counter if `favicon.ico` is requested
-                if (req.Url.AbsolutePath != "/favicon.ico")
-                    pageViews += 1;
+                    byte[] data = Encoding.UTF8.GetBytes(String.Format(pageData, pageViews, disableSubmit));
+                    resp.ContentType = "text";
+                    resp.ContentEncoding = Encoding.UTF8;
+                    resp.ContentLength64 = data.LongLength;
+
+                    // Write out to the response stream (asynchronously), then close it
+                    await resp.OutputStream.WriteAsync(data, 0, data.Length);
+                    resp.Close();
+                }
 
                 
             }

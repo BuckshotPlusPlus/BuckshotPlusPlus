@@ -129,7 +129,6 @@ namespace BuckshotPlusPlus
             stopwatch.Start();
 
             Tokenizer MyTokenizer = new Tokenizer(FilePath);
-            TokenDataContainer MainServer = TokenUtils.FindTokenDataContainerByName(MyTokenizer.FileTokens, "Main");
 
             //Compiler.Phoenix.Controller.WriteController(MyTokenizer);
             //Compiler.Phoenix.Router.WriteMainRouter(Analyzer.Array.GetArrayValues(TokenUtils.FindTokenByName(MainServer.ContainerData, "router")));

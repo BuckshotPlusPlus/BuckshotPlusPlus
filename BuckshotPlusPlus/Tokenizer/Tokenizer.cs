@@ -101,6 +101,15 @@ namespace BuckshotPlusPlus
                         }
 
                     }
+                    else if(Formater.SafeContains(LineData, '}'))
+                    {
+                        ContainerCount--;
+                        if (ContainerCount == 0)
+                        {
+                            FileTokens.Add(new Token(FileName, String.Join('\n', ContainerData), CurrentLineNumber, this));
+                            ContainerData = new List<string>();
+                        }
+                    }
                     CurrentLineNumber++;
                 }
             }
@@ -118,6 +127,23 @@ namespace BuckshotPlusPlus
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("Compilation of " + FilePath + " done");
                 Console.ForegroundColor = ConsoleColor.White;
+            }else if (FilePath.Split("https://").Length > 1)
+            {
+                var result = string.Empty;
+                using (var webClient = new System.Net.WebClient())
+                {
+                    string url = "https://" + FilePath.Split("https://")[1];
+                    result = webClient.DownloadString(url);
+
+                    Console.WriteLine("File " + url + " Found!");
+                    Console.WriteLine(result);
+
+                    AnalyzeFileData(url, Formater.FormatFileData(result));
+
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("Compilation of " + url + " done");
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
             }
             else
             {
