@@ -1,7 +1,7 @@
 
 include "pages/home.bpp"
 
-page Home{
+page index{
 	title = "Buckshot++"
 	body = MyBodyView
     fonts = ["https://fonts.googleapis.com/css2?family=Josefin+Sans&family=Nerko+One&family=Poppins&display=swap"]
@@ -9,12 +9,25 @@ page Home{
 
 include "pages/documentation.bpp"
 
-page Documentation:Home{
+page Documentation:index{
 	body = DocBody
 }
 
 include "pages/pricing.bpp"
 
-page Pricing:Home{
+page Pricing:index{
 	body = PricingBody
 }
+
+view testbd{
+    type = "body"
+    margin = "0"
+    padding = "0"
+    font_family = "'Poppins', sans-serif"
+    content = "<p>coucou</p>"
+}
+
+page MABITE:index{
+	body = testbd
+}
+

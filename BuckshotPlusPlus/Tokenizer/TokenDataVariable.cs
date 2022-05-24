@@ -15,7 +15,7 @@ namespace BuckshotPlusPlus
         {
             MyToken.Type = "variable";
             string[] MyVariableParams = Formater.SafeSplit(MyToken.LineData, ' ').ToArray();
-            Console.WriteLine(MyVariableParams.Length);
+            //Console.WriteLine(MyVariableParams.Length);
             // check if all parameters of a vriables are present
             if (MyVariableParams.Length == 3)
             {
@@ -49,7 +49,7 @@ namespace BuckshotPlusPlus
                 this.VariableData = this.VariableData.Substring(1, this.VariableData.Length - 2);
             }
 
-            Console.WriteLine("I found a variable of type " + this.VariableType + " and name : " + this.VariableName + " Value : " + this.VariableData);
+            //Console.WriteLine("I found a variable of type " + this.VariableType + " and name : " + this.VariableName + " Value : " + this.VariableData);
 
             if (this.VariableType == "ref")
             {

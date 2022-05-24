@@ -1,5 +1,5 @@
 view HomeTitle:Title{
-    content = "scalable, production-ready websites in a few minutes"
+    content = "COUCOU"
 }
 
 view HomeDesc:Detail{

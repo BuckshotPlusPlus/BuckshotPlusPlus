@@ -13,7 +13,7 @@ view DocBt:Link{
 }
 
 view DashboardBt:Button{
-    content = "GitHub repo"
+    content = "GitHub view repo"
     href = "https://github.com/BuckshotPlusPlus/BuckshotPlusPlus"
 }
 

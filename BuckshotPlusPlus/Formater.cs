@@ -169,7 +169,15 @@ namespace BuckshotPlusPlus
         public static void DebugMessage(string msg)
         {
             Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine("Debug : " + msg);
+            //Console.WriteLine("Debug : " + msg);
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
+        public static void InfoMessage(string msg)
+        {
+            Console.ForegroundColor = ConsoleColor.Blue;
+            string time = DateTime.Now.ToString("h:mm:ss tt");
+            Console.WriteLine(time + " : " + msg);
             Console.ForegroundColor = ConsoleColor.White;
         }
 
