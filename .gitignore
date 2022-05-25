@@ -3,3 +3,7 @@ BuckshotPlusPlus/.vs
 BuckshotPlusPlus/bin
 BuckshotPlusPlus/obj
 BuckshotPlusPlus/test_app
+BuckshotPlusPlus/BuckshotPlusPlus.csproj.user
+BuckshotPlusPlus/Properties/PublishProfiles/FolderProfile1.pubxml.user
+BuckshotPlusPlus/Properties/PublishProfiles/FolderProfile2.pubxml.user
+BuckshotPlusPlus/Properties/PublishProfiles/registry.hub.docker.com_victorchanet.pubxml.user

@@ -56,7 +56,6 @@ namespace BuckshotPlusPlus.WebServer
                         {
                             string PageName = MyTokenDataContainer.ContainerName;
                             
-
                             if (req.Url.AbsolutePath == "/" + PageName || (req.Url.AbsolutePath == "/" && PageName == "index"))
                             {
                                 page_found = true;
