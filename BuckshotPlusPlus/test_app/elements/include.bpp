@@ -1,6 +1,0 @@
-
-include "elements/variables.bpp"
-include "elements/text.bpp"
-include "elements/buttons.bpp"
-include "elements/menu.bpp"
-include "elements/footer.bpp"
