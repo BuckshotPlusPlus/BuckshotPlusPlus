@@ -1,9 +1,0 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta name="viewport" content="width = device - width, initial - scale = 1.0">
-<title>Buckshot++</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans&family=Nerko+One&family=Poppins&display=swap');
-</style></head>
-<body    style="font-family:'Poppins', sans-serif;margin:0;padding:0;"><nav    style="box-shadow:0 5px 10px rgba(20,20,20,0.1);font-family:'Josefin Sans';height:50px;width:100%;"><a href="/"   style="color:#222222;display:inline-block;font-family:'Josefin Sans';font-size:22px;height:50px;line-height:50px;margin-left:15px;text-decoration:none;">Buckshot++</a><div    style="display:flex;height:50px;justify-content:space-between;line-height:50px;width:450px;float:right;"><a href="/"  onmouseout="this.style.color = '#222222';" onmouseover="this.style.color = 'MainBlue';"  style="color:#222222;text-decoration:none;transition:all 0.25s;">Home</a><a href="/pricing"  onmouseout="this.style.color = '#222222';" onmouseover="this.style.color = 'MainBlue';"  style="color:#222222;text-decoration:none;transition:all 0.25s;">Pricing</a><a href="/doc"  onmouseout="this.style.color = '#222222';" onmouseover="this.style.color = 'MainBlue';"  style="color:#222222;text-decoration:none;transition:all 0.25s;">Documentation</a><a href="https://github.com/BuckshotPlusPlus/BuckshotPlusPlus"  onmouseout="this.style.backgroundColor = 'blue';" onmouseover="this.style.backgroundColor = 'red';"  style="background-color:#1971ff;color:white;font-size:18px;padding-left:15px;padding-right:15px;text-decoration:none;transition:0.3s all;">GitHub repo</a></div></nav><h1    style="color:#222222;text-align:center;width:100%;">Bienvenue bg</h1></body></html>
