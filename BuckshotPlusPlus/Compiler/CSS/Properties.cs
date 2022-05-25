@@ -65,6 +65,7 @@ namespace BuckshotPlusPlus.Compiler.CSS
 		public string css_content = "";
 		public string cursor = "";
 		public string display = "";
+		public string flex = "";
 		public string flex_basis = "";
 		public string flex_direction = "";
 		public string flex_flow = "";

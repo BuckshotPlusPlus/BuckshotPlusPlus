@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "BuckshotPlusPlus": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

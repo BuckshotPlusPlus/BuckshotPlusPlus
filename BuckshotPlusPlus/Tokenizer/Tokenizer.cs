@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 
 namespace BuckshotPlusPlus
@@ -130,10 +131,46 @@ namespace BuckshotPlusPlus
             }else if (FilePath.Split("https://").Length > 1)
             {
                 var result = string.Empty;
-                using (var webClient = new System.Net.WebClient())
+                using (var webClient = new HttpClient())
                 {
                     string url = "https://" + FilePath.Split("https://")[1];
-                    result = webClient.DownloadString(url);
+                    result = webClient.GetStringAsync(url).Result;
+
+                    Console.WriteLine("File " + url + " Found!");
+                    Console.WriteLine(result);
+
+                    AnalyzeFileData(url, Formater.FormatFileData(result));
+
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("Compilation of " + url + " done");
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
+            }
+            else if (FilePath.Contains("https://"))
+            {
+                var result = string.Empty;
+                using (var webClient = new HttpClient())
+                {
+                    string url = FilePath;
+                    result = webClient.GetStringAsync(url).Result;
+
+                    Console.WriteLine("File " + url + " Found!");
+                    Console.WriteLine(result);
+
+                    AnalyzeFileData(url, Formater.FormatFileData(result));
+
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("Compilation of " + url + " done");
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
+            }
+            else if (FilePath.Contains("https:/"))
+            {
+                var result = string.Empty;
+                using (var webClient = new HttpClient())
+                {
+                    string url = FilePath.Replace("https:/","https://");
+                    result = webClient.GetStringAsync(url).Result;
 
                     Console.WriteLine("File " + url + " Found!");
                     Console.WriteLine(result);

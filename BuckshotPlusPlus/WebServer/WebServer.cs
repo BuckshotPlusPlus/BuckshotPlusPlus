@@ -10,7 +10,6 @@ namespace BuckshotPlusPlus.WebServer
     class WebServer
     {
         public HttpListener listener;
-        public string url = "http://localhost:8080/";
         public int pageViews = 0;
         public int requestCount = 0;
         public bool runServer = true;
@@ -103,6 +102,8 @@ namespace BuckshotPlusPlus.WebServer
         public void Start(Tokenizer MyTokenizer)
         {
             // Create a Http server and start listening for incoming connections
+
+            string url = "http://localhost:8080/";
             listener = new HttpListener();
             listener.Prefixes.Add(url);
             listener.Start();

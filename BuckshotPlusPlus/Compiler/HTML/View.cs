@@ -8,7 +8,6 @@ namespace BuckshotPlusPlus.Compiler.HTML
     {
         public static string CompileView(Token MyViewToken)
         {
-            Formater.DebugMessage("test here");
             Formater.DebugMessage(MyViewToken.GetType().ToString());
             Console.WriteLine(MyViewToken.GetType().ToString());
             TokenDataContainer MyContainer = (TokenDataContainer)MyViewToken.Data;
