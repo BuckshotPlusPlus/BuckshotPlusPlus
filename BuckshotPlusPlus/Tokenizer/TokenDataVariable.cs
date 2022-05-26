@@ -28,6 +28,12 @@ namespace BuckshotPlusPlus
                 this.VariableData = MyVariableParams[0];
                 this.VariableType = FindVariableType(MyVariableParams[0], MyToken);
             }
+            else if (MyVariableParams.Length == 4)
+            {
+                this.VariableType = FindVariableType(MyVariableParams[2], MyToken);
+                this.VariableName = MyVariableParams[0];
+                this.VariableData = MyVariableParams[2];
+            }
             else
             {
                 Formater.TokenCriticalError("Invalid variable init ", MyToken);
