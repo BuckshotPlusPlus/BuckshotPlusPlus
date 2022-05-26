@@ -138,6 +138,8 @@ namespace BuckshotPlusPlus.Compiler.CSS
 		public string word_spacing = "";
 		public string z_index = "";
 		public string filter = "";
+		public string user_select = "";
+		public string outline_offset = "";
 
 		public static string GetCSSString(Token MyToken)
 		{
