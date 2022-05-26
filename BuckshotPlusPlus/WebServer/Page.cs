@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BuckshotPlusPlus.WebServer
 {
@@ -8,18 +6,11 @@ namespace BuckshotPlusPlus.WebServer
     {
         public static string RenderWebPage(Token MyPage)
         {
-            string HTML_code = "<!DOCTYPE html>" + Environment.NewLine +
-                "<html lang=\"en\">" + Environment.NewLine +
-
-                "<head>" + Environment.NewLine +
-                 "<meta name=\"viewport\" content=\"width = device - width, initial - scale = 1.0\">" + Environment.NewLine +
-                "<title>";
+            string HTML_code = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF - 8\"> <meta http-equiv=\"X - UA - Compatible\" content =\"IE = edge\" > <meta name=\"viewport\" content =\"width=device-width, height=device-height, initial-scale=1.0, user-scalable=yes\" ><title>";
 
             TokenDataContainer MyPageContainer = (TokenDataContainer)MyPage.Data;
             TokenDataVariable MyPageTitle = TokenUtils.FindTokenDataVariableByName(MyPageContainer.ContainerData, "title");
             TokenDataVariable MyPageBody = TokenUtils.FindTokenDataVariableByName(MyPageContainer.ContainerData, "body");
-
-            
 
             if (MyPageTitle != null)
             {
@@ -29,22 +20,41 @@ namespace BuckshotPlusPlus.WebServer
             {
                 HTML_code += MyPageContainer.ContainerName;
             }
-            HTML_code += "</title>" + Environment.NewLine;
+            HTML_code += "</title>";
 
             Token MyPageFonts = TokenUtils.FindTokenByName(MyPageContainer.ContainerData, "fonts");
-
             if (MyPageFonts != null)
             {
-                HTML_code += "<style>" + Environment.NewLine;
+                HTML_code += "<style>";
                 foreach (Token ArrayValue in Analyzer.Array.GetArrayValues(MyPageFonts))
                 {
                     TokenDataVariable ArrayVar = (TokenDataVariable)ArrayValue.Data;
-                    HTML_code += "@import url('" + ArrayVar.VariableData + "');" + Environment.NewLine;
+                    HTML_code += "@import url('" + ArrayVar.VariableData + "');";
                 }
                 HTML_code += "</style>";
             }
 
-            HTML_code += "</head>" + Environment.NewLine;
+            Token MyPageCSS = TokenUtils.FindTokenByName(MyPageContainer.ContainerData, "css");
+            if (MyPageCSS != null)
+            {
+                foreach (Token ArrayValue in Analyzer.Array.GetArrayValues(MyPageCSS))
+                {
+                    TokenDataVariable ArrayVar = (TokenDataVariable)ArrayValue.Data;
+                    HTML_code += $"<link rel=\"stylesheet\" href=\"{ArrayVar.VariableData}\">";
+                }
+            }
+
+            Token MyPageScript = TokenUtils.FindTokenByName(MyPageContainer.ContainerData, "script");
+            if (MyPageScript != null)
+            {
+                foreach (Token ArrayValue in Analyzer.Array.GetArrayValues(MyPageCSS))
+                {
+                    TokenDataVariable ArrayVar = (TokenDataVariable)ArrayValue.Data;
+                    HTML_code += $"<script src=\"{ArrayVar.VariableData}\">";
+                }
+            }
+
+            HTML_code += "</head>";
 
             if (MyPageBody != null)
             {
