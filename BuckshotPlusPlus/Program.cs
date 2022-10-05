@@ -83,8 +83,6 @@ namespace BuckshotPlusPlus
 
             Tokenizer MyTokenizer = new Tokenizer(FilePath);
 
-            //Compiler.Phoenix.Controller.WriteController(MyTokenizer);
-            //Compiler.Phoenix.Router.WriteMainRouter(Analyzer.Array.GetArrayValues(TokenUtils.FindTokenByName(MainServer.ContainerData, "router")));
             Console.WriteLine("----------||  BUCKSHOT++  ||----------");
             stopwatch.Stop();
             Formater.SuccessMessage("Successfully compiled in " + stopwatch.ElapsedMilliseconds + "ms");
