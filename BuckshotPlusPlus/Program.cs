@@ -11,8 +11,12 @@ namespace BuckshotPlusPlus
     {
         static void Main(string[] args)
         {
-            string FilePath = args[0];
+            if (args.Length == 0)
+            {
+                Formater.CriticalError("To display all commands: -h");
+            }
 
+            string FilePath = args[0];
             if (File.Exists(FilePath))
             {
                 var taskController = new CancellationTokenSource();
@@ -68,12 +72,8 @@ namespace BuckshotPlusPlus
             }
             else
             {
-                var taskController = new CancellationTokenSource();
-                var token = taskController.Token;
-                WebServer.WebServer MyWebServer = StartWebServer(FilePath, token);
+                Formater.CriticalError($"File {FilePath} not found");
             }
-
-            
         }
 
         private static WebServer.WebServer StartWebServer(string FilePath, CancellationToken token)
