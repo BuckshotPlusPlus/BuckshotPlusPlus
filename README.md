@@ -20,8 +20,7 @@
 ## Table Of Contents
 
 * [Getting Started](#getting-started)
-* [Contributing](#contributing)
-* [Creating A Pull Request](#creating-a-pull-request)
+* [Contributing](CONTRIBUTING.md)
 * [Authors](#authors)
 
 ## Getting Started
