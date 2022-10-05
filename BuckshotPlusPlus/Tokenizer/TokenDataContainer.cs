@@ -31,7 +31,6 @@ namespace BuckshotPlusPlus
                     
                     if(OpenCount == 1)
                     {
-                        Console.WriteLine("I found a new object");
                         // SPLIT FIRST LINE INTO AN ARRAY
                         List<string> MyArgs = Formater.SafeSplit(LineData, ' ');
 

@@ -9,6 +9,11 @@ namespace BuckshotPlusPlus
 {
     class Program
     {
+        static bool IsHTTP(string FilePath)
+        {
+            return FilePath.Contains("http");
+        }
+
         static void Main(string[] args)
         {
             if (args.Length == 0)
@@ -17,7 +22,7 @@ namespace BuckshotPlusPlus
             }
 
             string FilePath = args[0];
-            if (File.Exists(FilePath))
+            if (IsHTTP(FilePath) || File.Exists(FilePath))
             {
                 var taskController = new CancellationTokenSource();
                 var token = taskController.Token;
@@ -26,48 +31,50 @@ namespace BuckshotPlusPlus
                     WebServer.WebServer MyWebServer = StartWebServer(FilePath, token);
                 }, token);
 
-                Formater.DebugMessage(Directory.GetParent(FilePath).FullName);
+                if (!IsHTTP(FilePath)) 
+                {
+                    FileSystemWatcher watcher = new FileSystemWatcher();
+                    watcher.Path = Directory.GetParent(FilePath).FullName;
 
-                FileSystemWatcher watcher = new FileSystemWatcher();
-                watcher.Path = Directory.GetParent(FilePath).FullName;
+                    watcher.IncludeSubdirectories = true;
+                    watcher.NotifyFilter = NotifyFilters.Attributes |
+                    NotifyFilters.CreationTime |
+                    NotifyFilters.DirectoryName |
+                    NotifyFilters.FileName |
+                    NotifyFilters.LastAccess |
+                    NotifyFilters.LastWrite |
+                    NotifyFilters.Security |
+                    NotifyFilters.Size;
+                    watcher.Filter = "*.*";
+                    watcher.Changed += delegate (object source, FileSystemEventArgs e)
+                    {
+                        Formater.SuccessMessage("File changed!");
+                        taskController.Cancel();
+                        t.Wait();
+                        t.Dispose();
+                        taskController = new CancellationTokenSource();
+                        token = taskController.Token;
 
-                watcher.IncludeSubdirectories = true;
-                watcher.NotifyFilter = NotifyFilters.Attributes |
-                NotifyFilters.CreationTime |
-                NotifyFilters.DirectoryName |
-                NotifyFilters.FileName |
-                NotifyFilters.LastAccess |
-                NotifyFilters.LastWrite |
-                NotifyFilters.Security |
-                NotifyFilters.Size;
-                watcher.Filter = "*.*";
-                watcher.Changed += delegate (object source, FileSystemEventArgs e)
-                {
-                    Formater.SuccessMessage("File changed!");
-                    taskController.Cancel();
-                    t.Wait();
-                    t.Dispose();
-                    taskController = new CancellationTokenSource();
-                    token = taskController.Token;
+                        t = Task.Run(() => {
+                            WebServer.WebServer MyWebServer = StartWebServer(FilePath, token);
+                        }, token);
+                    };
+                    watcher.Created += delegate (object source, FileSystemEventArgs e)
+                    {
+                        Formater.SuccessMessage("File created!");
+                    };
+                    watcher.Deleted += delegate (object source, FileSystemEventArgs e)
+                    {
+                        Formater.SuccessMessage("File deleted!");
+                    };
+                    watcher.Renamed += delegate (object source, RenamedEventArgs e)
+                    {
+                        Formater.SuccessMessage("File renamed!");
+                    };
+                    //Start monitoring.  
+                    watcher.EnableRaisingEvents = true;
+                }
 
-                    t = Task.Run(() => {
-                        WebServer.WebServer MyWebServer = StartWebServer(FilePath, token);
-                    }, token);
-                };
-                watcher.Created += delegate (object source, FileSystemEventArgs e)
-                {
-                    Formater.SuccessMessage("File created!");
-                };
-                watcher.Deleted += delegate (object source, FileSystemEventArgs e)
-                {
-                    Formater.SuccessMessage("File deleted!");
-                };
-                watcher.Renamed += delegate (object source, RenamedEventArgs e)
-                {
-                    Formater.SuccessMessage("File renamed!");
-                };
-                //Start monitoring.  
-                watcher.EnableRaisingEvents = true;
                 Console.ReadLine();
             }
             else
@@ -85,7 +92,7 @@ namespace BuckshotPlusPlus
 
             Console.WriteLine("----------||  BUCKSHOT++  ||----------");
             stopwatch.Stop();
-            Formater.SuccessMessage("Successfully compiled in " + stopwatch.ElapsedMilliseconds + "ms");
+            Formater.SuccessMessage($"Successfully compiled in {stopwatch.ElapsedMilliseconds} ms");
 
             WebServer.WebServer MyWebServer = new WebServer.WebServer();
             MyWebServer.token = token;
