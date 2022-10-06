@@ -1,0 +1,6 @@
+include "Pages/Home.bpp"
+
+page index {
+	title = "Home!"
+	body = Home
+}

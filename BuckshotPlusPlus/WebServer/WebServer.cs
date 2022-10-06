@@ -1,13 +1,12 @@
 ﻿using System;
-using System.IO;
-using System.Text;
 using System.Net;
-using System.Threading.Tasks;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace BuckshotPlusPlus.WebServer
 {
-    class WebServer
+    internal class WebServer
     {
         public HttpListener listener;
         public int pageViews = 0;
@@ -18,7 +17,7 @@ namespace BuckshotPlusPlus.WebServer
 
         public async Task HandleIncomingConnections(Tokenizer MyTokenizer)
         {
-            
+
 
             // While a user hasn't visited the `shutdown` url, keep on handling requests
             while (runServer)
@@ -48,14 +47,14 @@ namespace BuckshotPlusPlus.WebServer
 
                 foreach (Token MyToken in MyTokenizer.FileTokens)
                 {
-                    
+
                     if (MyToken.Data.GetType() == typeof(TokenDataContainer))
                     {
                         TokenDataContainer MyTokenDataContainer = (TokenDataContainer)MyToken.Data;
                         if (MyTokenDataContainer.ContainerType == "page")
                         {
                             string PageName = MyTokenDataContainer.ContainerName;
-                            
+
                             if (req.Url.AbsolutePath == "/" + PageName || (req.Url.AbsolutePath == "/" && PageName == "index"))
                             {
                                 page_found = true;
@@ -93,7 +92,7 @@ namespace BuckshotPlusPlus.WebServer
                     resp.Close();
                 }
 
-                
+
             }
         }
 
