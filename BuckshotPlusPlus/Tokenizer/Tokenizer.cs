@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using static System.Net.WebRequestMethods;
+using File = System.IO.File;
 
 namespace BuckshotPlusPlus
 {
@@ -21,6 +23,7 @@ namespace BuckshotPlusPlus
         public List<Token> FileTokens { get;}
 
         string RelativePath { get; }
+
         public Tokenizer(string FilePath)
         {
             FileTokens = new List<Token>();
@@ -28,10 +31,21 @@ namespace BuckshotPlusPlus
             FileDataDictionary = new Dictionary<string, string>();
             RelativePath = Path.GetDirectoryName(FilePath);
 
-            IncludeFile(FilePath);
+            if (IsHTTP(FilePath))
+            {
+                IncludeHTTP(FilePath);
+            } else
+            {
+                IncludeFile(FilePath);
+            }
         }
 
-        public void AnalyzeFileData(string FileName,string FileData)
+        public bool IsHTTP(string FilePath)
+        {
+            return FilePath.Contains("http");
+        }
+
+        public void AnalyzeFileData(string FileName, string FileData, bool ForHTTP)
         {
             if (this.UnprocessedFileDataDictionary.ContainsKey(FileName))
             {
@@ -61,8 +75,20 @@ namespace BuckshotPlusPlus
 
                         if (Formater.SafeSplit(LineData, ' ')[0] == "include")
                         {
-                            IncludeFile(Path.Combine(RelativePath, Formater.SafeSplit(LineData, ' ')[1].Substring(1, Formater.SafeSplit(LineData, ' ')[1].Length - 2)));
-                            Formater.DebugMessage(CurrentLineNumber.ToString());
+                            if (ForHTTP)
+                            {
+                                IncludeHTTP(Formater.SafeSplit(LineData, ' ')[1].Substring(1, Formater.SafeSplit(LineData, ' ')[1].Length - 2));
+                            } else
+                            {
+                                if (IsHTTP(LineData))
+                                {
+                                    IncludeFile(Formater.SafeSplit(LineData, ' ')[1].Substring(1, Formater.SafeSplit(LineData, ' ')[1].Length - 2));
+                                }
+                                else
+                                {
+                                    IncludeFile(Path.Combine(RelativePath, Formater.SafeSplit(LineData, ' ')[1].Substring(1, Formater.SafeSplit(LineData, ' ')[1].Length - 2)));
+                                }
+                            }
                         }
                         else
                         {
@@ -116,78 +142,69 @@ namespace BuckshotPlusPlus
             }
         }
 
+        public void IncludeHTTP(string FilePath)
+        {
+            string Content = "";
+            if (IsHTTP(FilePath))
+            {
+                using (var webClient = new HttpClient())
+                {
+                    Content = webClient.GetStringAsync(FilePath).Result;
+                }
+            } else
+            {
+                IncludeHTTP($"https://raw.githubusercontent.com/MoskalykA/BuckshotPlusPlus-Examples/main/Buttons/{FilePath}");
+                return;
+            }
+
+            if (Content.Length == 0)
+            {
+                Formater.CriticalError($"File {FilePath} has no contents");
+            }
+
+            Console.WriteLine($"[HTTP] File {FilePath} Found!");
+
+            AnalyzeFileData(FilePath, Formater.FormatFileData(Content), true);
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"[HTTP] Compilation of {FilePath} done");
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
         public void IncludeFile(string FilePath)
         {
-            if (File.Exists(FilePath))
+            string Content = "";
+            if (IsHTTP(FilePath))
             {
-                Console.WriteLine("File " + FilePath + " Found!");
-                string FileData = File.ReadAllText(FilePath, System.Text.Encoding.UTF8);
-
-                AnalyzeFileData(FilePath, Formater.FormatFileData(FileData));
-
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Compilation of " + FilePath + " done");
-                Console.ForegroundColor = ConsoleColor.White;
-            }else if (FilePath.Split("https://").Length > 1)
-            {
-                var result = string.Empty;
                 using (var webClient = new HttpClient())
                 {
-                    string url = "https://" + FilePath.Split("https://")[1];
-                    result = webClient.GetStringAsync(url).Result;
-
-                    Console.WriteLine("File " + url + " Found!");
-                    Console.WriteLine(result);
-
-                    AnalyzeFileData(url, Formater.FormatFileData(result));
-
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("Compilation of " + url + " done");
-                    Console.ForegroundColor = ConsoleColor.White;
-                }
-            }
-            else if (FilePath.Contains("https://"))
-            {
-                var result = string.Empty;
-                using (var webClient = new HttpClient())
-                {
-                    string url = FilePath;
-                    result = webClient.GetStringAsync(url).Result;
-
-                    Console.WriteLine("File " + url + " Found!");
-                    Console.WriteLine(result);
-
-                    AnalyzeFileData(url, Formater.FormatFileData(result));
-
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("Compilation of " + url + " done");
-                    Console.ForegroundColor = ConsoleColor.White;
-                }
-            }
-            else if (FilePath.Contains("https:/"))
-            {
-                var result = string.Empty;
-                using (var webClient = new HttpClient())
-                {
-                    string url = FilePath.Replace("https:/","https://");
-                    result = webClient.GetStringAsync(url).Result;
-
-                    Console.WriteLine("File " + url + " Found!");
-                    Console.WriteLine(result);
-
-                    AnalyzeFileData(url, Formater.FormatFileData(result));
-
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("Compilation of " + url + " done");
-                    Console.ForegroundColor = ConsoleColor.White;
+                    Content = webClient.GetStringAsync(FilePath).Result;
                 }
             }
             else
             {
-                Formater.CriticalError("File " + FilePath + " not found");
+                if (!File.Exists(FilePath))
+                {
+                    Formater.CriticalError($"File {FilePath} not found");
+                }
+                else if (File.Exists(FilePath))
+                {
+                    Content = File.ReadAllText(FilePath, System.Text.Encoding.UTF8);
+                }
             }
-            
-        }
 
+            if (Content.Length == 0)
+            {
+                Formater.CriticalError($"File {FilePath} has no contents");
+            }
+
+            Console.WriteLine($"File {FilePath} Found!");
+
+            AnalyzeFileData(FilePath, Formater.FormatFileData(Content), false);
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"Compilation of {FilePath} done");
+            Console.ForegroundColor = ConsoleColor.White;
+        }
     }
 }

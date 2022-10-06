@@ -13,80 +13,82 @@ namespace BuckshotPlusPlus
         {
             _filePath = filePath;
         }
-
         public void FileMonitoring()
         {
-            if (File.Exists(_filePath))
+            if (IsHTTP(_filePath) || File.Exists(_filePath))
             {
                 var taskController = new CancellationTokenSource();
                 var token = taskController.Token;
 
-                Task webServerThread = Task.Run(() =>
+                Task t = Task.Run(() =>
                 {
-                    WebServer.WebServer MyWebServer = StartWebServer(token);
+                    WebServer.WebServer MyWebServer = StartWebServer(_filePath, token);
                 }, token);
 
-                var filePath = Directory.GetParent(_filePath).FullName;
-                Formater.DebugMessage(filePath);
-
-                FileSystemWatcher watcher = new FileSystemWatcher
+                if (!IsHTTP(_filePath))
                 {
-                    Path = filePath,
-
-                    IncludeSubdirectories = true,
-                    NotifyFilter = NotifyFilters.Attributes | NotifyFilters.CreationTime | NotifyFilters.DirectoryName |
-                                   NotifyFilters.FileName | NotifyFilters.LastAccess | NotifyFilters.LastWrite |
-                                   NotifyFilters.Security | NotifyFilters.Size,
-                    Filter = "*.bpp"
-                };
-                watcher.Changed += delegate (object source, FileSystemEventArgs e)
-                {
-                    Formater.SuccessMessage("File changed!");
-                    taskController.Cancel();
-                    webServerThread.Wait();
-                    webServerThread.Dispose();
-                    taskController = new CancellationTokenSource();
-                    token = taskController.Token;
-
-                    webServerThread = Task.Run(() =>
+                    FileSystemWatcher watcher = new FileSystemWatcher
                     {
-                        WebServer.WebServer MyWebServer = StartWebServer(token);
-                    }, token);
-                };
-                watcher.Created += delegate (object source, FileSystemEventArgs e)
-                {
-                    Formater.SuccessMessage("File created!");
-                };
-                watcher.Deleted += delegate (object source, FileSystemEventArgs e)
-                {
-                    Formater.SuccessMessage("File deleted!");
-                };
-                watcher.Renamed += delegate (object source, RenamedEventArgs e)
-                {
-                    Formater.SuccessMessage("File renamed!");
-                };
-                //Start monitoring.  
-                watcher.EnableRaisingEvents = true;
+                        Path = Directory.GetParent(_filePath).FullName,
+
+                        IncludeSubdirectories = true,
+                        NotifyFilter = NotifyFilters.Attributes | NotifyFilters.CreationTime | NotifyFilters.DirectoryName | NotifyFilters.FileName |
+                                       NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.Security | NotifyFilters.Size,
+                        Filter = "*.bpp"
+                    };
+                    watcher.Changed += delegate (object source, FileSystemEventArgs e)
+                    {
+                        Formater.SuccessMessage("File changed!");
+                        taskController.Cancel();
+                        t.Wait();
+                        t.Dispose();
+                        taskController = new CancellationTokenSource();
+                        token = taskController.Token;
+
+                        t = Task.Run(() =>
+                        {
+                            WebServer.WebServer MyWebServer = StartWebServer(_filePath, token);
+                        }, token);
+                    };
+                    watcher.Created += delegate (object source, FileSystemEventArgs e)
+                    {
+                        Formater.SuccessMessage("File created!");
+                    };
+                    watcher.Deleted += delegate (object source, FileSystemEventArgs e)
+                    {
+                        Formater.SuccessMessage("File deleted!");
+                    };
+                    watcher.Renamed += delegate (object source, RenamedEventArgs e)
+                    {
+                        Formater.SuccessMessage("File renamed!");
+                    };
+                    //Start monitoring.  
+                    watcher.EnableRaisingEvents = true;
+                }
+
                 Console.ReadLine();
             }
             else
             {
-                var taskController = new CancellationTokenSource();
-                var token = taskController.Token;
-                WebServer.WebServer MyWebServer = StartWebServer(token);
+                Formater.CriticalError($"File {_filePath} not found");
             }
         }
 
-        private WebServer.WebServer StartWebServer(CancellationToken token)
+        private static bool IsHTTP(string FilePath)
+        {
+            return FilePath.Contains("http");
+        }
+
+        private static WebServer.WebServer StartWebServer(string FilePath, CancellationToken token)
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            Tokenizer MyTokenizer = new Tokenizer(_filePath);
+            Tokenizer MyTokenizer = new Tokenizer(FilePath);
 
             Console.WriteLine("----------||  BUCKSHOT++  ||----------");
             stopwatch.Stop();
-            Formater.SuccessMessage("Successfully compiled in " + stopwatch.ElapsedMilliseconds + "ms");
+            Formater.SuccessMessage($"Successfully compiled in {stopwatch.ElapsedMilliseconds} ms");
 
             WebServer.WebServer MyWebServer = new WebServer.WebServer
             {
@@ -100,6 +102,11 @@ namespace BuckshotPlusPlus
     {
         private static void Main(string[] args)
         {
+            if (args.Length == 0)
+            {
+                Formater.CriticalError("To display all commands: -h");
+            }
+
             string FilePath = args[0];
             FileMonitor fileMonitor = new FileMonitor(FilePath);
             Thread workerThread = new Thread(new ThreadStart(fileMonitor.FileMonitoring));
