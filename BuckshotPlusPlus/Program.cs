@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
@@ -7,47 +6,51 @@ using System.Threading.Tasks;
 
 namespace BuckshotPlusPlus
 {
-    class Program
+    internal class FileMonitor
     {
-        static void Main(string[] args)
+        private readonly string _filePath;
+        public FileMonitor(string filePath)
         {
-            string FilePath = args[0];
+            _filePath = filePath;
+        }
 
-            if (File.Exists(FilePath))
+        public void FileMonitoring()
+        {
+            if (File.Exists(_filePath))
             {
                 var taskController = new CancellationTokenSource();
                 var token = taskController.Token;
 
-                Task t = Task.Run(() => {
-                    WebServer.WebServer MyWebServer = StartWebServer(FilePath, token);
+                Task webServerThread = Task.Run(() =>
+                {
+                    WebServer.WebServer MyWebServer = StartWebServer(token);
                 }, token);
 
-                Formater.DebugMessage(Directory.GetParent(FilePath).FullName);
+                var filePath = Directory.GetParent(_filePath).FullName;
+                Formater.DebugMessage(filePath);
 
-                FileSystemWatcher watcher = new FileSystemWatcher();
-                watcher.Path = Directory.GetParent(FilePath).FullName;
+                FileSystemWatcher watcher = new FileSystemWatcher
+                {
+                    Path = filePath,
 
-                watcher.IncludeSubdirectories = true;
-                watcher.NotifyFilter = NotifyFilters.Attributes |
-                NotifyFilters.CreationTime |
-                NotifyFilters.DirectoryName |
-                NotifyFilters.FileName |
-                NotifyFilters.LastAccess |
-                NotifyFilters.LastWrite |
-                NotifyFilters.Security |
-                NotifyFilters.Size;
-                watcher.Filter = "*.*";
+                    IncludeSubdirectories = true,
+                    NotifyFilter = NotifyFilters.Attributes | NotifyFilters.CreationTime | NotifyFilters.DirectoryName |
+                                   NotifyFilters.FileName | NotifyFilters.LastAccess | NotifyFilters.LastWrite |
+                                   NotifyFilters.Security | NotifyFilters.Size,
+                    Filter = "*.bpp"
+                };
                 watcher.Changed += delegate (object source, FileSystemEventArgs e)
                 {
                     Formater.SuccessMessage("File changed!");
                     taskController.Cancel();
-                    t.Wait();
-                    t.Dispose();
+                    webServerThread.Wait();
+                    webServerThread.Dispose();
                     taskController = new CancellationTokenSource();
                     token = taskController.Token;
 
-                    t = Task.Run(() => {
-                        WebServer.WebServer MyWebServer = StartWebServer(FilePath, token);
+                    webServerThread = Task.Run(() =>
+                    {
+                        WebServer.WebServer MyWebServer = StartWebServer(token);
                     }, token);
                 };
                 watcher.Created += delegate (object source, FileSystemEventArgs e)
@@ -70,27 +73,37 @@ namespace BuckshotPlusPlus
             {
                 var taskController = new CancellationTokenSource();
                 var token = taskController.Token;
-                WebServer.WebServer MyWebServer = StartWebServer(FilePath, token);
+                WebServer.WebServer MyWebServer = StartWebServer(token);
             }
-
-            
         }
 
-        private static WebServer.WebServer StartWebServer(string FilePath, CancellationToken token)
+        private WebServer.WebServer StartWebServer(CancellationToken token)
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            Tokenizer MyTokenizer = new Tokenizer(FilePath);
+            Tokenizer MyTokenizer = new Tokenizer(_filePath);
 
             Console.WriteLine("----------||  BUCKSHOT++  ||----------");
             stopwatch.Stop();
             Formater.SuccessMessage("Successfully compiled in " + stopwatch.ElapsedMilliseconds + "ms");
 
-            WebServer.WebServer MyWebServer = new WebServer.WebServer();
-            MyWebServer.token = token;
+            WebServer.WebServer MyWebServer = new WebServer.WebServer
+            {
+                token = token
+            };
             MyWebServer.Start(MyTokenizer);
             return MyWebServer;
+        }
+    }
+    internal class Program
+    {
+        private static void Main(string[] args)
+        {
+            string FilePath = args[0];
+            FileMonitor fileMonitor = new FileMonitor(FilePath);
+            Thread workerThread = new Thread(new ThreadStart(fileMonitor.FileMonitoring));
+            workerThread.Start();
         }
 
         private static void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)

@@ -1,0 +1,7 @@
+view Home {
+   type = "body"
+   margin = "0"
+   padding = "0"
+
+   content = "<h1>Home Yolo!!</h1>"
+}
