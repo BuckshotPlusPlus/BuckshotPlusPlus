@@ -147,10 +147,10 @@ namespace BuckshotPlusPlus
 
         public static void CriticalError(string error)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
+            Console.BackgroundColor = ConsoleColor.DarkRed;
+            Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("Error : " + error);
             Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("----------||  BUCKSHOT++  ||----------");
             Environment.Exit(-1);
         }
 
