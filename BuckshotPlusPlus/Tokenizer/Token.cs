@@ -42,7 +42,6 @@
             {
                 Formater.TokenCriticalError("Unkown instruction", this);
             }
-            Formater.DebugMessage(Data.GetType().ToString());
         }
     }
 }

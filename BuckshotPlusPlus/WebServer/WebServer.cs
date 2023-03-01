@@ -26,17 +26,8 @@ namespace BuckshotPlusPlus.WebServer
                 HttpListenerRequest req = ctx.Request;
                 HttpListenerResponse resp = ctx.Response;
 
-                // Print out some info about the request
-                Console.WriteLine("Request #: {0}", ++requestCount);
-                Console.WriteLine(req.Url.ToString());
-                Console.WriteLine(req.HttpMethod);
-                Console.WriteLine(req.UserHostName);
-                Console.WriteLine(req.UserAgent);
-                Console.WriteLine();
-
                 if (token.IsCancellationRequested)
                 {
-                    Console.WriteLine("Cancellation Token Detected");
                     runServer = false;
                 }
 
@@ -59,9 +50,7 @@ namespace BuckshotPlusPlus.WebServer
                                 page_found = true;
                                 // Write the response info
                                 string disableSubmit = !runServer ? "disabled" : "";
-                                Console.WriteLine("start compiling");
                                 string pageData = Page.RenderWebPage(MyToken);
-                                Console.WriteLine(PageName);
 
                                 byte[] data = Encoding.UTF8.GetBytes(
                                     String.Format(pageData, pageViews, disableSubmit)

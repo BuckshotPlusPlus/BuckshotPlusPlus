@@ -66,12 +66,6 @@
 
             if (MyPageBody != null)
             {
-                Formater.DebugMessage(MyPageBody.VariableData);
-                Formater.DebugMessage(
-                    TokenUtils
-                        .FindTokenByName(MyPage.MyTokenizer.FileTokens, MyPageBody.VariableData)
-                        .ToString()
-                );
                 HTML_code += Compiler.HTML.View.CompileView(
                     TokenUtils.FindTokenByName(
                         MyPage.MyTokenizer.FileTokens,

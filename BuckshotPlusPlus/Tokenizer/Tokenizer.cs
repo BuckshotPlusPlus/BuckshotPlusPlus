@@ -63,7 +63,6 @@ namespace BuckshotPlusPlus
                     string LineData = MyFileLines[CurrentLineNumber];
                     if (LineData.Length > 1)
                     {
-                        Formater.DebugMessage(LineData);
                         if ((int)LineData[LineData.Length - 1] == 13)
                         {
                             LineData = LineData.Substring(0, LineData.Length - 1);
@@ -117,9 +116,6 @@ namespace BuckshotPlusPlus
                                 {
                                     if (MyString[0] == ContainerType)
                                     {
-                                        Formater.DebugMessage(
-                                            "Container start of type " + ContainerType
-                                        );
                                         ContainerCount++;
                                         break;
                                     }

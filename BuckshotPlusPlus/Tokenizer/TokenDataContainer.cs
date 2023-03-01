@@ -77,7 +77,6 @@ namespace BuckshotPlusPlus
 
                             foreach (Token LocalToken in MyToken.MyTokenizer.FileTokens)
                             {
-                                Formater.DebugMessage(LocalToken.Data.GetType().ToString());
                                 if (LocalToken.Data is TokenDataContainer)
                                 {
                                     TokenDataContainer LocalTokenDataContainer =
@@ -141,18 +140,6 @@ namespace BuckshotPlusPlus
                     );
                     AddChildToContainerData(ContainerData, MyNewToken);
                     ChildContainerLines = new List<string>();
-                }
-                else if (Formater.SafeContains(LineData, '}') && OpenCount == 1)
-                {
-                    Formater.DebugMessage(
-                        "Container found of name : "
-                            + ContainerName
-                            + " of type : "
-                            + ContainerType
-                            + " with "
-                            + ContainerData.Count
-                            + " Children"
-                    );
                 }
                 else if (Formater.SafeContains(LineData, '}'))
                 {

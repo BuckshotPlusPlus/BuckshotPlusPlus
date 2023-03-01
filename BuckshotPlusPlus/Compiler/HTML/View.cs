@@ -6,8 +6,6 @@ namespace BuckshotPlusPlus.Compiler.HTML
     {
         public static string CompileView(Token MyViewToken)
         {
-            Formater.DebugMessage(MyViewToken.GetType().ToString());
-            Console.WriteLine(MyViewToken.GetType().ToString());
             TokenDataContainer MyContainer = (TokenDataContainer)MyViewToken.Data;
             TokenDataVariable ViewType = TokenUtils.FindTokenDataVariableByName(
                 MyContainer.ContainerData,
@@ -62,7 +60,6 @@ namespace BuckshotPlusPlus.Compiler.HTML
                     )
                     {
                         TokenDataVariable ChildView = (TokenDataVariable)ChildViewToken.Data;
-                        Formater.DebugMessage(ChildView.VariableData);
                         viewHTML += CompileView(
                             TokenUtils.FindTokenByName(
                                 MyViewToken.MyTokenizer.FileTokens,
