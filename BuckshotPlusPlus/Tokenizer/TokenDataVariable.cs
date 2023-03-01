@@ -22,7 +22,8 @@ namespace BuckshotPlusPlus
                 this.VariableType = FindVariableType(MyVariableParams[2], MyToken);
                 this.VariableName = MyVariableParams[0];
                 this.VariableData = MyVariableParams[2];
-            }else if (MyVariableParams.Length == 1)
+            }
+            else if (MyVariableParams.Length == 1)
             {
                 this.VariableName = "";
                 this.VariableData = MyVariableParams[0];
@@ -38,17 +39,18 @@ namespace BuckshotPlusPlus
             {
                 Formater.TokenCriticalError("Invalid variable init ", MyToken);
             }
-            
-            if(this.VariableType == "")
+
+            if (this.VariableType == "")
             {
                 Formater.TokenCriticalError("Unknown variable type ", MyToken);
             }
 
-            
-
             if (this.VariableType == "string")
             {
-                if (this.VariableData[0] != '"' || this.VariableData[this.VariableData.Length - 1] != '"')
+                if (
+                    this.VariableData[0] != '"'
+                    || this.VariableData[this.VariableData.Length - 1] != '"'
+                )
                 {
                     Formater.TokenCriticalError("Invalid string value", MyToken);
                 }
@@ -59,42 +61,49 @@ namespace BuckshotPlusPlus
 
             if (this.VariableType == "ref")
             {
-                this.RefData = TokenUtils.FindTokenByName(MyToken.MyTokenizer.FileTokens, this.VariableData);
-                if(RefData == null)
+                this.RefData = TokenUtils.FindTokenByName(
+                    MyToken.MyTokenizer.FileTokens,
+                    this.VariableData
+                );
+                if (RefData == null)
                 {
-                    if(MyToken.Parent != null)
+                    if (MyToken.Parent != null)
                     {
-                        this.RefData = TokenUtils.FindTokenByName(MyToken.Parent.ContainerData, this.VariableData);
+                        this.RefData = TokenUtils.FindTokenByName(
+                            MyToken.Parent.ContainerData,
+                            this.VariableData
+                        );
                     }
                 }
             }
-
         }
 
-        public static string FindVariableType(string Value,Token MyToken)
+        public static string FindVariableType(string Value, Token MyToken)
         {
-
             int VariableIntData = 0;
             float VariableFloatData = 0;
             bool VariableBoolData = false;
 
-            if(Value[0] == '[' && Value[Value.Length - 1] == ']')
+            if (Value[0] == '[' && Value[Value.Length - 1] == ']')
             {
                 return "array";
             }
             else if (Value.Contains('"'))
             {
                 return "string";
-            }else if (int.TryParse(Value, out VariableIntData))
+            }
+            else if (int.TryParse(Value, out VariableIntData))
             {
                 return "int";
-            }else if (float.TryParse(Value, out VariableFloatData))
+            }
+            else if (float.TryParse(Value, out VariableFloatData))
             {
                 return "float";
-            }else if(bool.TryParse(Value, out VariableBoolData))
+            }
+            else if (bool.TryParse(Value, out VariableBoolData))
             {
                 return "bool";
-            }//else if(TokenUtils.FindTokenByName(MyToken.MyTokenizer.FileTokens,Value) != null)
+            } //else if(TokenUtils.FindTokenByName(MyToken.MyTokenizer.FileTokens,Value) != null)
             else
             {
                 return "ref";
@@ -105,10 +114,11 @@ namespace BuckshotPlusPlus
 
         public static bool IsTokenDataVariable(Token MyToken)
         {
-            if(Formater.SafeContains(MyToken.LineData, '='))
+            if (Formater.SafeContains(MyToken.LineData, '='))
             {
                 return true;
-            }else if(FindVariableType(MyToken.LineData, MyToken) != "")
+            }
+            else if (FindVariableType(MyToken.LineData, MyToken) != "")
             {
                 return true;
             }

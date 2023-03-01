@@ -10,7 +10,7 @@ namespace BuckshotPlusPlus.Compiler.JS
         {
             Token CurrentToken = FunctionToken[currentToken];
             string CurrentTokenName = TokenUtils.GetTokenName(CurrentToken);
-            if(CurrentToken.Data.GetType() == typeof(TokenDataVariable))
+            if (CurrentToken.Data.GetType() == typeof(TokenDataVariable))
             {
                 TokenDataVariable MyVarData = (TokenDataVariable)CurrentToken.Data;
                 string VarString = "let ";
@@ -19,11 +19,14 @@ namespace BuckshotPlusPlus.Compiler.JS
                 int TokensFound = 0;
                 foreach (Token ContainerChildToken in FunctionToken)
                 {
-                    if(CurrentTokenName == TokenUtils.GetTokenName(ContainerChildToken))
+                    if (CurrentTokenName == TokenUtils.GetTokenName(ContainerChildToken))
                     {
                         TokensFound++;
                     }
-                    if (CurrentTokenName == TokenUtils.GetTokenName(ContainerChildToken) && TokenCounter < currentToken)
+                    if (
+                        CurrentTokenName == TokenUtils.GetTokenName(ContainerChildToken)
+                        && TokenCounter < currentToken
+                    )
                     {
                         VarString = "";
                         break;
@@ -31,7 +34,7 @@ namespace BuckshotPlusPlus.Compiler.JS
                     TokenCounter++;
                 }
 
-                if(TokensFound == 1)
+                if (TokensFound == 1)
                 {
                     VarString = "const";
                 }

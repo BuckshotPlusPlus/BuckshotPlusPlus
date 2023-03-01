@@ -10,17 +10,14 @@ using File = System.IO.File;
 namespace BuckshotPlusPlus
 {
     // TokenData is the main class for all tokens
-    public abstract class TokenData
-    {
-    }
-
+    public abstract class TokenData { }
 
     public class Tokenizer
     {
         Dictionary<string, string> UnprocessedFileDataDictionary { get; set; }
-        Dictionary<string,string> FileDataDictionary { get; set; }
+        Dictionary<string, string> FileDataDictionary { get; set; }
 
-        public List<Token> FileTokens { get;}
+        public List<Token> FileTokens { get; }
 
         string RelativePath { get; }
 
@@ -34,7 +31,8 @@ namespace BuckshotPlusPlus
             if (IsHTTP(FilePath))
             {
                 IncludeHTTP(FilePath);
-            } else
+            }
+            else
             {
                 IncludeFile(FilePath);
             }
@@ -50,7 +48,7 @@ namespace BuckshotPlusPlus
             if (this.UnprocessedFileDataDictionary.ContainsKey(FileName))
             {
                 Formater.Warn("Circular dependency detected of " + FileName);
-            } 
+            }
             else
             {
                 this.UnprocessedFileDataDictionary.Add(FileName, FileData);
@@ -67,7 +65,7 @@ namespace BuckshotPlusPlus
                     string LineData = MyFileLines[CurrentLineNumber];
                     if (LineData.Length > 1)
                     {
-                        Formater.DebugMessage( LineData);
+                        Formater.DebugMessage(LineData);
                         if ((int)LineData[LineData.Length - 1] == 13)
                         {
                             LineData = LineData.Substring(0, LineData.Length - 1);
@@ -77,31 +75,53 @@ namespace BuckshotPlusPlus
                         {
                             if (ForHTTP)
                             {
-                                IncludeHTTP(Formater.SafeSplit(LineData, ' ')[1].Substring(1, Formater.SafeSplit(LineData, ' ')[1].Length - 2));
-                            } else
+                                IncludeHTTP(
+                                    Formater.SafeSplit(LineData, ' ')[1].Substring(
+                                        1,
+                                        Formater.SafeSplit(LineData, ' ')[1].Length - 2
+                                    )
+                                );
+                            }
+                            else
                             {
                                 if (IsHTTP(LineData))
                                 {
-                                    IncludeFile(Formater.SafeSplit(LineData, ' ')[1].Substring(1, Formater.SafeSplit(LineData, ' ')[1].Length - 2));
+                                    IncludeFile(
+                                        Formater.SafeSplit(LineData, ' ')[1].Substring(
+                                            1,
+                                            Formater.SafeSplit(LineData, ' ')[1].Length - 2
+                                        )
+                                    );
                                 }
                                 else
                                 {
-                                    IncludeFile(Path.Combine(RelativePath, Formater.SafeSplit(LineData, ' ')[1].Substring(1, Formater.SafeSplit(LineData, ' ')[1].Length - 2)));
+                                    IncludeFile(
+                                        Path.Combine(
+                                            RelativePath,
+                                            Formater.SafeSplit(LineData, ' ')[1].Substring(
+                                                1,
+                                                Formater.SafeSplit(LineData, ' ')[1].Length - 2
+                                            )
+                                        )
+                                    );
                                 }
                             }
                         }
                         else
                         {
-                            if(Formater.SafeContains(LineData, '{'))
+                            if (Formater.SafeContains(LineData, '{'))
                             {
                                 List<string> MyString = Formater.SafeSplit(LineData, ' ');
 
-                                foreach (string ContainerType in TokenDataContainer.SupportedContainerTypes)
+                                foreach (
+                                    string ContainerType in TokenDataContainer.SupportedContainerTypes
+                                )
                                 {
-
                                     if (MyString[0] == ContainerType)
                                     {
-                                        Formater.DebugMessage("Container start of type " + ContainerType);
+                                        Formater.DebugMessage(
+                                            "Container start of type " + ContainerType
+                                        );
                                         ContainerCount++;
                                         break;
                                     }
@@ -111,29 +131,44 @@ namespace BuckshotPlusPlus
                             if (ContainerCount > 0)
                             {
                                 ContainerData.Add(LineData);
-                                if (Formater.SafeContains(LineData, '}')){
+                                if (Formater.SafeContains(LineData, '}'))
+                                {
                                     ContainerCount--;
-                                    if(ContainerCount == 0)
+                                    if (ContainerCount == 0)
                                     {
-                                        FileTokens.Add(new Token(FileName, String.Join('\n', ContainerData), CurrentLineNumber, this));
+                                        FileTokens.Add(
+                                            new Token(
+                                                FileName,
+                                                String.Join('\n', ContainerData),
+                                                CurrentLineNumber,
+                                                this
+                                            )
+                                        );
                                         ContainerData = new List<string>();
                                     }
                                 }
                             }
                             else
                             {
-                                FileTokens.Add(new Token(FileName, LineData, CurrentLineNumber, this));
+                                FileTokens.Add(
+                                    new Token(FileName, LineData, CurrentLineNumber, this)
+                                );
                             }
-                            
                         }
-
                     }
-                    else if(Formater.SafeContains(LineData, '}'))
+                    else if (Formater.SafeContains(LineData, '}'))
                     {
                         ContainerCount--;
                         if (ContainerCount == 0)
                         {
-                            FileTokens.Add(new Token(FileName, String.Join('\n', ContainerData), CurrentLineNumber, this));
+                            FileTokens.Add(
+                                new Token(
+                                    FileName,
+                                    String.Join('\n', ContainerData),
+                                    CurrentLineNumber,
+                                    this
+                                )
+                            );
                             ContainerData = new List<string>();
                         }
                     }
@@ -151,9 +186,12 @@ namespace BuckshotPlusPlus
                 {
                     Content = webClient.GetStringAsync(FilePath).Result;
                 }
-            } else
+            }
+            else
             {
-                IncludeHTTP($"https://raw.githubusercontent.com/MoskalykA/BuckshotPlusPlus-Examples/main/Buttons/{FilePath}");
+                IncludeHTTP(
+                    $"https://raw.githubusercontent.com/MoskalykA/BuckshotPlusPlus-Examples/main/Buttons/{FilePath}"
+                );
                 return;
             }
 

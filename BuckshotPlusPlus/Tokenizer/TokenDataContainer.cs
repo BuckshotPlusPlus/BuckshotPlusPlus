@@ -11,7 +11,17 @@ namespace BuckshotPlusPlus
         public List<Token> ContainerData { get; set; }
         public string ContainerType { get; set; }
 
-        public static string[] SupportedContainerTypes = { "object", "function", "view", "server", "route", "page", "event", "table" };
+        public static string[] SupportedContainerTypes =
+        {
+            "object",
+            "function",
+            "view",
+            "server",
+            "route",
+            "page",
+            "event",
+            "table"
+        };
 
         public TokenDataContainer(Token MyToken)
         {
@@ -20,16 +30,16 @@ namespace BuckshotPlusPlus
             this.ContainerType = "";
             this.ContainerName = "";
 
-            
             int OpenCount = 0;
             List<string> ChildContainerLines = new List<string>();
 
-            foreach(string LineData in LinesData)
+            foreach (string LineData in LinesData)
             {
-                if (Formater.SafeContains(LineData, '{')) {
+                if (Formater.SafeContains(LineData, '{'))
+                {
                     OpenCount++;
-                    
-                    if(OpenCount == 1)
+
+                    if (OpenCount == 1)
                     {
                         // SPLIT FIRST LINE INTO AN ARRAY
                         List<string> MyArgs = Formater.SafeSplit(LineData, ' ');
@@ -38,29 +48,28 @@ namespace BuckshotPlusPlus
                         if (MyArgs[1][MyArgs[1].Length - 1] == '{')
                         {
                             this.ContainerName = MyArgs[1].Substring(0, MyArgs[1].Length - 1);
-                        } else
+                        }
+                        else
                         {
                             this.ContainerName = MyArgs[1];
                         }
 
-
                         // CHECK AND STORE CONTAINER TYPE (OBJECT, FUNCTION)
                         foreach (string ContainerType in SupportedContainerTypes)
                         {
-                            if(MyArgs[0] == ContainerType)
+                            if (MyArgs[0] == ContainerType)
                             {
                                 this.ContainerType = ContainerType;
                                 MyToken.Type = this.ContainerType;
                             }
                         }
-                        if(this.ContainerType == "")
+                        if (this.ContainerType == "")
                         {
                             Formater.TokenCriticalError("Invalid container type", MyToken);
                         }
 
                         if (this.ContainerName.Contains(':'))
                         {
-                            
                             string[] SplitedName = this.ContainerName.Split(':');
                             this.ContainerName = SplitedName[0];
 
@@ -72,15 +81,23 @@ namespace BuckshotPlusPlus
                                 Formater.DebugMessage(LocalToken.Data.GetType().ToString());
                                 if (LocalToken.Data is TokenDataContainer)
                                 {
-                                    
-                                    TokenDataContainer LocalTokenDataContainer = (TokenDataContainer)LocalToken.Data;
-                                    if(LocalTokenDataContainer.ContainerName == ParentName)
+                                    TokenDataContainer LocalTokenDataContainer =
+                                        (TokenDataContainer)LocalToken.Data;
+                                    if (LocalTokenDataContainer.ContainerName == ParentName)
                                     {
-                                        if(LocalTokenDataContainer.ContainerType != this.ContainerType)
+                                        if (
+                                            LocalTokenDataContainer.ContainerType
+                                            != this.ContainerType
+                                        )
                                         {
-                                            Formater.TokenCriticalError("Invalid parent container type", MyToken);
+                                            Formater.TokenCriticalError(
+                                                "Invalid parent container type",
+                                                MyToken
+                                            );
                                         }
-                                        foreach(Token LocalTokenData in LocalTokenDataContainer.ContainerData)
+                                        foreach (
+                                            Token LocalTokenData in LocalTokenDataContainer.ContainerData
+                                        )
                                         {
                                             ContainerData.Add(LocalTokenData);
                                         }
@@ -95,50 +112,74 @@ namespace BuckshotPlusPlus
                             }
                         }
                     }
-                    
                 }
                 else if (OpenCount == 1 && !Formater.SafeContains(LineData, '}'))
                 {
-                    Token MyNewToken = new Token(MyToken.FileName, LineData, MyToken.LineNumber + LinesData.IndexOf(LineData) - 1, MyToken.MyTokenizer, this);
+                    Token MyNewToken = new Token(
+                        MyToken.FileName,
+                        LineData,
+                        MyToken.LineNumber + LinesData.IndexOf(LineData) - 1,
+                        MyToken.MyTokenizer,
+                        this
+                    );
                     AddChildToContainerData(ContainerData, MyNewToken);
                 }
 
-                if (OpenCount == 2) {
+                if (OpenCount == 2)
+                {
                     ChildContainerLines.Add(LineData);
                 }
 
-                if (Formater.SafeContains(LineData, '}') && OpenCount == 2) {
+                if (Formater.SafeContains(LineData, '}') && OpenCount == 2)
+                {
                     OpenCount--;
-                    Token MyNewToken = new Token(MyToken.FileName, String.Join('\n', ChildContainerLines), MyToken.LineNumber + LinesData.IndexOf(ChildContainerLines[0]) - 4, MyToken.MyTokenizer, this);
+                    Token MyNewToken = new Token(
+                        MyToken.FileName,
+                        String.Join('\n', ChildContainerLines),
+                        MyToken.LineNumber + LinesData.IndexOf(ChildContainerLines[0]) - 4,
+                        MyToken.MyTokenizer,
+                        this
+                    );
                     AddChildToContainerData(ContainerData, MyNewToken);
                     ChildContainerLines = new List<string>();
                 }
                 else if (Formater.SafeContains(LineData, '}') && OpenCount == 1)
                 {
-                    Formater.DebugMessage("Container found of name : " + ContainerName + " of type : " + ContainerType + " with " + ContainerData.Count + " Children");
+                    Formater.DebugMessage(
+                        "Container found of name : "
+                            + ContainerName
+                            + " of type : "
+                            + ContainerType
+                            + " with "
+                            + ContainerData.Count
+                            + " Children"
+                    );
                 }
                 else if (Formater.SafeContains(LineData, '}'))
                 {
                     OpenCount--;
                 }
-                
             }
         }
 
         public static void AddChildToContainerData(List<Token> ContainerData, Token NewChild)
         {
-            Token FoundToken = TokenUtils.FindTokenByName(ContainerData, TokenUtils.GetTokenName(NewChild));
+            Token FoundToken = TokenUtils.FindTokenByName(
+                ContainerData,
+                TokenUtils.GetTokenName(NewChild)
+            );
             if (FoundToken != null)
             {
                 ContainerData.Remove(FoundToken);
             }
             ContainerData.Add(NewChild);
         }
+
         public static bool IsTokenDataContainer(Token MyToken)
         {
-            foreach(string Type in TokenDataContainer.SupportedContainerTypes)
+            foreach (string Type in TokenDataContainer.SupportedContainerTypes)
             {
-                if(Formater.SafeSplit(MyToken.LineData, ' ')[0] == Type)
+                if (Formater.SafeSplit(MyToken.LineData, ' ')[0] == Type)
                 {
                     return true;
                 }

@@ -13,14 +13,13 @@ namespace BuckshotPlusPlus
         public TokenDataLogic(Token MyToken)
         {
             MyToken.Type = "logic";
-
         }
 
         public static bool IsTokenDataLogic(Token MyToken)
         {
-            foreach(string TokenType in LogicTokens)
+            foreach (string TokenType in LogicTokens)
             {
-                if(MyToken.LineData == TokenType)
+                if (MyToken.LineData == TokenType)
                 {
                     return true;
                 }

@@ -21,11 +21,12 @@ namespace BuckshotPlusPlus
             //Formater.CriticalError(TokenName + " does not exist");
             return null;
         }
+
         public static Token FindTokenByName(List<Token> MyTokenList, string TokenName)
         {
             string[] SubTokenNames = TokenName.Split('.');
             int Remain = SubTokenNames.Length;
-            foreach(string LocalTokenName in SubTokenNames)
+            foreach (string LocalTokenName in SubTokenNames)
             {
                 Remain--;
                 foreach (Token MyToken in MyTokenList)
@@ -35,7 +36,6 @@ namespace BuckshotPlusPlus
                         TokenDataVariable MyVar = (TokenDataVariable)MyToken.Data;
                         if (MyVar.VariableName == LocalTokenName)
                         {
-
                             if (Remain > 0)
                             {
                                 Formater.TokenCriticalError("Not a container!", MyToken);
@@ -69,7 +69,10 @@ namespace BuckshotPlusPlus
             return null;
         }
 
-        public static TokenDataVariable FindTokenDataVariableByName(List<Token> MyTokenList, string TokenName)
+        public static TokenDataVariable FindTokenDataVariableByName(
+            List<Token> MyTokenList,
+            string TokenName
+        )
         {
             Token FoundToken = FindTokenByName(MyTokenList, TokenName);
             if (FoundToken != null)
@@ -87,7 +90,10 @@ namespace BuckshotPlusPlus
             return null;
         }
 
-        public static TokenDataContainer FindTokenDataContainerByName(List<Token> MyTokenList, string TokenName)
+        public static TokenDataContainer FindTokenDataContainerByName(
+            List<Token> MyTokenList,
+            string TokenName
+        )
         {
             Token FoundToken = FindTokenByName(MyTokenList, TokenName);
             if (FoundToken.Data.GetType() == typeof(TokenDataContainer))

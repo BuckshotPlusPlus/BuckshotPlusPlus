@@ -12,7 +12,7 @@ namespace BuckshotPlusPlus
             int spaceCount = 0;
             bool isQuote = false;
 
-            while (i < FileData.Length )
+            while (i < FileData.Length)
             {
                 // Gérer les chaines de character
                 if (FileData[i] == '"')
@@ -30,15 +30,16 @@ namespace BuckshotPlusPlus
                     {
                         FileData = FileData.Remove(i, spaceCount);
                     }
-                    else if(FileData[i - 1] == '\n') {
+                    else if (FileData[i - 1] == '\n')
+                    {
                         FileData = FileData.Remove(i, spaceCount);
-                    } else
+                    }
+                    else
                     {
                         if (spaceCount > 1)
                         {
                             FileData = FileData.Remove(i, spaceCount - 1);
                         }
-                        
                     }
                     spaceCount = 0;
                 }
@@ -46,7 +47,7 @@ namespace BuckshotPlusPlus
             }
             return FileData;
         }
-        
+
         public static bool SafeContains(string Value, char c)
         {
             bool isQuote = false;
@@ -60,7 +61,7 @@ namespace BuckshotPlusPlus
                 if (isQuote == false && Value[i] == c)
                 {
                     return true;
-                } 
+                }
             }
             return false;
         }
@@ -71,19 +72,20 @@ namespace BuckshotPlusPlus
             public bool IsFirstChar { get; set; }
             public int UnsafeCharId { get; set; }
         }
+
         public static UnsafeCharStruct IsUnsafeChar(string[] UnsafeCharsList, char c)
         {
             UnsafeCharStruct UnsafeCharValue = new UnsafeCharStruct();
             for (int i = 0; i < UnsafeCharsList.Length; i++)
             {
                 UnsafeCharValue.UnsafeCharId = i;
-                if(c == UnsafeCharsList[i][0])
+                if (c == UnsafeCharsList[i][0])
                 {
                     UnsafeCharValue.IsFirstChar = true;
                     UnsafeCharValue.IsUnsafeChar = true;
                     return UnsafeCharValue;
                 }
-                else if(c == UnsafeCharsList[i][1])
+                else if (c == UnsafeCharsList[i][1])
                 {
                     UnsafeCharValue.IsFirstChar = false;
                     UnsafeCharValue.IsUnsafeChar = true;
@@ -93,6 +95,7 @@ namespace BuckshotPlusPlus
             UnsafeCharValue.IsUnsafeChar = false;
             return UnsafeCharValue;
         }
+
         public static List<string> SafeSplit(string Value, char c)
         {
             List<string> SplitedString = new List<string>();
@@ -109,10 +112,19 @@ namespace BuckshotPlusPlus
                 Count++;
                 if (LastUnsafeChar.IsUnsafeChar)
                 {
-                    UnsafeCharStruct CurrentUnsafeChar = Formater.IsUnsafeChar(UnsafeChars, Value[i]);
+                    UnsafeCharStruct CurrentUnsafeChar = Formater.IsUnsafeChar(
+                        UnsafeChars,
+                        Value[i]
+                    );
                     if (CurrentUnsafeChar.IsUnsafeChar)
                     {
-                        if((CurrentUnsafeChar.IsFirstChar == false || CurrentUnsafeChar.UnsafeCharId == 0) && CurrentUnsafeChar.UnsafeCharId == LastUnsafeChar.UnsafeCharId)
+                        if (
+                            (
+                                CurrentUnsafeChar.IsFirstChar == false
+                                || CurrentUnsafeChar.UnsafeCharId == 0
+                            )
+                            && CurrentUnsafeChar.UnsafeCharId == LastUnsafeChar.UnsafeCharId
+                        )
                         {
                             LastUnsafeChar.IsUnsafeChar = false;
                         }
@@ -120,8 +132,10 @@ namespace BuckshotPlusPlus
                 }
                 else
                 {
-                    
-                    UnsafeCharStruct CurrentUnsafeChar = Formater.IsUnsafeChar(UnsafeChars, Value[i]);
+                    UnsafeCharStruct CurrentUnsafeChar = Formater.IsUnsafeChar(
+                        UnsafeChars,
+                        Value[i]
+                    );
                     if (CurrentUnsafeChar.IsUnsafeChar)
                     {
                         LastUnsafeChar = CurrentUnsafeChar;
@@ -135,10 +149,7 @@ namespace BuckshotPlusPlus
                             Count = 0;
                         }
                     }
-                    
                 }
-
-                
             }
             SplitedString.Add(Value.Substring(LastPos, Value.Length - LastPos));
 
@@ -163,7 +174,16 @@ namespace BuckshotPlusPlus
 
         public static void TokenCriticalError(string Error, Token MyToken)
         {
-            Formater.CriticalError(Error + " in file : " + MyToken.FileName + " at line : " + MyToken.LineNumber + Environment.NewLine + "=> " + MyToken.LineData);
+            Formater.CriticalError(
+                Error
+                    + " in file : "
+                    + MyToken.FileName
+                    + " at line : "
+                    + MyToken.LineNumber
+                    + Environment.NewLine
+                    + "=> "
+                    + MyToken.LineData
+            );
         }
 
         public static void DebugMessage(string msg)

@@ -14,11 +14,8 @@ namespace BuckshotPlusPlus.WebServer
         public bool runServer = true;
         public CancellationToken token;
 
-
         public async Task HandleIncomingConnections(Tokenizer MyTokenizer)
         {
-
-
             // While a user hasn't visited the `shutdown` url, keep on handling requests
             while (runServer)
             {
@@ -47,7 +44,6 @@ namespace BuckshotPlusPlus.WebServer
 
                 foreach (Token MyToken in MyTokenizer.FileTokens)
                 {
-
                     if (MyToken.Data.GetType() == typeof(TokenDataContainer))
                     {
                         TokenDataContainer MyTokenDataContainer = (TokenDataContainer)MyToken.Data;
@@ -55,7 +51,10 @@ namespace BuckshotPlusPlus.WebServer
                         {
                             string PageName = MyTokenDataContainer.ContainerName;
 
-                            if (req.Url.AbsolutePath == "/" + PageName || (req.Url.AbsolutePath == "/" && PageName == "index"))
+                            if (
+                                req.Url.AbsolutePath == "/" + PageName
+                                || (req.Url.AbsolutePath == "/" && PageName == "index")
+                            )
                             {
                                 page_found = true;
                                 // Write the response info
@@ -64,7 +63,9 @@ namespace BuckshotPlusPlus.WebServer
                                 string pageData = Page.RenderWebPage(MyToken);
                                 Console.WriteLine(PageName);
 
-                                byte[] data = Encoding.UTF8.GetBytes(String.Format(pageData, pageViews, disableSubmit));
+                                byte[] data = Encoding.UTF8.GetBytes(
+                                    String.Format(pageData, pageViews, disableSubmit)
+                                );
                                 resp.ContentType = "text/html";
                                 resp.ContentEncoding = Encoding.UTF8;
                                 resp.ContentLength64 = data.LongLength;
@@ -82,7 +83,9 @@ namespace BuckshotPlusPlus.WebServer
                     string disableSubmit = !runServer ? "disabled" : "";
                     string pageData = "404 not found";
 
-                    byte[] data = Encoding.UTF8.GetBytes(String.Format(pageData, pageViews, disableSubmit));
+                    byte[] data = Encoding.UTF8.GetBytes(
+                        String.Format(pageData, pageViews, disableSubmit)
+                    );
                     resp.ContentType = "text";
                     resp.ContentEncoding = Encoding.UTF8;
                     resp.ContentLength64 = data.LongLength;
@@ -91,11 +94,8 @@ namespace BuckshotPlusPlus.WebServer
                     await resp.OutputStream.WriteAsync(data, 0, data.Length);
                     resp.Close();
                 }
-
-
             }
         }
-
 
         public void Start(Tokenizer MyTokenizer)
         {

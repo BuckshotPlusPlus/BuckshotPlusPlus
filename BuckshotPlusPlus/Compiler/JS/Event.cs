@@ -13,23 +13,29 @@ namespace BuckshotPlusPlus.Compiler.JS
             string EventString = "";
 
             int TokenId = 0;
-            foreach(Token ChildToken in MyJSEvent.ContainerData)
+            foreach (Token ChildToken in MyJSEvent.ContainerData)
             {
-                if(ChildToken.Data.GetType() == typeof(TokenDataVariable))
+                if (ChildToken.Data.GetType() == typeof(TokenDataVariable))
                 {
                     TokenDataVariable ChildVar = (TokenDataVariable)ChildToken.Data;
                     if (CSS.Properties.isCSSProp(ChildToken))
                     {
-                        EventString += "this.style." + CSS.Properties.toDOMProp(ChildVar.VariableName) + " = '" + ChildVar.VariableData + "';";
-                    }else if (ChildVar.VariableName == "content")
+                        EventString +=
+                            "this.style."
+                            + CSS.Properties.toDOMProp(ChildVar.VariableName)
+                            + " = '"
+                            + ChildVar.VariableData
+                            + "';";
+                    }
+                    else if (ChildVar.VariableName == "content")
                     {
                         EventString += "this.textContent = '" + ChildVar.VariableData + "';";
                     }
                     else
                     {
-                        EventString += JS.Variables.GetVarString(MyJSEvent.ContainerData, TokenId) + ";";
+                        EventString +=
+                            JS.Variables.GetVarString(MyJSEvent.ContainerData, TokenId) + ";";
                     }
-                    
                 }
                 else
                 {

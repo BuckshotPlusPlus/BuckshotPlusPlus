@@ -13,11 +13,16 @@ namespace BuckshotPlusPlus
         {
             MyToken.Type = "function_call";
 
-            this.FuncName = GetFunctionCallName(MyToken.LineData,MyToken);
+            this.FuncName = GetFunctionCallName(MyToken.LineData, MyToken);
             this.FuncArgs = GetFunctionArgs(MyToken.LineData, MyToken);
 
-
-            Console.WriteLine("I found a function call of name : " + this.FuncName + " and " + this.FuncArgs.Count + " args");
+            Console.WriteLine(
+                "I found a function call of name : "
+                    + this.FuncName
+                    + " and "
+                    + this.FuncArgs.Count
+                    + " args"
+            );
         }
 
         public static bool IsTokenDataFunctionCall(Token MyToken)
@@ -28,9 +33,9 @@ namespace BuckshotPlusPlus
         public static string GetFunctionCallName(string Value, Token MyToken)
         {
             string FunName = "";
-            foreach(char c in Value)
+            foreach (char c in Value)
             {
-                if(c != '(')
+                if (c != '(')
                 {
                     FunName += c;
                 }
@@ -43,25 +48,31 @@ namespace BuckshotPlusPlus
             return "";
         }
 
-        public static List<Token> GetFunctionArgs(string Value,Token MyToken)
+        public static List<Token> GetFunctionArgs(string Value, Token MyToken)
         {
             List<Token> FunctionArgs = new List<Token>();
             string CurrentVar = "";
             bool isArgs = false;
             int SubPar = 0;
 
-            foreach(char c in Value)
+            foreach (char c in Value)
             {
-                if(c == '(')
+                if (c == '(')
                 {
                     isArgs = true;
                     SubPar++;
-                }else if (c == ')')
+                }
+                else if (c == ')')
                 {
                     SubPar--;
-                    if(SubPar == 0)
+                    if (SubPar == 0)
                     {
-                        Token MyNewToken = new Token(MyToken.FileName,CurrentVar, MyToken.LineNumber,MyToken.MyTokenizer);
+                        Token MyNewToken = new Token(
+                            MyToken.FileName,
+                            CurrentVar,
+                            MyToken.LineNumber,
+                            MyToken.MyTokenizer
+                        );
                         new TokenDataVariable(MyNewToken);
                         FunctionArgs.Add(MyNewToken);
                         return FunctionArgs;
@@ -71,12 +82,17 @@ namespace BuckshotPlusPlus
                 {
                     if (isArgs && c == ',')
                     {
-                        Token MyNewToken = new Token(MyToken.FileName,CurrentVar, MyToken.LineNumber, MyToken.MyTokenizer);
+                        Token MyNewToken = new Token(
+                            MyToken.FileName,
+                            CurrentVar,
+                            MyToken.LineNumber,
+                            MyToken.MyTokenizer
+                        );
                         new TokenDataVariable(MyNewToken);
                         FunctionArgs.Add(MyNewToken);
                         CurrentVar = "";
                     }
-                    else if(isArgs)
+                    else if (isArgs)
                     {
                         CurrentVar += c;
                     }

@@ -11,9 +11,10 @@ namespace BuckshotPlusPlus.WebServer
         Query,
         Header
     }
+
     public class MetaData
     {
         public Dictionary<string, string> data;
-        public WebMetaDataType type; 
+        public WebMetaDataType type;
     }
 }
