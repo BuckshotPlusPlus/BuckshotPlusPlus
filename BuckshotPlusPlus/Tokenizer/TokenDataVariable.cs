@@ -109,7 +109,6 @@ namespace BuckshotPlusPlus
                 return "ref";
             }
             //Formater.TokenCriticalError("Unknown variable type ", MyToken);
-            return "";
         }
 
         public static bool IsTokenDataVariable(Token MyToken)

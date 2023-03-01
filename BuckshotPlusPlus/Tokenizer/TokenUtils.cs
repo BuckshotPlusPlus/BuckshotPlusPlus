@@ -102,8 +102,7 @@ namespace BuckshotPlusPlus
                 return MyVar;
             }
             return null;
-            //Formater.CriticalError(TokenName + " does not exist");
-            return null;
+            //Formater.CriticalError(TokenName + " does not exist");=
         }
     }
 }
