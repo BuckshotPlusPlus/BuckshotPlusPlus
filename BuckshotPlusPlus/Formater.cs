@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Spectre.Console;
 
 namespace BuckshotPlusPlus
 {
@@ -157,18 +158,15 @@ namespace BuckshotPlusPlus
 
         public static void CriticalError(string error)
         {
-            Console.BackgroundColor = ConsoleColor.DarkRed;
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine("Error : " + error);
-            Console.ForegroundColor = ConsoleColor.White;
+            AnsiConsole.Markup($"[maroon on default]Error : {error}[/]");
+
             Environment.Exit(-1);
         }
 
         public static void Warn(string error)
         {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("Warning : " + error);
-            Console.ForegroundColor = ConsoleColor.White;
+            AnsiConsole.Markup($"[orange3 on default]Warning : {error}[/]");
+            AnsiConsole.Write("\n");
         }
 
         public static void TokenCriticalError(string Error, Token MyToken)
@@ -187,24 +185,14 @@ namespace BuckshotPlusPlus
 
         public static void DebugMessage(string msg)
         {
-            Console.ForegroundColor = ConsoleColor.Blue;
-            //Console.WriteLine("Debug : " + msg);
-            Console.ForegroundColor = ConsoleColor.White;
-        }
-
-        public static void InfoMessage(string msg)
-        {
-            Console.ForegroundColor = ConsoleColor.Blue;
-            string time = DateTime.Now.ToString("h:mm:ss tt");
-            Console.WriteLine(time + " : " + msg);
-            Console.ForegroundColor = ConsoleColor.White;
+            AnsiConsole.Markup($"[dodgerblue3 on default]Debug : {msg}[/]");
+            AnsiConsole.Write("\n");
         }
 
         public static void SuccessMessage(string msg)
         {
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine(msg);
-            Console.ForegroundColor = ConsoleColor.White;
+            AnsiConsole.Markup($"[green4 on default]Success : {msg}[/]");
+            AnsiConsole.Write("\n");
         }
     }
 }

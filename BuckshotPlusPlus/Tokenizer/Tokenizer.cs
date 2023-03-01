@@ -234,13 +234,11 @@ namespace BuckshotPlusPlus
                 Formater.CriticalError($"File {FilePath} has no contents");
             }
 
-            Console.WriteLine($"File {FilePath} Found!");
+            Formater.DebugMessage($"File {FilePath} Found!");
 
             AnalyzeFileData(FilePath, Formater.FormatFileData(Content), false);
 
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"Compilation of {FilePath} done");
-            Console.ForegroundColor = ConsoleColor.White;
+            Formater.DebugMessage($"Compilation of {FilePath} done");
         }
     }
 }

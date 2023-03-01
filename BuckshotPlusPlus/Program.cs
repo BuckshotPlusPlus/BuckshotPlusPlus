@@ -100,7 +100,6 @@ namespace BuckshotPlusPlus
 
             Tokenizer MyTokenizer = new Tokenizer(FilePath);
 
-            Console.WriteLine("----------||  BUCKSHOT++  ||----------");
             stopwatch.Stop();
             Formater.SuccessMessage($"Successfully compiled in {stopwatch.ElapsedMilliseconds} ms");
 
