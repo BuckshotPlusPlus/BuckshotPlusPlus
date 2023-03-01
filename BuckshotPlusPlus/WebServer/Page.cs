@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace BuckshotPlusPlus.WebServer
+﻿namespace BuckshotPlusPlus.WebServer
 {
     internal class Page
     {

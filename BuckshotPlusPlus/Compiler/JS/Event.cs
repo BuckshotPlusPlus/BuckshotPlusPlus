@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace BuckshotPlusPlus.Compiler.JS
+﻿namespace BuckshotPlusPlus.Compiler.JS
 {
     class Event
     {
