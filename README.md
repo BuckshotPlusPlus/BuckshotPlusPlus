@@ -15,22 +15,24 @@
   </p>
 </p>
 
-![Downloads](https://img.shields.io/github/downloads/BuckshotPlusPlus/BuckshotPlusPlus/total) ![Contributors](https://img.shields.io/github/contributors/BuckshotPlusPlus/BuckshotPlusPlus?color=dark-green) ![Forks](https://img.shields.io/github/forks/BuckshotPlusPlus/BuckshotPlusPlus?style=social) ![Stargazers](https://img.shields.io/github/stars/BuckshotPlusPlus/BuckshotPlusPlus?style=social) ![Issues](https://img.shields.io/github/issues/BuckshotPlusPlus/BuckshotPlusPlus) ![License](https://img.shields.io/github/license/BuckshotPlusPlus/BuckshotPlusPlus) 
+![Downloads](https://img.shields.io/github/downloads/BuckshotPlusPlus/BuckshotPlusPlus/total) ![Contributors](https://img.shields.io/github/contributors/BuckshotPlusPlus/BuckshotPlusPlus?color=dark-green) ![Forks](https://img.shields.io/github/forks/BuckshotPlusPlus/BuckshotPlusPlus?style=social) ![Stargazers](https://img.shields.io/github/stars/BuckshotPlusPlus/BuckshotPlusPlus?style=social) ![Issues](https://img.shields.io/github/issues/BuckshotPlusPlus/BuckshotPlusPlus) ![License](https://img.shields.io/github/license/BuckshotPlusPlus/BuckshotPlusPlus)
 
 ## Table Of Contents
 
-* [Getting Started](#getting-started)
-* [Contributing](CONTRIBUTING.md)
-* [Authors](#authors)
+- [Getting Started](#getting-started)
+- [Contributing](CONTRIBUTING.md)
+- [Authors](#authors)
 
 ## Getting Started
 
 **Main.bpp**
+
 ```lua
 include "Pages.bpp"
 ```
 
 **Pages.bpp**
+
 ```lua
 include "Pages/Home.bpp"
 
@@ -41,6 +43,7 @@ page index {
 ```
 
 **Pages/Home.bpp**
+
 ```lua
 view Home {
    type = "body"
@@ -53,5 +56,5 @@ view Home {
 
 ## Authors
 
-* **[Vic92548](https://github.com/Vic92548)** - *Developer* 
-* **[MoskalykA](https://github.com/MoskalykA)** - *Developer* 
+- **[Vic92548](https://github.com/Vic92548)** - _Developer_
+- **[MoskalykA](https://github.com/MoskalykA)** - _Developer_
