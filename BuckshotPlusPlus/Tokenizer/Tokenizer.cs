@@ -52,9 +52,10 @@ namespace BuckshotPlusPlus
                 this.UnprocessedFileDataDictionary.Add(FileName, FileData);
                 this.FileDataDictionary.Add(FileName, FileData);
 
-                List<string> MyFileLines = FileData.Split('\n').OfType<string>().ToList();
                 int CurrentLineNumber = 0;
                 int ContainerCount = 0;
+
+                List<string> MyFileLines = FileData.Split('\n').OfType<string>().ToList();
                 List<string> ContainerData = new List<string>();
 
                 while (CurrentLineNumber < MyFileLines.Count)
