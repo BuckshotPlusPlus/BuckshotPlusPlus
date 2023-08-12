@@ -1,0 +1,79 @@
+on:
+  push:
+    tags:
+      - "v*"
+
+name: build
+
+jobs:
+  build:
+    name: Ubuntu build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "6.0"
+      - run: dotnet build BuckshotPlusPlus
+
+      - name: Archive Release
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: "zip"
+          filename: "ubuntu.zip"
+          directory: "BuckshotPlusPlus/bin/Debug/net6.0/"
+
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: "BuckshotPlusPlus/bin/Debug/net6.0/ubuntu.zip"
+          tag: ${{ github.ref }}
+
+  build-win:
+    name: Windows build
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "6.0"
+      - run: dotnet build BuckshotPlusPlus
+
+      - name: Archive Release
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: "zip"
+          filename: "windows.zip"
+          directory: "BuckshotPlusPlus/bin/Debug/net6.0/"
+
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: "BuckshotPlusPlus/bin/Debug/net6.0/windows.zip"
+          tag: ${{ github.ref }}
+
+  build-macos:
+    name: MacOs build
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "6.0"
+      - run: dotnet build BuckshotPlusPlus
+
+      - name: Archive Release
+        uses: thedoctor0/zip-release@0.7.1
+        with:
+          type: "zip"
+          filename: "macos.zip"
+          directory: "BuckshotPlusPlus/bin/Debug/net6.0/"
+
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: "BuckshotPlusPlus/bin/Debug/net6.0/macos.zip"
+          tag: ${{ github.ref }}
