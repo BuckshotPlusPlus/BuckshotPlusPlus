@@ -123,10 +123,5 @@ namespace BuckshotPlusPlus
             Thread workerThread = new Thread(new ThreadStart(fileMonitor.FileMonitoring));
             workerThread.Start();
         }
-
-        private static void Process_OutputDataReceived(object sender, DataReceivedEventArgs e)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
