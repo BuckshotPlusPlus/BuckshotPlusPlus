@@ -1,154 +1,157 @@
 ﻿using System;
-using System.Reflection;
+using System.Collections.Generic;
 
 namespace BuckshotPlusPlus.Compiler.CSS
 {
     public class Properties
     {
-        public string align_content = "";
-        public string align_items = "";
-        public string align_self = "";
-        public string animation_delay = "";
-        public string animation_direction = "";
-        public string animation_duration = "";
-        public string animation_fill_mode = "";
-        public string animation_iteration_count = "";
-        public string animation_name = "";
-        public string animation_play_state = "";
-        public string animation_timing_function = "";
-        public string animation = "";
-        public string background_attachment = "";
-        public string background_clip = "";
-        public string background_color = "";
-        public string background_image = "";
-        public string background_origin = "";
-        public string background_position = "";
-        public string background_repeat = "";
-        public string background_size = "";
-        public string background = "";
-        public string border_bottom_color = "";
-        public string border_bottom_left_radius = "";
-        public string border_bottom_right_radius = "";
-        public string border_bottom_style = "";
-        public string border_bottom_width = "";
-        public string border_bottom = "";
-        public string border_collapse = "";
-        public string border_color = "";
-        public string border_left_color = "";
-        public string border_left_style = "";
-        public string border_left_width = "";
-        public string border_left = "";
-        public string border_radius = "";
-        public string border_right_color = "";
-        public string border_right_style = "";
-        public string border_right_width = "";
-        public string border_right = "";
-        public string border_style = "";
-        public string border_top_color = "";
-        public string border_top_left_radius = "";
-        public string border_top_right_radius = "";
-        public string border_top_style = "";
-        public string border_top_width = "";
-        public string border_top = "";
-        public string border_width = "";
-        public string border = "";
-        public string bottom = "";
-        public string box_shadow = "";
-        public string box_sizing = "";
-        public string clear = "";
-        public string color = "";
-        public string column_count = "";
-        public string column_gap = "";
-        public string column_width = "";
-        public string css_content = "";
-        public string cursor = "";
-        public string display = "";
-        public string flex = "";
-        public string flex_basis = "";
-        public string flex_direction = "";
-        public string flex_flow = "";
-        public string flex_grow = "";
-        public string flex_shrink = "";
-        public string flex_wrap = "";
-        public string _float = "";
-        public string font_family = "";
-        public string font_size = "";
-        public string font_style = "";
-        public string font_variant = "";
-        public string font_weight = "";
-        public string font = "";
-        public string height = "";
-        public string justify_content = "";
-        public string left = "";
-        public string letter_spacing = "";
-        public string line_height = "";
-        public string list_style_image = "";
-        public string list_style_position = "";
-        public string list_style_type = "";
-        public string list_style = "";
-        public string margin_bottom = "";
-        public string margin_left = "";
-        public string margin_right = "";
-        public string margin_top = "";
-        public string margin = "";
-        public string max_height = "";
-        public string max_width = "";
-        public string min_height = "";
-        public string min_width = "";
-        public string mix_blend_mode = "";
-        public string opacity = "";
-        public string order = "";
-        public string outline_color = "";
-        public string outline_style = "";
-        public string outline_width = "";
-        public string outline = "";
-        public string overflow_wrap = "";
-        public string overflow_x = "";
-        public string overflow_y = "";
-        public string overflow = "";
-        public string padding_bottom = "";
-        public string padding_left = "";
-        public string padding_right = "";
-        public string padding_top = "";
-        public string padding = "";
-        public string pointer_events = "";
-        public string position = "";
-        public string resize = "";
-        public string right = "";
-        public string text_align = "";
-        public string text_decoration = "";
-        public string text_indent = "";
-        public string text_overflow = "";
-        public string text_shadow = "";
-        public string text_transform = "";
-        public string top = "";
-        public string transform_origin = "";
-        public string transform = "";
-        public string transition_delay = "";
-        public string transition_duration = "";
-        public string transition_property = "";
-        public string transition_timing_function = "";
-        public string transition = "";
-        public string white_space = "";
-        public string width = "";
-        public string will_change = "";
-        public string word_break = "";
-        public string word_spacing = "";
-        public string z_index = "";
-        public string filter = "";
-        public string user_select = "";
-        public string outline_offset = "";
+        static List<String> Props = new List<string>
+        {
+            "align_content",
+            "align_items",
+            "align_self",
+            "animation_delay",
+            "animation_direction",
+            "animation_duration",
+            "animation_fill_mode",
+            "animation_iteration_count",
+            "animation_name",
+            "animation_play_state",
+            "animation_timing_function",
+            "animation",
+            "background_attachment",
+            "background_clip",
+            "background_color",
+            "background_image",
+            "background_origin",
+            "background_position",
+            "background_repeat",
+            "background_size",
+            "background",
+            "border_bottom_color",
+            "border_bottom_left_radius",
+            "border_bottom_right_radius",
+            "border_bottom_style",
+            "border_bottom_width",
+            "border_bottom",
+            "border_collapse",
+            "border_color",
+            "border_left_color",
+            "border_left_style",
+            "border_left_width",
+            "border_left",
+            "border_radius",
+            "border_right_color",
+            "border_right_style",
+            "border_right_width",
+            "border_right",
+            "border_style",
+            "border_top_color",
+            "border_top_left_radius",
+            "border_top_right_radius",
+            "border_top_style",
+            "border_top_width",
+            "border_top",
+            "border_width",
+            "border",
+            "bottom",
+            "box_shadow",
+            "box_sizing",
+            "clear",
+            "color",
+            "column_count",
+            "column_gap",
+            "column_width",
+            "css_content",
+            "cursor",
+            "display",
+            "flex",
+            "flex_basis",
+            "flex_direction",
+            "flex_flow",
+            "flex_grow",
+            "flex_shrink",
+            "flex_wrap",
+            "_float",
+            "font_family",
+            "font_size",
+            "font_style",
+            "font_variant",
+            "font_weight",
+            "font",
+            "height",
+            "justify_content",
+            "left",
+            "letter_spacing",
+            "line_height",
+            "list_style_image",
+            "list_style_position",
+            "list_style_type",
+            "list_style",
+            "margin_bottom",
+            "margin_left",
+            "margin_right",
+            "margin_top",
+            "margin",
+            "max_height",
+            "max_width",
+            "min_height",
+            "min_width",
+            "mix_blend_mode",
+            "opacity",
+            "order",
+            "outline_color",
+            "outline_style",
+            "outline_width",
+            "outline",
+            "overflow_wrap",
+            "overflow_x",
+            "overflow_y",
+            "overflow",
+            "padding_bottom",
+            "padding_left",
+            "padding_right",
+            "padding_top",
+            "padding",
+            "pointer_events",
+            "position",
+            "resize",
+            "right",
+            "text_align",
+            "text_decoration",
+            "text_indent",
+            "text_overflow",
+            "text_shadow",
+            "text_transform",
+            "top",
+            "transform_origin",
+            "transform",
+            "transition_delay",
+            "transition_duration",
+            "transition_property",
+            "transition_timing_function",
+            "transition",
+            "white_space",
+            "width",
+            "will_change",
+            "word_break",
+            "word_spacing",
+            "z_index",
+            "filter",
+            "user_select",
+            "outline_offset"
+        };
 
         public static string GetCSSString(Token MyToken)
         {
             string CompiledCSS = "";
-            FieldInfo[] CSSProps = typeof(CSS.Properties).GetFields();
             TokenDataContainer ViewContainer = (TokenDataContainer)MyToken.Data;
-            foreach (FieldInfo CSSProp in CSSProps)
+            
+            foreach (String Name in Props)
             {
                 TokenDataVariable MyCSSProp = TokenUtils.FindTokenDataVariableByName(
                     ViewContainer.ContainerData,
-                    CSSProp.Name
+                    Name
                 );
                 if (MyCSSProp != null)
                 {
@@ -158,13 +161,13 @@ namespace BuckshotPlusPlus.Compiler.CSS
                         {
                             TokenDataVariable MyRefData = (TokenDataVariable)MyCSSProp.RefData.Data;
                             CompiledCSS +=
-                                CSSProp.Name.Replace('_', '-') + ':' + MyRefData.VariableData + ";";
+                                Name.Replace('_', '-') + ':' + MyRefData.VariableData + ";";
                         }
                     }
                     else
                     {
                         CompiledCSS +=
-                            CSSProp.Name.Replace('_', '-') + ':' + MyCSSProp.VariableData + ";";
+                            Name.Replace('_', '-') + ':' + MyCSSProp.VariableData + ";";
                     }
                 }
             }
@@ -181,11 +184,10 @@ namespace BuckshotPlusPlus.Compiler.CSS
 
         public static bool isCSSProp(Token MyToken)
         {
-            FieldInfo[] CSSProps = typeof(CSS.Properties).GetFields();
             TokenDataVariable MyVar = (TokenDataVariable)MyToken.Data;
-            foreach (FieldInfo CSSProp in CSSProps)
+            foreach (String Prop in Props)
             {
-                if (MyVar.VariableName == CSSProp.Name)
+                if (MyVar.VariableName == Prop)
                 {
                     return true;
                 }
