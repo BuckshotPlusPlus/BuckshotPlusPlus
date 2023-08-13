@@ -5,7 +5,7 @@
   </a>
 
   <p align="center">
-    <a href="https://victor-chanet.gitbook.io/buckshot++/"><strong>Explore the docs</strong></a>
+    <a href="https://bpp.gitbook.io/buckshot++/"><strong>Explore the docs</strong></a>
     <br/>
     <a href="https://github.com/BuckshotPlusPlus/Official-Website">View Demo</a>
   -
