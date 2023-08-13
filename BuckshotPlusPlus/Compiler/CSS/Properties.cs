@@ -258,13 +258,14 @@ namespace BuckshotPlusPlus.Compiler.CSS
             return false;
         }
 
-        public static string toDOMProp(string css_prop_name)
+        public static string ToDOMProp(string Name)
         {
-            string[] result = css_prop_name.Split('-');
+            string[] result = Name.Split('-');
             for (int i = 1; i < result.Length; i++)
             {
                 result[i] = char.ToUpper(result[i][0]) + result[i].Substring(1);
             }
+            
             return String.Join("", result);
         }
     }

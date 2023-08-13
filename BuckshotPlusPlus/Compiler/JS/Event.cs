@@ -18,7 +18,7 @@
                     {
                         EventString +=
                             "this.style."
-                            + CSS.Properties.toDOMProp(ChildVar.VariableName)
+                            + CSS.Properties.ToDOMProp(ChildVar.VariableName)
                             + " = '"
                             + ChildVar.VariableData
                             + "';";
