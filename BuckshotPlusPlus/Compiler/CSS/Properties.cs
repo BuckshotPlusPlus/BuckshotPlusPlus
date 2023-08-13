@@ -83,7 +83,7 @@ namespace BuckshotPlusPlus.Compiler.CSS
             "column-span",
             "column-width",
             "columns",
-            "content",
+            //"content", We need to remove this otherwise we can't edit content in events
             "counter-increment",
             "counter-reset",
             "cursor",
