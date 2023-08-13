@@ -260,7 +260,7 @@ namespace BuckshotPlusPlus.Compiler.CSS
 
         public static string toDOMProp(string css_prop_name)
         {
-            string[] result = css_prop_name.Split('_');
+            string[] result = css_prop_name.Split('-');
             for (int i = 1; i < result.Length; i++)
             {
                 result[i] = char.ToUpper(result[i][0]) + result[i].Substring(1);
