@@ -1,4 +1,6 @@
-﻿namespace BuckshotPlusPlus
+﻿using System;
+
+namespace BuckshotPlusPlus
 {
     public class TokenDataVariable : TokenData
     {
@@ -18,6 +20,13 @@
                 this.VariableType = FindVariableType(MyVariableParams[2], MyToken);
                 this.VariableName = MyVariableParams[0];
                 this.VariableData = MyVariableParams[2];
+
+                /*string[] VariablePath = VariableName.Split('.');
+                if(VariablePath.Length > 1)
+                {
+                    this.VariableName = "";
+                    Fi
+                }*/
             }
             else if (MyVariableParams.Length == 1)
             {

@@ -32,7 +32,14 @@
             }
             else if (TokenDataFunctionCall.IsTokenDataFunctionCall(this))
             {
-                Data = new TokenDataFunctionCall(this);
+                if(TokenDataLogic.IsTokenDataLogic(this))
+                {
+                    Data = new TokenDataLogic(this);
+                }
+                else
+                {
+                    Data = new TokenDataFunctionCall(this);
+                }
             }
             else if (TokenDataVariable.IsTokenDataVariable(this))
             {

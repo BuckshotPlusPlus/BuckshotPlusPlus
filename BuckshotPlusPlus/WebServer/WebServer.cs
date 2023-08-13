@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -48,6 +49,10 @@ namespace BuckshotPlusPlus.WebServer
                             )
                             {
                                 page_found = true;
+
+                                var stopwatch = new Stopwatch();
+                                stopwatch.Start();
+
                                 // Write the response info
                                 string disableSubmit = !runServer ? "disabled" : "";
                                 string pageData = Page.RenderWebPage(MyToken);
@@ -62,6 +67,9 @@ namespace BuckshotPlusPlus.WebServer
                                 // Write out to the response stream (asynchronously), then close it
                                 await resp.OutputStream.WriteAsync(data, 0, data.Length);
                                 resp.Close();
+
+                                stopwatch.Stop();
+                                Formater.SuccessMessage($"Successfully sent page {PageName} in {stopwatch.ElapsedMilliseconds} ms");
                             }
                         }
                     }

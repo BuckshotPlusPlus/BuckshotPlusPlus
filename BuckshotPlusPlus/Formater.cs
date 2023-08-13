@@ -48,6 +48,44 @@ namespace BuckshotPlusPlus
             return FileData;
         }
 
+        public static string SafeRemoveSpacesFromString(string Content)
+        {
+            int i = 0;
+            int spaceCount = 0;
+            bool isQuote = false;
+
+            while (i < Content.Length)
+            {
+                // Gérer les chaines de character
+                if (Content[i] == '"')
+                {
+                    isQuote = !isQuote;
+                }
+                if (Content[i] == ' ' || Content[i] == '\t' && isQuote == false)
+                {
+                    while (Content[spaceCount + i] == ' ' || Content[spaceCount + i] == '\t')
+                    {
+                        spaceCount++;
+                    }
+
+                    if (i == 0)
+                    {
+                        Content = Content.Remove(i, spaceCount);
+                    }
+                    else
+                    {
+                        if (spaceCount > 0)
+                        {
+                            Content = Content.Remove(i, spaceCount);
+                        }
+                    }
+                    spaceCount = 0;
+                }
+                i++;
+            }
+            return Content;
+        }
+
         public static bool SafeContains(string Value, char c)
         {
             bool isQuote = false;
@@ -96,11 +134,17 @@ namespace BuckshotPlusPlus
             return UnsafeCharValue;
         }
 
-        public static List<string> SafeSplit(string Value, char c)
+        public static List<string> SafeSplit(string Value, char c, bool only_strings = false)
         {
             List<string> SplitedString = new List<string>();
 
             string[] UnsafeChars = { "\"\"", "()" };
+
+            if (only_strings)
+            {
+                UnsafeChars[1] = "\"\"";
+            }
+
             UnsafeCharStruct LastUnsafeChar = new UnsafeCharStruct();
             LastUnsafeChar.IsUnsafeChar = false;
 

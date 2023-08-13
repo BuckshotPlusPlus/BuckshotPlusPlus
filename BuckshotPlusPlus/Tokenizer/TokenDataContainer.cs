@@ -9,6 +9,7 @@ namespace BuckshotPlusPlus
         public Token ContainerParent { get; set; }
         public List<Token> ContainerData { get; set; }
         public string ContainerType { get; set; }
+        public TokenData ContainerMetaData { get; set; }
 
         public static string[] SupportedContainerTypes =
         {
@@ -19,7 +20,10 @@ namespace BuckshotPlusPlus
             "route",
             "page",
             "event",
-            "table"
+            "table",
+            "if",
+            "else",
+            "elseif"
         };
 
         public TokenDataContainer(Token MyToken)
@@ -52,14 +56,26 @@ namespace BuckshotPlusPlus
                         {
                             this.ContainerName = MyArgs[1];
                         }
+                        Console.WriteLine(LineData);
+                        Console.WriteLine("ContainerName:" + ContainerName);
 
                         // CHECK AND STORE CONTAINER TYPE (OBJECT, FUNCTION)
                         foreach (string ContainerType in SupportedContainerTypes)
                         {
                             if (MyArgs[0] == ContainerType)
                             {
-                                this.ContainerType = ContainerType;
-                                MyToken.Type = this.ContainerType;
+                                if(ContainerType == "if")
+                                {
+                                    this.ContainerType = "logic";
+                                    MyToken.Type = this.ContainerType;
+                                    ContainerMetaData = new TokenDataLogic(MyToken);
+                                }
+                                else
+                                {
+                                    this.ContainerType = ContainerType;
+                                    MyToken.Type = this.ContainerType;
+                                }
+                                
                             }
                         }
                         if (this.ContainerType == "")

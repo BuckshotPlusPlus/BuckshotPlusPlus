@@ -131,13 +131,36 @@ namespace BuckshotPlusPlus
                                     ContainerCount--;
                                     if (ContainerCount == 0)
                                     {
-                                        FileTokens.Add(
-                                            new Token(
+                                        Token NewContainerToken = new Token(
                                                 FileName,
                                                 String.Join('\n', ContainerData),
                                                 CurrentLineNumber,
                                                 this
-                                            )
+                                            );
+                                        TokenDataContainer NewContainerTokenData = (TokenDataContainer)NewContainerToken.Data;
+                                        Console.WriteLine("NewCOntainer:" + NewContainerTokenData.ContainerName);
+                                        if (NewContainerTokenData.ContainerType == "logic")
+                                        {
+                                            LogicTest TestToRun = ((TokenDataLogic)NewContainerTokenData.ContainerMetaData).TokenLogicTest;
+                                            if (TestToRun.RunLogicTest(FileTokens, NewContainerToken))
+                                            {
+                                                foreach(Token LocalToken in NewContainerTokenData.ContainerData)
+                                                {
+                                                    if(LocalToken.Type == "variable")
+                                                    {
+                                                        if (Formater.SafeSplit(((TokenDataVariable)LocalToken.Data).VariableName, '.').Count > 1)
+                                                        {
+                                                            Console.WriteLine("Found a token to edit:" + ((TokenDataVariable)LocalToken.Data).VariableName);
+                                                            TokenUtils.EditTokenData(FileTokens, LocalToken);
+                                                        }
+                                                    }
+                                                    
+                                                }
+                                            }
+                                            Console.WriteLine("Found container logic!");
+                                        }
+                                        FileTokens.Add(
+                                            NewContainerToken
                                         );
                                         ContainerData = new List<string>();
                                     }
@@ -145,9 +168,18 @@ namespace BuckshotPlusPlus
                             }
                             else
                             {
-                                FileTokens.Add(
-                                    new Token(FileName, LineData, CurrentLineNumber, this)
-                                );
+                                Console.WriteLine(LineData + " is not in a container!");
+                                Token MyNewToken = new Token(FileName, LineData, CurrentLineNumber, this);
+                                if(Formater.SafeSplit(LineData, '.').Count > 1)
+                                {
+                                    Console.WriteLine("Found a token to edit:" + LineData);
+                                    TokenUtils.EditTokenData(FileTokens, MyNewToken);
+                                }
+                                else
+                                {
+                                    FileTokens.Add(MyNewToken);
+                                }
+                                
                             }
                         }
                     }
@@ -156,13 +188,14 @@ namespace BuckshotPlusPlus
                         ContainerCount--;
                         if (ContainerCount == 0)
                         {
-                            FileTokens.Add(
-                                new Token(
+                            Token NewContainerToken = new Token(
                                     FileName,
                                     String.Join('\n', ContainerData),
                                     CurrentLineNumber,
                                     this
-                                )
+                                );
+                            FileTokens.Add(
+                                NewContainerToken
                             );
                             ContainerData = new List<string>();
                         }

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BuckshotPlusPlus
 {
@@ -20,7 +22,7 @@ namespace BuckshotPlusPlus
             return null;
         }
 
-        public static Token FindTokenByName(List<Token> MyTokenList, string TokenName)
+        public static Token FindTokenByName(List<Token> MyTokenList, string TokenName, bool ReturnParent = false)
         {
             string[] SubTokenNames = TokenName.Split('.');
             int Remain = SubTokenNames.Length;
@@ -50,7 +52,7 @@ namespace BuckshotPlusPlus
                         TokenDataContainer MyContainer = (TokenDataContainer)MyToken.Data;
                         if (MyContainer.ContainerName == LocalTokenName)
                         {
-                            if (Remain > 0)
+                            if (Remain > 0 && !ReturnParent)
                             {
                                 MyTokenList = MyContainer.ContainerData;
                                 break;
@@ -65,6 +67,30 @@ namespace BuckshotPlusPlus
             }
             //Formater.CriticalError(TokenName + " does not exist");
             return null;
+        }
+
+        public static bool EditTokenData(List<Token> MyTokenList, Token MyToken)
+        {
+            TokenDataVariable Var = (TokenDataVariable)MyToken.Data;
+            Token TokenToEdit = FindTokenByName(MyTokenList, Var.VariableName);
+            if(TokenToEdit == null)
+            {
+                Token ParentToken = FindTokenByName(MyTokenList, Var.VariableName, true);
+                if(ParentToken == null)
+                {
+                    Formater.TokenCriticalError("Can't find token with name: " + Var.VariableName, MyToken);
+                    return false;
+                }
+                TokenDataContainer Container = (TokenDataContainer)ParentToken.Data;
+                Var.VariableName = Var.VariableName.Split('.').Last();
+                Container.ContainerData.Add(MyToken);
+                return true;
+                
+            }
+            TokenDataVariable MyVar = (TokenDataVariable)TokenToEdit.Data;
+            MyVar.VariableData = Var.VariableData;
+            MyVar.VariableType = Var.VariableType;
+            return true;
         }
 
         public static TokenDataVariable FindTokenDataVariableByName(
