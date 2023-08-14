@@ -1,23 +1,25 @@
-﻿namespace BuckshotPlusPlus.WebServer
+﻿using System.Collections.Generic;
+
+namespace BuckshotPlusPlus.WebServer
 {
     internal class Page
     {
-        public static string RenderWebPage(Token MyPage)
+        public static string RenderWebPage(List<Token> ServerSideTokens, Token MyPage)
         {
 
-            TokenUtils.EditAllTokensOfContainer(MyPage.MyTokenizer.FileTokens, MyPage);
+            TokenUtils.EditAllTokensOfContainer(ServerSideTokens, MyPage);
 
             string HTML_code =
                 "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF - 8\"> <meta http-equiv=\"X - UA - Compatible\" content =\"IE = edge\" > <meta name=\"viewport\" content =\"width=device-width, height=device-height, initial-scale=1.0, user-scalable=yes\" ><title>";
 
             TokenDataContainer MyPageContainer = (TokenDataContainer)MyPage.Data;
             TokenDataVariable MyPageTitle = TokenUtils.TryFindTokenDataVariableValueByName(
-                MyPage.MyTokenizer.FileTokens, 
+                ServerSideTokens, 
                 MyPageContainer.ContainerData,
                 "title"
             );
             Token MyPageBody = TokenUtils.TryFindTokenValueByName(
-                MyPage.MyTokenizer.FileTokens,
+                ServerSideTokens,
                 MyPageContainer.ContainerData,
                 "body"
             );

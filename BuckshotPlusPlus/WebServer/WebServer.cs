@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -17,6 +19,8 @@ namespace BuckshotPlusPlus.WebServer
 
         public async Task HandleIncomingConnections(Tokenizer MyTokenizer)
         {
+            UserSessionManager UserSessions = new UserSessionManager();
+
             // While a user hasn't visited the `shutdown` url, keep on handling requests
             while (runServer)
             {
@@ -48,14 +52,34 @@ namespace BuckshotPlusPlus.WebServer
                                 || (req.Url.AbsolutePath == "/" && PageName == "index")
                             )
                             {
+                                
+
                                 page_found = true;
 
                                 var stopwatch = new Stopwatch();
                                 stopwatch.Start();
 
+                                UserSessions.RemoveInactiveUserSessions();
+
+                                Console.WriteLine("user session removed!");
+
+                                string clientIP = ctx.Request.RemoteEndPoint.ToString();
+
+                                List<Token> ServerSideTokenList = new List<Token>();
+
+                                ServerSideTokenList.AddRange(MyTokenizer.FileTokens);
+
+                                Console.WriteLine("Getting user session");
+
+                                UserSession FoundUserSession = UserSessions.AddOrUpdateUserSession(req, resp);
+
+                                FoundUserSession.AddUrl(req.Url.AbsolutePath);
+
+                                ServerSideTokenList.Add(FoundUserSession.GetToken(MyTokenizer));
+
                                 // Write the response info
                                 string disableSubmit = !runServer ? "disabled" : "";
-                                string pageData = Page.RenderWebPage(MyToken);
+                                string pageData = Page.RenderWebPage(ServerSideTokenList, MyToken);
 
                                 byte[] data = Encoding.UTF8.GetBytes(
                                     String.Format(pageData, pageViews, disableSubmit)

@@ -106,7 +106,6 @@ namespace BuckshotPlusPlus
         {
             
             TokenDataContainer PageTokenDataContainer = (TokenDataContainer)MyContainer.Data;
-            Console.WriteLine("Editing All tokens of container of " + PageTokenDataContainer.ContainerName);
             if (PageTokenDataContainer == null)
             {
                 Formater.TokenCriticalError("The procided token is not a container!", MyContainer);
@@ -118,7 +117,6 @@ namespace BuckshotPlusPlus
                     TokenDataVariable VarToken = (TokenDataVariable)ChildToken.Data;
                     if(VarToken != null)
                     {
-                        Console.WriteLine("Var " + VarToken.VariableName);
                         SafeEditTokenData(VarToken.VariableName, FileTokens, ChildToken);
 
                         if(VarToken.VariableType == "ref")
@@ -136,7 +134,6 @@ namespace BuckshotPlusPlus
                                     TokenDataContainer ContainerToken = (TokenDataContainer)ReferencedToken.Data;
                                     if (ContainerToken != null)
                                     {
-                                        Console.WriteLine("Want to got to " + ContainerToken.ContainerName);
                                         EditAllTokensOfContainer(FileTokens, ReferencedToken);
                                     }
                                 }
@@ -175,26 +172,15 @@ namespace BuckshotPlusPlus
             string TokenName
             )
         {
-            Token FoundToken = FindTokenByName(LocalTokenList, TokenName);
+            Token FoundToken = TryFindTokenValueByName(FileTokens, LocalTokenList, TokenName);
             if (FoundToken != null)
             {
                 if (FoundToken.Data.GetType() == typeof(TokenDataVariable))
                 {
                     TokenDataVariable MyVar = (TokenDataVariable)FoundToken.Data;
-                    if(MyVar.VariableType == "ref")
-                    {
-                        return TryFindTokenDataVariableValueByName(FileTokens, FileTokens, MyVar.VariableData);
-                    }
-                    else
-                    {
-                        return MyVar;
-                    }
+                    return MyVar;
                     
                 }
-            }
-            else
-            {
-                //Formater.Warn("Token of name : " + TokenName + " not found");
             }
             return null;
         }
