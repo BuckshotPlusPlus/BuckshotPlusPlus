@@ -10,6 +10,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
             ("href", false),
             ("id", false),
             ("class", false),
+            ("target", false),
             ("disabled", true)
         };
 
