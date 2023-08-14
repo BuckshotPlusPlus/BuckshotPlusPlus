@@ -5,7 +5,7 @@
   </a>
 
   <p align="center">
-    <a href="https://victor-chanet.gitbook.io/buckshot++/"><strong>Explore the docs</strong></a>
+    <a href="https://bpp.gitbook.io/buckshot++/"><strong>Explore the docs</strong></a>
     <br/>
     <a href="https://github.com/BuckshotPlusPlus/Official-Website">View Demo</a>
   -
@@ -25,16 +25,27 @@
 
 ## Getting Started
 
+Get the lastest executable for Buckshot++ in teh release section or compile from source.
+
+Create a main.bpp
+
 **Main.bpp**
 
-```lua
-include "Pages.bpp"
-```
-
-**Pages.bpp**
+The example code below will create a simple buckshgot++ website with an index page displaying the title "Hello World!".
 
 ```lua
-include "Pages/Home.bpp"
+view Title{
+    content = "Hello World!"
+    type = "h1"
+    color = "blue"
+}
+
+view Home {
+   type = "body"
+   margin = "0"
+   padding = "0"
+   content = Title
+}
 
 page index {
 	title = "Home!"
@@ -42,19 +53,14 @@ page index {
 }
 ```
 
-**Pages/Home.bpp**
+**Start your BuckShot++ server**
 
-```lua
-view Home {
-   type = "body"
-   margin = "0"
-   padding = "0"
-
-   content = "<h1>Home!</h1>"
-}
+```shell
+BuchshotPlusPlus.exe "Path/To/Main.bpp"
 ```
+Enjoy!
 
 ## Authors
 
-- **[Vic92548](https://github.com/Vic92548)** - _Developer_
+- **[Vic92548](https://github.com/Vic92548)** - _Lead Developer_
 - **[MoskalykA](https://github.com/MoskalykA)** - _Developer_

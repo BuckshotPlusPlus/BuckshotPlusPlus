@@ -131,3 +131,7 @@ $RECYCLE.BIN/
 .DS_Store
 
 _NCrunch*
+*.vsidx
+*.vsidx
+*.vsidx
+*.1

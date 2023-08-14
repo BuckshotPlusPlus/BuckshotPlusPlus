@@ -13,6 +13,7 @@ namespace BuckshotPlusPlus
 
         public static string[] SupportedContainerTypes =
         {
+            "data",
             "object",
             "function",
             "view",
