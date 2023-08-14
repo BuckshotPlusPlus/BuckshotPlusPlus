@@ -169,6 +169,70 @@ namespace BuckshotPlusPlus
             return null;
         }
 
+        public static TokenDataVariable TryFindTokenDataVariableValueByName(
+            List<Token> FileTokens,
+            List<Token> LocalTokenList,
+            string TokenName
+            )
+        {
+            Token FoundToken = FindTokenByName(LocalTokenList, TokenName);
+            if (FoundToken != null)
+            {
+                if (FoundToken.Data.GetType() == typeof(TokenDataVariable))
+                {
+                    TokenDataVariable MyVar = (TokenDataVariable)FoundToken.Data;
+                    if(MyVar.VariableType == "ref")
+                    {
+                        return TryFindTokenDataVariableValueByName(FileTokens, FileTokens, MyVar.VariableData);
+                    }
+                    else
+                    {
+                        return MyVar;
+                    }
+                    
+                }
+            }
+            else
+            {
+                //Formater.Warn("Token of name : " + TokenName + " not found");
+            }
+            return null;
+        }
+
+        public static Token TryFindTokenValueByName(
+            List<Token> FileTokens,
+            List<Token> LocalTokenList,
+            string TokenName
+            )
+        {
+            Token FoundToken = FindTokenByName(LocalTokenList, TokenName);
+            if (FoundToken != null)
+            {
+                if (FoundToken.Data.GetType() == typeof(TokenDataVariable))
+                {
+                    TokenDataVariable MyVar = (TokenDataVariable)FoundToken.Data;
+                    if(MyVar.VariableType == "ref")
+                    {
+                        return TryFindTokenValueByName(FileTokens, FileTokens, MyVar.VariableData);
+                    }
+                    else
+                    {
+                        return FoundToken;
+                    }
+
+                }
+                else
+                {
+                    return FoundToken;
+                }
+            }
+            else
+            {
+                //Formater.Warn("Token of name : " + TokenName + " not found");
+            }
+            return null;
+        }
+
         public static TokenDataContainer FindTokenDataContainerByName(
             List<Token> MyTokenList,
             string TokenName

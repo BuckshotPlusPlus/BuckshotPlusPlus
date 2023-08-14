@@ -11,11 +11,13 @@
                 "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF - 8\"> <meta http-equiv=\"X - UA - Compatible\" content =\"IE = edge\" > <meta name=\"viewport\" content =\"width=device-width, height=device-height, initial-scale=1.0, user-scalable=yes\" ><title>";
 
             TokenDataContainer MyPageContainer = (TokenDataContainer)MyPage.Data;
-            TokenDataVariable MyPageTitle = TokenUtils.FindTokenDataVariableByName(
+            TokenDataVariable MyPageTitle = TokenUtils.TryFindTokenDataVariableValueByName(
+                MyPage.MyTokenizer.FileTokens, 
                 MyPageContainer.ContainerData,
                 "title"
             );
-            TokenDataVariable MyPageBody = TokenUtils.FindTokenDataVariableByName(
+            Token MyPageBody = TokenUtils.TryFindTokenValueByName(
+                MyPage.MyTokenizer.FileTokens,
                 MyPageContainer.ContainerData,
                 "body"
             );
@@ -70,10 +72,7 @@
             if (MyPageBody != null)
             {
                 HTML_code += Compiler.HTML.View.CompileView(
-                    TokenUtils.FindTokenByName(
-                        MyPage.MyTokenizer.FileTokens,
-                        MyPageBody.VariableData
-                    )
+                    MyPageBody
                 );
             }
             else
