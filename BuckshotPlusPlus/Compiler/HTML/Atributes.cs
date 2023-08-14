@@ -1,33 +1,47 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
 
 namespace BuckshotPlusPlus.Compiler.HTML
 {
     public class Attributes
     {
-        public string _href = "";
-        public string _id = "";
-        public string _class = "";
+        static List<(String, Boolean)> Props = new List<(string, bool)>
+        {
+            ("href", false),
+            ("id", false),
+            ("class", false),
+            ("disabled", true)
+        };
 
         public static string GetHTMLAttributes(Token MyToken)
         {
             string CompiledAtributes = "";
-            FieldInfo[] HTMLAttributes = typeof(HTML.Attributes).GetFields();
             TokenDataContainer ViewContainer = (TokenDataContainer)MyToken.Data;
-            foreach (FieldInfo HTMLAttribute in HTMLAttributes)
+            
+            foreach ((String Name, bool WithoutValue) in Props)
             {
                 TokenDataVariable MyHTMLAttribute = TokenUtils.FindTokenDataVariableByName(
                     ViewContainer.ContainerData,
-                    HTMLAttribute.Name.Substring(1)
+                    Name
                 );
+                
                 if (MyHTMLAttribute != null)
                 {
-                    CompiledAtributes +=
-                        HTMLAttribute.Name.Substring(1)
-                        + "=\""
-                        + MyHTMLAttribute.VariableData
-                        + "\"";
+                    if ( WithoutValue )
+                    {
+                        CompiledAtributes += Name;
+                    }
+                    else
+                    {
+                        CompiledAtributes +=
+                            Name
+                            + "=\""
+                            + MyHTMLAttribute.VariableData
+                            + "\"";
+                    }
                 }
             }
+            
             return CompiledAtributes;
         }
     }
