@@ -2,7 +2,7 @@
 
 namespace BuckshotPlusPlus.Compiler.HTML
 {
-    public class Atributes
+    public class Attributes
     {
         public string _href = "";
         public string _id = "";
@@ -11,7 +11,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
         public static string GetHTMLAttributes(Token MyToken)
         {
             string CompiledAtributes = "";
-            FieldInfo[] HTMLAttributes = typeof(HTML.Atributes).GetFields();
+            FieldInfo[] HTMLAttributes = typeof(HTML.Attributes).GetFields();
             TokenDataContainer ViewContainer = (TokenDataContainer)MyToken.Data;
             foreach (FieldInfo HTMLAttribute in HTMLAttributes)
             {

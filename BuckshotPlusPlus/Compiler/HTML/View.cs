@@ -29,7 +29,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
                 "<"
                 + viewType
                 + " "
-                + HTML.Atributes.GetHTMLAttributes(MyViewToken)
+                + HTML.Attributes.GetHTMLAttributes(MyViewToken)
                 + " "
                 + HTML.Events.GetHTMLEvents(MyViewToken)
                 + " style=\""
