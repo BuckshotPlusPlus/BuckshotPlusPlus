@@ -104,19 +104,45 @@ namespace BuckshotPlusPlus
 
         public static void EditAllTokensOfContainer(List<Token> FileTokens,Token MyContainer)
         {
-            TokenDataContainer TokenDataContainer = (TokenDataContainer)MyContainer.Data;
-            if(TokenDataContainer == null)
+            
+            TokenDataContainer PageTokenDataContainer = (TokenDataContainer)MyContainer.Data;
+            Console.WriteLine("Editing All tokens of container of " + PageTokenDataContainer.ContainerName);
+            if (PageTokenDataContainer == null)
             {
                 Formater.TokenCriticalError("The procided token is not a container!", MyContainer);
             }
             else
             {
-                foreach(Token ChildToken in TokenDataContainer.ContainerData)
+                foreach(Token ChildToken in PageTokenDataContainer.ContainerData)
                 {
                     TokenDataVariable VarToken = (TokenDataVariable)ChildToken.Data;
                     if(VarToken != null)
                     {
+                        Console.WriteLine("Var " + VarToken.VariableName);
                         SafeEditTokenData(VarToken.VariableName, FileTokens, ChildToken);
+
+                        if(VarToken.VariableType == "ref")
+                        {
+                            Token ReferencedToken = TokenUtils.FindTokenByName(FileTokens,VarToken.VariableData);
+
+                            if (ReferencedToken == null)
+                            {
+                                Formater.TokenCriticalError("Token not found " + VarToken.VariableData, ChildToken);
+                            }
+                            else
+                            {
+                                if (ReferencedToken.Data.GetType() == typeof(TokenDataContainer))
+                                {
+                                    TokenDataContainer ContainerToken = (TokenDataContainer)ReferencedToken.Data;
+                                    if (ContainerToken != null)
+                                    {
+                                        Console.WriteLine("Want to got to " + ContainerToken.ContainerName);
+                                        EditAllTokensOfContainer(FileTokens, ReferencedToken);
+                                    }
+                                }
+                                
+                            }                            
+                        }
                     }
                 }
             }
