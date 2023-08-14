@@ -24,6 +24,7 @@ namespace BuckshotPlusPlus
         {
             return "data session{\n" +
                 "ip = \"" + SessionIP + "\"\n" +
+                "id = \"" + SessionID + "\"\n" +
                 "url_visited_num = \"" + UrlHistory.Count.ToString() + "\"\n" +
                 "}\n";
         }
