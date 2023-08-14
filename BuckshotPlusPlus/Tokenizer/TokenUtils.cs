@@ -93,6 +93,15 @@ namespace BuckshotPlusPlus
             return true;
         }
 
+        public static bool SafeEditTokenData(string LineData,List<Token> MyTokenList, Token MyToken)
+        {
+            if(Formater.SafeSplit(LineData, '.').Count > 1)
+            {
+                return EditTokenData(MyTokenList, MyToken);
+            }
+            return false;
+        }
+
         public static TokenDataVariable FindTokenDataVariableByName(
             List<Token> MyTokenList,
             string TokenName

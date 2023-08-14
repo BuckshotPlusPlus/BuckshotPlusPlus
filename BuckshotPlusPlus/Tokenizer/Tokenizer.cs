@@ -170,10 +170,10 @@ namespace BuckshotPlusPlus
                             {
                                 Console.WriteLine(LineData + " is not in a container!");
                                 Token MyNewToken = new Token(FileName, LineData, CurrentLineNumber, this);
-                                if(Formater.SafeSplit(LineData, '.').Count > 1)
+                                
+                                if(TokenUtils.SafeEditTokenData(LineData, FileTokens, MyNewToken))
                                 {
                                     Console.WriteLine("Found a token to edit:" + LineData);
-                                    TokenUtils.EditTokenData(FileTokens, MyNewToken);
                                 }
                                 else
                                 {
