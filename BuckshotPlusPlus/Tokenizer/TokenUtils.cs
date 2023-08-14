@@ -102,6 +102,26 @@ namespace BuckshotPlusPlus
             return false;
         }
 
+        public static void EditAllTokensOfContainer(List<Token> FileTokens,Token MyContainer)
+        {
+            TokenDataContainer TokenDataContainer = (TokenDataContainer)MyContainer.Data;
+            if(TokenDataContainer == null)
+            {
+                Formater.TokenCriticalError("The procided token is not a container!", MyContainer);
+            }
+            else
+            {
+                foreach(Token ChildToken in TokenDataContainer.ContainerData)
+                {
+                    TokenDataVariable VarToken = (TokenDataVariable)ChildToken.Data;
+                    if(VarToken != null)
+                    {
+                        SafeEditTokenData(VarToken.VariableName, FileTokens, ChildToken);
+                    }
+                }
+            }
+        }
+
         public static TokenDataVariable FindTokenDataVariableByName(
             List<Token> MyTokenList,
             string TokenName

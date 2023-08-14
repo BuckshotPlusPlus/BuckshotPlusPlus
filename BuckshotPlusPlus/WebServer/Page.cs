@@ -4,6 +4,9 @@
     {
         public static string RenderWebPage(Token MyPage)
         {
+
+            TokenUtils.EditAllTokensOfContainer(MyPage.MyTokenizer.FileTokens, MyPage);
+
             string HTML_code =
                 "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF - 8\"> <meta http-equiv=\"X - UA - Compatible\" content =\"IE = edge\" > <meta name=\"viewport\" content =\"width=device-width, height=device-height, initial-scale=1.0, user-scalable=yes\" ><title>";
 
