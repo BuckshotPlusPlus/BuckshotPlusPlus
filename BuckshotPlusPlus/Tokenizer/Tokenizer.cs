@@ -43,6 +43,43 @@ namespace BuckshotPlusPlus
             return FilePath.Contains("http");
         }
 
+        public string GetIncludeValue(string FilePath)
+        {
+            if (Formater.SafeContains(FilePath, '+'))
+            {
+                List<string> Variables = Formater.SafeSplit(FilePath, '+');
+
+                string Result = "";
+
+                foreach (string Variable in Variables)
+                {
+                    string SafeVariableType = TokenDataVariable.FindVariableType(Variable, null);
+
+                    if (SafeVariableType == "string")
+                    {
+                        Result += TokenDataVariable.GetValueFromString(Variable, null);
+                    }
+                    else if (SafeVariableType == "ref")
+                    {
+                        TokenDataVariable FoundToken = TokenUtils.FindTokenDataVariableByName(FileTokens, Variable);
+                        if (FoundToken != null)
+                        {
+                            Result += FoundToken.VariableData;
+                        }
+                        else
+                        {
+                            Formater.CriticalError("Token not found for include: " + FilePath);
+                        }
+
+                    }
+                }
+
+                return '"' + Result + '"';
+            }
+
+            return FilePath;
+        }
+
         public void AnalyzeFileData(string FileName, string FileData, bool ForHTTP)
         {
             if (this.UnprocessedFileDataDictionary.ContainsKey(FileName))
@@ -74,37 +111,8 @@ namespace BuckshotPlusPlus
                         if (Formater.SafeSplit(LineData, ' ')[0] == "include")
                         {
                             string IncludePath = Formater.SafeSplit(LineData, ' ')[1];
-                            if (Formater.SafeContains(IncludePath, '+'))
-                            {
-                                List<string> Variables = Formater.SafeSplit(IncludePath, '+');
-
-                                string Result = "";
-
-                                foreach (string Variable in Variables)
-                                {
-                                    string SafeVariableType = TokenDataVariable.FindVariableType(Variable, null);
-
-                                    if (SafeVariableType == "string")
-                                    {
-                                        Result += TokenDataVariable.GetValueFromString(Variable, null);
-                                    }
-                                    else if (SafeVariableType == "ref")
-                                    {
-                                        TokenDataVariable FoundToken = TokenUtils.FindTokenDataVariableByName(FileTokens, Variable);
-                                        if (FoundToken != null)
-                                        {
-                                            Result += FoundToken.VariableData;
-                                        }
-                                        else
-                                        {
-                                            Formater.CriticalError("Token not found for include: " + IncludePath);
-                                        }
-
-                                    }
-                                }
-
-                                IncludePath = '"' + Result + '"';
-                            }
+                            IncludePath = GetIncludeValue(IncludePath);
+                            
                             if (ForHTTP)
                             {
                                 IncludeHTTP(
@@ -116,7 +124,7 @@ namespace BuckshotPlusPlus
                             }
                             else
                             {
-                                if (IsHTTP(LineData))
+                                if (IsHTTP(IncludePath))
                                 {
                                     IncludeFile(
                                         IncludePath.Substring(

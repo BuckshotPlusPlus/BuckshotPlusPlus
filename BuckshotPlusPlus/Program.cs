@@ -120,6 +120,7 @@ namespace BuckshotPlusPlus
 
         public static void ExportWebsite(string filePath, string exportDirectory)
         {
+            // For now export directory is absolute only
             Tokenizer MyTokenizer = CompileMainFile(filePath);
 
             if(!Path.Exists(exportDirectory))
