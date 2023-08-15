@@ -45,7 +45,7 @@ namespace BuckshotPlusPlus
         {
             if (this.UnprocessedFileDataDictionary.ContainsKey(FileName))
             {
-                Formater.Warn("Circular dependency detected of " + FileName);
+                Formater.CriticalError("Circular dependency detected of " + FileName);
             }
             else
             {
@@ -71,12 +71,44 @@ namespace BuckshotPlusPlus
 
                         if (Formater.SafeSplit(LineData, ' ')[0] == "include")
                         {
+                            string IncludePath = Formater.SafeSplit(LineData, ' ')[1];
+                            if (Formater.SafeContains(IncludePath, '+'))
+                            {
+                                List<string> Variables = Formater.SafeSplit(IncludePath, '+');
+
+                                string Result = "";
+
+                                foreach (string Variable in Variables)
+                                {
+                                    string SafeVariableType = TokenDataVariable.FindVariableType(Variable, null);
+
+                                    if (SafeVariableType == "string")
+                                    {
+                                        Result += TokenDataVariable.GetValueFromString(Variable, null);
+                                    }
+                                    else if (SafeVariableType == "ref")
+                                    {
+                                        TokenDataVariable FoundToken = TokenUtils.FindTokenDataVariableByName(FileTokens, Variable);
+                                        if (FoundToken != null)
+                                        {
+                                            Result += FoundToken.VariableData;
+                                        }
+                                        else
+                                        {
+                                            Formater.CriticalError("Token not found for include: " + IncludePath);
+                                        }
+
+                                    }
+                                }
+
+                                IncludePath = '"' + Result + '"';
+                            }
                             if (ForHTTP)
                             {
                                 IncludeHTTP(
-                                    Formater.SafeSplit(LineData, ' ')[1].Substring(
+                                    IncludePath.Substring(
                                         1,
-                                        Formater.SafeSplit(LineData, ' ')[1].Length - 2
+                                        IncludePath.Length - 2
                                     )
                                 );
                             }
@@ -85,9 +117,9 @@ namespace BuckshotPlusPlus
                                 if (IsHTTP(LineData))
                                 {
                                     IncludeFile(
-                                        Formater.SafeSplit(LineData, ' ')[1].Substring(
+                                        IncludePath.Substring(
                                             1,
-                                            Formater.SafeSplit(LineData, ' ')[1].Length - 2
+                                            IncludePath.Length - 2
                                         )
                                     );
                                 }
@@ -96,9 +128,9 @@ namespace BuckshotPlusPlus
                                     IncludeFile(
                                         Path.Combine(
                                             RelativePath,
-                                            Formater.SafeSplit(LineData, ' ')[1].Substring(
+                                            IncludePath.Substring(
                                                 1,
-                                                Formater.SafeSplit(LineData, ' ')[1].Length - 2
+                                                IncludePath.Length - 2
                                             )
                                         )
                                     );
