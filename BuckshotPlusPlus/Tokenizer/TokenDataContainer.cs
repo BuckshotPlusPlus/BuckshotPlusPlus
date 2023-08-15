@@ -122,7 +122,7 @@ namespace BuckshotPlusPlus
 
                             if (!ParentFound)
                             {
-                                Formater.TokenCriticalError("Container parent not found", MyToken);
+                                Formater.CriticalError("View " + ParentName + " not found!");
                             }
                         }
                     }
