@@ -214,6 +214,26 @@ namespace BuckshotPlusPlus
             Environment.Exit(-1);
         }
 
+        public static void RuntimeError(string error, Token MyToken)
+        {
+            if(MyToken == null)
+            {
+                AnsiConsole.Markup($"[maroon on default]Runtime error : {error}[/]");
+            }
+            else
+            {
+                AnsiConsole.Markup($"[maroon on default]Runtime error : " +
+                error +
+                " in file : "
+                    + MyToken.FileName
+                    + " at line : "
+                    + MyToken.LineNumber
+                    + Environment.NewLine
+                    + "=> "
+                    + MyToken.LineData + "[/]\n");
+            }
+        }
+
         public static void Warn(string error)
         {
             AnsiConsole.Markup($"[orange3 on default]Warning : {error}[/]");

@@ -164,7 +164,15 @@ namespace BuckshotPlusPlus
                         Result += GetValueFromString(Variable, VariableToken);
                     }else if(SafeVariableType == "ref") {
                         TokenDataVariable FoundToken = TokenUtils.FindTokenDataVariableByName(FileTokens, Variable);
-                        Result += FoundToken.VariableData;
+                        if(FoundToken != null)
+                        {
+                            Result += FoundToken.VariableData;
+                        }
+                        else
+                        {
+                            Formater.RuntimeError("Token not found!", this.VariableToken);
+                        }
+                        
                     }
                 }
 
