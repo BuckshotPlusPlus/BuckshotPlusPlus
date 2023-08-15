@@ -95,13 +95,7 @@ namespace BuckshotPlusPlus
 
         private static WebServer.WebServer StartWebServer(string FilePath, CancellationToken token)
         {
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            Tokenizer MyTokenizer = new Tokenizer(FilePath);
-
-            stopwatch.Stop();
-            Formater.SuccessMessage($"Successfully compiled in {stopwatch.ElapsedMilliseconds} ms");
+            Tokenizer MyTokenizer = Program.CompileMainFile(FilePath);
 
             WebServer.WebServer MyWebServer = new WebServer.WebServer { token = token };
             MyWebServer.Start(MyTokenizer);
@@ -111,6 +105,23 @@ namespace BuckshotPlusPlus
 
     internal class Program
     {
+        public static Tokenizer CompileMainFile(string FilePath)
+        {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            Tokenizer MyTokenizer = new Tokenizer(FilePath);
+
+            stopwatch.Stop();
+            Formater.SuccessMessage($"Successfully compiled in {stopwatch.ElapsedMilliseconds} ms");
+            return MyTokenizer;
+        }
+
+        public static void ExportWebsite(string filePath, string exportDirectory)
+        {
+
+        }
+
         private static void Main(string[] args)
         {
             if (args.Length == 0)
@@ -119,6 +130,22 @@ namespace BuckshotPlusPlus
             }
 
             string FilePath = args[0];
+
+            if(FilePath == "export")
+            {
+                if(args.Length == 3)
+                {
+                    ExportWebsite(args[1], args[2]);
+                }
+                else
+                {
+                    Formater.CriticalError("You need the following arguments to export your bpp website:\n" +
+                        "\t- export\n" +
+                        "\t- path/to/your/main.bpp\n" +
+                        "\t- path/to/your/export/directory");
+                }
+            }
+
             FileMonitor fileMonitor = new FileMonitor(FilePath);
             Thread workerThread = new Thread(new ThreadStart(fileMonitor.FileMonitoring));
             workerThread.Start();
