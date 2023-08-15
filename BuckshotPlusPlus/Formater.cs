@@ -36,7 +36,14 @@ namespace BuckshotPlusPlus
                     }
                     else
                     {
-                        if (spaceCount > 1)
+                        if(FileData[spaceCount + i] == '+')
+                        {
+                            FileData = FileData.Remove(i, spaceCount);
+                        }
+                        else if (FileData[i - 1] == '+')
+                        {
+                            FileData = FileData.Remove(i, spaceCount);
+                        }else if (spaceCount > 1)
                         {
                             FileData = FileData.Remove(i, spaceCount - 1);
                         }

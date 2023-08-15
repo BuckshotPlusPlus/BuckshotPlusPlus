@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Reflection;
 
 namespace BuckshotPlusPlus.Compiler.HTML
 {
@@ -72,7 +73,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
         public string onvolumechange = "";
         public string onwaiting = "";
 
-        public static string GetHTMLEvents(Token MyToken)
+        public static string GetHTMLEvents(List<Token> ServerSideTokens,Token MyToken)
         {
             string CompiledEvents = " ";
             //Formater.TokenCriticalError("LLLOOOOL", MyToken);
@@ -88,12 +89,12 @@ namespace BuckshotPlusPlus.Compiler.HTML
                 {
                     Token MyJSEvent = TokenUtils.FindTokenByName(
                         MyToken.MyTokenizer.FileTokens,
-                        MyJSEventVar.VariableData
+                        MyJSEventVar.GetCompiledVariableData(ServerSideTokens)
                     );
                     if (MyJSEvent != null)
                     {
                         CompiledEvents +=
-                            HTMLEvent.Name + "=\"" + JS.Event.GetEventString(MyJSEvent) + "\" ";
+                            HTMLEvent.Name + "=\"" + JS.Event.GetEventString(ServerSideTokens,MyJSEvent) + "\" ";
                         //Formater.TokenCriticalError("LLLOOOOL", MyJSEvent);
                     }
                 }

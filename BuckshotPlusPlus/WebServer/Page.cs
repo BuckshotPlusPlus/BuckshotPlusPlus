@@ -26,7 +26,7 @@ namespace BuckshotPlusPlus.WebServer
 
             if (MyPageTitle != null)
             {
-                HTML_code += MyPageTitle.VariableData;
+                HTML_code += MyPageTitle.GetCompiledVariableData(ServerSideTokens);
             }
             else
             {
@@ -74,6 +74,7 @@ namespace BuckshotPlusPlus.WebServer
             if (MyPageBody != null)
             {
                 HTML_code += Compiler.HTML.View.CompileView(
+                    ServerSideTokens,
                     MyPageBody
                 );
             }

@@ -1,8 +1,10 @@
-﻿namespace BuckshotPlusPlus.Compiler.JS
+﻿using System.Collections.Generic;
+
+namespace BuckshotPlusPlus.Compiler.JS
 {
     class Event
     {
-        public static string GetEventString(Token MyJSEventToken)
+        public static string GetEventString(List<Token> ServerSideTokens, Token MyJSEventToken)
         {
             TokenDataContainer MyJSEvent = (TokenDataContainer)MyJSEventToken.Data;
 
@@ -20,17 +22,17 @@
                             "this.style."
                             + CSS.Properties.ToDOMProp(ChildVar.VariableName)
                             + " = '"
-                            + ChildVar.VariableData
+                            + ChildVar.GetCompiledVariableData(ServerSideTokens)
                             + "';";
                     }
                     else if (ChildVar.VariableName == "content")
                     {
-                        EventString += "this.textContent = '" + ChildVar.VariableData + "';";
+                        EventString += "this.textContent = '" + ChildVar.GetCompiledVariableData(ServerSideTokens) + "';";
                     }
                     else
                     {
                         EventString +=
-                            JS.Variables.GetVarString(MyJSEvent.ContainerData, TokenId) + ";";
+                            JS.Variables.GetVarString(ServerSideTokens,MyJSEvent.ContainerData, TokenId) + ";";
                     }
                 }
                 else

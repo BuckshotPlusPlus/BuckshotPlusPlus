@@ -14,7 +14,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
             ("disabled", true)
         };
 
-        public static string GetHTMLAttributes(Token MyToken)
+        public static string GetHTMLAttributes(List<Token> ServerSideTokens,Token MyToken)
         {
             string CompiledAtributes = "";
             TokenDataContainer ViewContainer = (TokenDataContainer)MyToken.Data;
@@ -37,7 +37,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
                         CompiledAtributes +=
                             Name
                             + "=\""
-                            + MyHTMLAttribute.VariableData
+                            + MyHTMLAttribute.GetCompiledVariableData(ServerSideTokens)
                             + "\"";
                     }
                 }

@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace BuckshotPlusPlus.Compiler.HTML
 {
     public class View
     {
-        public static string CompileView(Token MyViewToken)
+        public static string CompileView(List<Token> ServerSideTokens,Token MyViewToken)
         {
             TokenDataContainer MyContainer = (TokenDataContainer)MyViewToken.Data;
             TokenDataVariable ViewType = TokenUtils.FindTokenDataVariableByName(
@@ -19,7 +20,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
 
             if (ViewType != null)
             {
-                viewType = ViewType.VariableData;
+                viewType = ViewType.GetCompiledVariableData(ServerSideTokens);
             }
             else
             {
@@ -29,25 +30,26 @@ namespace BuckshotPlusPlus.Compiler.HTML
                 "<"
                 + viewType
                 + " "
-                + HTML.Attributes.GetHTMLAttributes(MyViewToken)
+                + HTML.Attributes.GetHTMLAttributes(ServerSideTokens, MyViewToken)
                 + " "
-                + HTML.Events.GetHTMLEvents(MyViewToken)
+                + HTML.Events.GetHTMLEvents(ServerSideTokens, MyViewToken)
                 + " style=\""
-                + CSS.Properties.GetCSSString(MyViewToken)
+                + CSS.Properties.GetCSSString(ServerSideTokens, MyViewToken)
                 + "\">";
 
             if (ViewContent != null)
             {
                 if (ViewContent.VariableType == "string")
                 {
-                    viewHTML += ViewContent.VariableData;
+                    viewHTML += ViewContent.GetCompiledVariableData(ServerSideTokens);
                 }
                 else if (ViewContent.VariableType == "ref")
                 {
                     viewHTML += CompileView(
+                        ServerSideTokens,
                         TokenUtils.FindTokenByName(
                             MyViewToken.MyTokenizer.FileTokens,
-                            ViewContent.VariableData
+                            ViewContent.GetCompiledVariableData(ServerSideTokens)
                         )
                     );
                 }
@@ -61,9 +63,10 @@ namespace BuckshotPlusPlus.Compiler.HTML
                     {
                         TokenDataVariable ChildView = (TokenDataVariable)ChildViewToken.Data;
                         viewHTML += CompileView(
+                            ServerSideTokens,
                             TokenUtils.FindTokenByName(
                                 MyViewToken.MyTokenizer.FileTokens,
-                                ChildView.VariableData
+                                ChildView.GetCompiledVariableData(ServerSideTokens)
                             )
                         );
                     }

@@ -205,7 +205,7 @@ namespace BuckshotPlusPlus.Compiler.CSS
             "z-index"
         };
 
-        public static string GetCSSString(Token MyToken)
+        public static string GetCSSString(List<Token> ServerSideTokens, Token MyToken)
         {
             string CompiledCSS = "";
             TokenDataContainer ViewContainer = (TokenDataContainer)MyToken.Data;
@@ -224,13 +224,13 @@ namespace BuckshotPlusPlus.Compiler.CSS
                         {
                             TokenDataVariable MyRefData = (TokenDataVariable)MyCSSProp.RefData.Data;
                             CompiledCSS +=
-                                Name + ':' + MyRefData.VariableData + ";";
+                                Name + ':' + MyRefData.GetCompiledVariableData(ServerSideTokens) + ";";
                         }
                     }
                     else
                     {
                         CompiledCSS +=
-                            Name + ':' + MyCSSProp.VariableData + ";";
+                            Name + ':' + MyCSSProp.GetCompiledVariableData(ServerSideTokens) + ";";
                     }
                 }
             }
@@ -240,7 +240,7 @@ namespace BuckshotPlusPlus.Compiler.CSS
             );
             if (MyFloatProp != null)
             {
-                CompiledCSS += "float:" + MyFloatProp.VariableData + ";";
+                CompiledCSS += "float:" + MyFloatProp.GetCompiledVariableData(ServerSideTokens) + ";";
             }
             return CompiledCSS;
         }

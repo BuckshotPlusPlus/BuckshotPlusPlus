@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace BuckshotPlusPlus
 {
@@ -8,14 +9,24 @@ namespace BuckshotPlusPlus
         public string VariableData { get; set; }
         public string VariableName { get; set; }
         public Token RefData { get; set; }
+        public Token VariableToken { get; set; }
 
         public TokenDataVariable(Token MyToken)
         {
+            VariableToken = MyToken;
             MyToken.Type = "variable";
             string[] MyVariableParams = Formater.SafeSplit(MyToken.LineData, ' ').ToArray();
             //Console.WriteLine(MyVariableParams.Length);
             // check if all parameters of a vriables are present
-            if (MyVariableParams.Length == 3)
+
+            if (Formater.SafeContains(MyToken.LineData, '+'))
+            {
+                this.VariableName = MyVariableParams[0];
+                this.VariableData = MyVariableParams[2];
+                this.VariableType = "multiple";
+                Console.WriteLine(MyToken.LineData);
+            }
+            else if (MyVariableParams.Length == 3)
             {
                 this.VariableType = FindVariableType(MyVariableParams[2], MyToken);
                 this.VariableName = MyVariableParams[0];
@@ -52,14 +63,7 @@ namespace BuckshotPlusPlus
 
             if (this.VariableType == "string")
             {
-                if (
-                    this.VariableData[0] != '"'
-                    || this.VariableData[this.VariableData.Length - 1] != '"'
-                )
-                {
-                    Formater.TokenCriticalError("Invalid string value", MyToken);
-                }
-                this.VariableData = this.VariableData.Substring(1, this.VariableData.Length - 2);
+                this.VariableData = GetValueFromString(this.VariableData, MyToken);
             }
 
             //Console.WriteLine("I found a variable of type " + this.VariableType + " and name : " + this.VariableName + " Value : " + this.VariableData);
@@ -81,6 +85,17 @@ namespace BuckshotPlusPlus
                     }
                 }
             }
+        }
+
+        public static string GetValueFromString(string InitialValue, Token MyToken)
+        {
+            if (
+                    InitialValue[0] != '"'
+                )
+            {
+                Formater.TokenCriticalError("Invalid string value", MyToken);
+            }
+            return InitialValue.Substring(1, InitialValue.Length - 2);
         }
 
         public static string FindVariableType(string Value, Token MyToken)
@@ -131,5 +146,33 @@ namespace BuckshotPlusPlus
                 return false;
             }
         }
+
+        public string GetCompiledVariableData(List<Token> FileTokens)
+        {
+            Console.WriteLine("Variable data:"+this.VariableData);
+            if(this.VariableType == "multiple") {
+                List<string> Variables = Formater.SafeSplit(this.VariableData, '+');
+
+                string Result = "";
+
+                foreach (string Variable in Variables)
+                {
+                    string SafeVariableType = FindVariableType(Variable, null);
+
+                    Console.WriteLine(Variable);
+
+                    if(SafeVariableType == "string") {
+                        Result += GetValueFromString(Variable, VariableToken);
+                    }else if(SafeVariableType == "ref") {
+                        TokenDataVariable FoundToken = TokenUtils.FindTokenDataVariableByName(FileTokens, Variable);
+                        Result += FoundToken.VariableData;
+                    }
+                }
+
+                return Result;
+            }
+
+            return this.VariableData;
+        } 
     }
 }

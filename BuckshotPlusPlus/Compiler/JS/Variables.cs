@@ -4,7 +4,7 @@ namespace BuckshotPlusPlus.Compiler.JS
 {
     public class Variables
     {
-        public static string GetVarString(List<Token> FunctionToken, int currentToken)
+        public static string GetVarString(List<Token> ServerSideTokens,List<Token> FunctionToken, int currentToken)
         {
             Token CurrentToken = FunctionToken[currentToken];
             string CurrentTokenName = TokenUtils.GetTokenName(CurrentToken);
@@ -36,7 +36,7 @@ namespace BuckshotPlusPlus.Compiler.JS
                 {
                     VarString = "const";
                 }
-                return VarString + MyVarData.VariableName + " = " + MyVarData.VariableData;
+                return VarString + MyVarData.VariableName + " = " + MyVarData.GetCompiledVariableData(ServerSideTokens);
             }
 
             return "";
