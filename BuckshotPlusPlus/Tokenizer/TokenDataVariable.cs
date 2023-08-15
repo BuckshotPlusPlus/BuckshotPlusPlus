@@ -24,7 +24,6 @@ namespace BuckshotPlusPlus
                 this.VariableName = MyVariableParams[0];
                 this.VariableData = MyVariableParams[2];
                 this.VariableType = "multiple";
-                Console.WriteLine("Multiple:" + MyToken.LineData);
             }
             else if (MyVariableParams.Length == 3)
             {
@@ -158,8 +157,6 @@ namespace BuckshotPlusPlus
                 {
                     string SafeVariableType = FindVariableType(Variable, null);
 
-                    Console.WriteLine(Variable);
-
                     if(SafeVariableType == "string") {
                         Result += GetValueFromString(Variable, VariableToken);
                     }else if(SafeVariableType == "ref") {
@@ -175,8 +172,6 @@ namespace BuckshotPlusPlus
                         
                     }
                 }
-
-                Console.WriteLine(Result);
                 return Result;
             }
 
