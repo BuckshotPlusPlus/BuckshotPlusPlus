@@ -198,6 +198,10 @@ namespace BuckshotPlusPlus
                                                 }
                                             }
                                         }
+                                        if (((TokenDataContainer)NewContainerToken.Data).ContainerType == "page")
+                                        {
+                                            PagesTokens.Add(NewContainerToken);
+                                        }
                                         FileTokens.Add(
                                             NewContainerToken
                                         );
