@@ -16,11 +16,13 @@ namespace BuckshotPlusPlus
         Dictionary<string, string> FileDataDictionary { get; set; }
 
         public List<Token> FileTokens { get; }
+        public List <Token> PagesTokens { get; }
 
         string RelativePath { get; }
 
         public Tokenizer(string FilePath)
         {
+            PagesTokens = new List<Token>();
             FileTokens = new List<Token>();
             UnprocessedFileDataDictionary = new Dictionary<string, string>();
             FileDataDictionary = new Dictionary<string, string>();
@@ -222,6 +224,10 @@ namespace BuckshotPlusPlus
                                     CurrentLineNumber,
                                     this
                                 );
+                            if(((TokenDataContainer)NewContainerToken.Data).ContainerType == "page")
+                            {
+                                PagesTokens.Add(NewContainerToken);
+                            }
                             FileTokens.Add(
                                 NewContainerToken
                             );

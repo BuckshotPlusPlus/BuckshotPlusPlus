@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BuckshotPlusPlus.WebServer;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
@@ -119,7 +120,19 @@ namespace BuckshotPlusPlus
 
         public static void ExportWebsite(string filePath, string exportDirectory)
         {
+            Tokenizer MyTokenizer = CompileMainFile(filePath);
 
+            if(!Path.Exists(exportDirectory))
+            {
+                Directory.CreateDirectory(exportDirectory);
+            }
+            foreach (Token PageToken in MyTokenizer.PagesTokens)
+            {
+                TokenDataContainer MyPageData = (TokenDataContainer)PageToken.Data;
+                Formater.DebugMessage("Starting to export page " + MyPageData.ContainerName + "...");
+                File.WriteAllText(exportDirectory + "/" + MyPageData.ContainerName + ".html", Page.RenderWebPage(MyTokenizer.FileTokens, PageToken));
+                Formater.SuccessMessage("Successfully exported page " + MyPageData.ContainerName + ".html");
+            }
         }
 
         private static void Main(string[] args)
@@ -145,10 +158,14 @@ namespace BuckshotPlusPlus
                         "\t- path/to/your/export/directory");
                 }
             }
+            else
+            {
+                FileMonitor fileMonitor = new FileMonitor(FilePath);
+                Thread workerThread = new Thread(new ThreadStart(fileMonitor.FileMonitoring));
+                workerThread.Start();
+            }
 
-            FileMonitor fileMonitor = new FileMonitor(FilePath);
-            Thread workerThread = new Thread(new ThreadStart(fileMonitor.FileMonitoring));
-            workerThread.Start();
+            
         }
     }
 }
