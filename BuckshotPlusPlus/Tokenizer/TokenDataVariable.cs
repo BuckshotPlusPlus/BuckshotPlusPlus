@@ -30,12 +30,11 @@ namespace BuckshotPlusPlus
                 this.VariableName = MyVariableParams[0];
                 this.VariableData = MyVariableParams[2];
 
-                /*string[] VariablePath = VariableName.Split('.');
+                string[] VariablePath = VariableName.Split('.');
                 if(VariablePath.Length > 1)
                 {
-                    this.VariableName = "";
-                    Fi
-                }*/
+                    MyToken.Type = "edit";
+                }
             }
             else if (MyVariableParams.Length == 1)
             {

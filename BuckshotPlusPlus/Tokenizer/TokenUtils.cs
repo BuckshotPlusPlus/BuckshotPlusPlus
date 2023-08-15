@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace BuckshotPlusPlus
@@ -114,7 +115,7 @@ namespace BuckshotPlusPlus
             TokenDataContainer PageTokenDataContainer = (TokenDataContainer)MyContainer.Data;
             if (PageTokenDataContainer == null)
             {
-                Formater.TokenCriticalError("The procided token is not a container!", MyContainer);
+                Formater.TokenCriticalError("The provided token is not a container!", MyContainer);
             }
             else
             {

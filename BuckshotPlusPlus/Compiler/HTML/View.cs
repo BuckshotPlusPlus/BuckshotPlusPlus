@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using BuckshotPlusPlus.WebServer;
+using System;
+using System.Collections.Generic;
 
 namespace BuckshotPlusPlus.Compiler.HTML
 {
@@ -6,7 +8,10 @@ namespace BuckshotPlusPlus.Compiler.HTML
     {
         public static string CompileView(List<Token> ServerSideTokens,Token MyViewToken)
         {
+            TokenUtils.EditAllTokensOfContainer(ServerSideTokens, MyViewToken);
+
             TokenDataContainer MyContainer = (TokenDataContainer)MyViewToken.Data;
+
             TokenDataVariable ViewType = TokenUtils.FindTokenDataVariableByName(
                 MyContainer.ContainerData,
                 "type"
