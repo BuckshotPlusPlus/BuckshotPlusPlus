@@ -34,17 +34,17 @@ Create a main.bpp
 The example code below will create a simple buckshgot++ website with an index page displaying the title "Hello World!".
 
 ```lua
-view Title{
-    content = "Hello World!"
-    type = "h1"
-    color = "blue"
+view Title {
+  content = "Hello World!"
+  type = "h1"
+  color = "blue"
 }
 
 view Home {
-   type = "body"
-   margin = "0"
-   padding = "0"
-   content = Title
+  type = "body"
+  margin = "0"
+  padding = "0"
+  content = Title
 }
 
 page index {
@@ -58,6 +58,7 @@ page index {
 ```shell
 BuchshotPlusPlus.exe "Path/To/Main.bpp"
 ```
+
 Enjoy!
 
 ## Authors
