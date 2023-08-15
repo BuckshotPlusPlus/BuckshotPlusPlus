@@ -24,7 +24,7 @@ namespace BuckshotPlusPlus
                 this.VariableName = MyVariableParams[0];
                 this.VariableData = MyVariableParams[2];
                 this.VariableType = "multiple";
-                Console.WriteLine(MyToken.LineData);
+                Console.WriteLine("Multiple:" + MyToken.LineData);
             }
             else if (MyVariableParams.Length == 3)
             {
@@ -149,7 +149,6 @@ namespace BuckshotPlusPlus
 
         public string GetCompiledVariableData(List<Token> FileTokens)
         {
-            Console.WriteLine("Variable data:"+this.VariableData);
             if(this.VariableType == "multiple") {
                 List<string> Variables = Formater.SafeSplit(this.VariableData, '+');
 

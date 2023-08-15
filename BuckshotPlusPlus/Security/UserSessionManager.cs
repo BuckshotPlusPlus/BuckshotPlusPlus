@@ -20,8 +20,6 @@ namespace BuckshotPlusPlus
             bool SessionCookieFound = false;
             string UserSessionId = null;
 
-            Console.WriteLine("Reading cookies!");
-
             foreach (Cookie cook in req.Cookies)
             {
 
@@ -56,11 +54,9 @@ namespace BuckshotPlusPlus
                 {
                     if(User.SessionID == UserSessionId)
                     {
-                        Console.WriteLine("User found with ID : " + User.SessionID);
                         return User;
                     }
                 }
-                Console.WriteLine("Creating a new user session");
                 return CreateNewUserSession(req, response);
             }
             else
@@ -75,7 +71,6 @@ namespace BuckshotPlusPlus
             ActiveUsers.Add(NewUserSession);
             Cookie SessionIdCookie = new Cookie("bpp_session_id", NewUserSession.SessionID);
             response.SetCookie(SessionIdCookie);
-            Console.WriteLine("Cookies updated");
             return NewUserSession;
         }
 

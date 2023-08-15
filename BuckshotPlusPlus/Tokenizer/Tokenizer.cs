@@ -138,7 +138,6 @@ namespace BuckshotPlusPlus
                                                 this
                                             );
                                         TokenDataContainer NewContainerTokenData = (TokenDataContainer)NewContainerToken.Data;
-                                        Console.WriteLine("NewCOntainer:" + NewContainerTokenData.ContainerName);
                                         if (NewContainerTokenData.ContainerType == "logic")
                                         {
                                             LogicTest TestToRun = ((TokenDataLogic)NewContainerTokenData.ContainerMetaData).TokenLogicTest;
@@ -150,14 +149,12 @@ namespace BuckshotPlusPlus
                                                     {
                                                         if (Formater.SafeSplit(((TokenDataVariable)LocalToken.Data).VariableName, '.').Count > 1)
                                                         {
-                                                            Console.WriteLine("Found a token to edit:" + ((TokenDataVariable)LocalToken.Data).VariableName);
                                                             TokenUtils.EditTokenData(FileTokens, LocalToken);
                                                         }
                                                     }
                                                     
                                                 }
                                             }
-                                            Console.WriteLine("Found container logic!");
                                         }
                                         FileTokens.Add(
                                             NewContainerToken
@@ -168,12 +165,11 @@ namespace BuckshotPlusPlus
                             }
                             else
                             {
-                                Console.WriteLine(LineData + " is not in a container!");
                                 Token MyNewToken = new Token(FileName, LineData, CurrentLineNumber, this);
                                 
                                 if(TokenUtils.SafeEditTokenData(LineData, FileTokens, MyNewToken))
                                 {
-                                    Console.WriteLine("Found a token to edit:" + LineData);
+                                    
                                 }
                                 else
                                 {

@@ -58,8 +58,6 @@ namespace BuckshotPlusPlus
                         {
                             this.ContainerName = MyArgs[1];
                         }
-                        Console.WriteLine(LineData);
-                        Console.WriteLine("ContainerName:" + ContainerName);
 
                         // CHECK AND STORE CONTAINER TYPE (OBJECT, FUNCTION)
                         foreach (string ContainerType in SupportedContainerTypes)

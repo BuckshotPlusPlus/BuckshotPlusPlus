@@ -61,15 +61,11 @@ namespace BuckshotPlusPlus.WebServer
 
                                 UserSessions.RemoveInactiveUserSessions();
 
-                                Console.WriteLine("user session removed!");
-
                                 string clientIP = ctx.Request.RemoteEndPoint.ToString();
 
                                 List<Token> ServerSideTokenList = new List<Token>();
 
                                 ServerSideTokenList.AddRange(MyTokenizer.FileTokens);
-
-                                Console.WriteLine("Getting user session");
 
                                 UserSession FoundUserSession = UserSessions.AddOrUpdateUserSession(req, resp);
 
