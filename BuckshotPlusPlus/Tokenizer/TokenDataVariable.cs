@@ -168,6 +168,7 @@ namespace BuckshotPlusPlus
                     }
                 }
 
+                Console.WriteLine(Result);
                 return Result;
             }
 
