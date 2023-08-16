@@ -134,6 +134,8 @@ namespace BuckshotPlusPlus
                             {
                                 Formater.TokenCriticalError("Token not found " + VarToken.VariableData, ChildToken);
                             }
+                            // This is not necessary, because we run EditAllTokensOfContainer for each views
+                            /*
                             else
                             {
                                 if (ReferencedToken.Data.GetType() == typeof(TokenDataContainer))
@@ -145,7 +147,7 @@ namespace BuckshotPlusPlus
                                     }
                                 }
                                 
-                            }                            
+                            }    */
                         }
                     }
                 }
