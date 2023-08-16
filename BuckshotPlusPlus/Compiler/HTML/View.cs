@@ -57,9 +57,6 @@ namespace BuckshotPlusPlus.Compiler.HTML
                 }
                 else if (ViewContent.VariableType == "ref")
                 {
-                    Console.WriteLine("Variable name:" + ViewContent.VariableName);
-                    Console.WriteLine("Data:" + ViewContent.VariableData);
-                    Console.WriteLine("Compiled:" + ViewContent.GetCompiledVariableData(ServerSideTokens));
 
                     Token FoundToken = TokenUtils.FindTokenByName(
                             MyViewToken.MyTokenizer.FileTokens,
