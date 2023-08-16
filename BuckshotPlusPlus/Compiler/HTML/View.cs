@@ -50,7 +50,6 @@ namespace BuckshotPlusPlus.Compiler.HTML
 
             if (ViewContent != null)
             {
-                Console.WriteLine("Content of " + MyContainer.ContainerName + " = " + ViewContent.VariableData);
                 if (ViewContent.VariableType == "string")
                 {
                     viewHTML += ViewContent.GetCompiledVariableData(ServerSideTokens);
@@ -83,10 +82,6 @@ namespace BuckshotPlusPlus.Compiler.HTML
                         );
                     }
                 }
-            }
-            else
-            {
-                Console.WriteLine("Content of " + MyContainer.ContainerName + " is null");
             }
 
             return viewHTML + "</" + viewType + ">";
