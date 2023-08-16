@@ -89,9 +89,7 @@ namespace BuckshotPlusPlus
                 
             }
             TokenDataVariable MyVar = (TokenDataVariable)TokenToEdit.Data;
-            Console.WriteLine("Editing var : " + Var.VariableName + " with name " + MyVar.VariableName);
             MyVar.VariableData = Var.GetCompiledVariableData(MyTokenList);
-            Console.WriteLine("Editing var : " + Var.VariableName + " with data " + MyVar.VariableData);
 
             if (Var.VariableType == "multiple") {
                 MyVar.VariableType = "string";

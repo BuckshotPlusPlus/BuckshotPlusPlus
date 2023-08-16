@@ -12,12 +12,6 @@ namespace BuckshotPlusPlus.Compiler.HTML
 
             TokenDataContainer MyContainer = (TokenDataContainer)MyViewToken.Data;
 
-            Console.WriteLine("Compiling VIEW : " + MyContainer.ContainerName);
-
-            foreach (Token token in MyContainer.ContainerData) {
-                Console.WriteLine(token.LineData);
-            }
-
             TokenDataVariable ViewType = TokenUtils.FindTokenDataVariableByName(
                 MyContainer.ContainerData,
                 "type"
