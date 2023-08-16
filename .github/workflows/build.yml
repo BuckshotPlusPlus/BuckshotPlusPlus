@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: "6.0"
+          dotnet-version: "7.0"
       - run: dotnet build BuckshotPlusPlus
 
       - name: Archive Release
@@ -21,13 +21,13 @@ jobs:
         with:
           type: "zip"
           filename: "ubuntu.zip"
-          directory: "BuckshotPlusPlus/bin/Debug/net6.0/"
+          directory: "BuckshotPlusPlus/bin/Debug/net7.0/"
 
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: "BuckshotPlusPlus/bin/Debug/net6.0/ubuntu.zip"
+          file: "BuckshotPlusPlus/bin/Debug/net7.0/ubuntu.zip"
           tag: ${{ github.ref }}
 
   build-win:
@@ -37,7 +37,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: "6.0"
+          dotnet-version: "7.0"
       - run: dotnet build BuckshotPlusPlus
 
       - name: Archive Release
@@ -45,13 +45,13 @@ jobs:
         with:
           type: "zip"
           filename: "windows.zip"
-          directory: "BuckshotPlusPlus/bin/Debug/net6.0/"
+          directory: "BuckshotPlusPlus/bin/Debug/net7.0/"
 
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: "BuckshotPlusPlus/bin/Debug/net6.0/windows.zip"
+          file: "BuckshotPlusPlus/bin/Debug/net7.0/windows.zip"
           tag: ${{ github.ref }}
 
   build-macos:
@@ -61,7 +61,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: "6.0"
+          dotnet-version: "7.0"
       - run: dotnet build BuckshotPlusPlus
 
       - name: Archive Release
@@ -69,11 +69,11 @@ jobs:
         with:
           type: "zip"
           filename: "macos.zip"
-          directory: "BuckshotPlusPlus/bin/Debug/net6.0/"
+          directory: "BuckshotPlusPlus/bin/Debug/net7.0/"
 
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: "BuckshotPlusPlus/bin/Debug/net6.0/macos.zip"
+          file: "BuckshotPlusPlus/bin/Debug/net7.0/macos.zip"
           tag: ${{ github.ref }}
