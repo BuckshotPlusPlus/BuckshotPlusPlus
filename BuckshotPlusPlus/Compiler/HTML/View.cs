@@ -12,6 +12,12 @@ namespace BuckshotPlusPlus.Compiler.HTML
 
             TokenDataContainer MyContainer = (TokenDataContainer)MyViewToken.Data;
 
+            Console.WriteLine("Compiling VIEW : " + MyContainer.ContainerName);
+
+            foreach (Token token in MyContainer.ContainerData) {
+                Console.WriteLine(token.LineData);
+            }
+
             TokenDataVariable ViewType = TokenUtils.FindTokenDataVariableByName(
                 MyContainer.ContainerData,
                 "type"
@@ -20,6 +26,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
                 MyContainer.ContainerData,
                 "content"
             );
+
             string viewType = "h1";
 
             if (ViewType != null)
@@ -49,6 +56,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
 
             if (ViewContent != null)
             {
+                Console.WriteLine("Content of " + MyContainer.ContainerName + " = " + ViewContent.VariableData);
                 if (ViewContent.VariableType == "string")
                 {
                     viewHTML += ViewContent.GetCompiledVariableData(ServerSideTokens);
@@ -81,6 +89,10 @@ namespace BuckshotPlusPlus.Compiler.HTML
                         );
                     }
                 }
+            }
+            else
+            {
+                Console.WriteLine("Content of " + MyContainer.ContainerName + " is null");
             }
 
             return viewHTML + "</" + viewType + ">";

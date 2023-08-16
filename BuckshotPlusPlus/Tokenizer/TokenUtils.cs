@@ -75,6 +75,7 @@ namespace BuckshotPlusPlus
             Token TokenToEdit = FindTokenByName(MyTokenList, Var.VariableName);
             if(TokenToEdit == null)
             {
+                Console.WriteLine("Token not found : " + Var.VariableName);
                 Token ParentToken = FindTokenByName(MyTokenList, Var.VariableName, true);
                 if(ParentToken == null)
                 {
@@ -88,9 +89,11 @@ namespace BuckshotPlusPlus
                 
             }
             TokenDataVariable MyVar = (TokenDataVariable)TokenToEdit.Data;
+            Console.WriteLine("Editing var : " + Var.VariableName + " with name " + MyVar.VariableName);
             MyVar.VariableData = Var.GetCompiledVariableData(MyTokenList);
+            Console.WriteLine("Editing var : " + Var.VariableName + " with data " + MyVar.VariableData);
 
-            if(Var.VariableType == "multiple") {
+            if (Var.VariableType == "multiple") {
                 MyVar.VariableType = "string";
             }
             else

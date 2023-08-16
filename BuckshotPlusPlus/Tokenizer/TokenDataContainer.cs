@@ -113,6 +113,7 @@ namespace BuckshotPlusPlus
                                             Token LocalTokenData in LocalTokenDataContainer.ContainerData
                                         )
                                         {
+                                            //Token LocalTokenCopy = new Token(LocalTokenData.FileName, LocalTokenData.LineData, LocalTokenData.LineNumber, LocalTokenData.MyTokenizer);
                                             ContainerData.Add(LocalTokenData);
                                         }
                                         ParentFound = true;
@@ -166,13 +167,16 @@ namespace BuckshotPlusPlus
 
         public static void AddChildToContainerData(List<Token> ContainerData, Token NewChild)
         {
-            Token FoundToken = TokenUtils.FindTokenByName(
-                ContainerData,
-                TokenUtils.GetTokenName(NewChild)
-            );
-            if (FoundToken != null)
+            if(!Formater.SafeContains(TokenUtils.GetTokenName(NewChild), '.'))
             {
-                ContainerData.Remove(FoundToken);
+                Token FoundToken = TokenUtils.FindTokenByName(
+                    ContainerData,
+                    TokenUtils.GetTokenName(NewChild)
+                );
+                if (FoundToken != null)
+                {
+                    ContainerData.Remove(FoundToken);
+                }
             }
             ContainerData.Add(NewChild);
         }
