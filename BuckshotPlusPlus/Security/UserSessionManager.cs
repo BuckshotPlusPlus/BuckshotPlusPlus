@@ -6,10 +6,10 @@ namespace BuckshotPlusPlus
 {
     public class UserSessionManager
     {
-        public List<UserSession> ActiveUsers { get; set; }
+        public Dictionary<string, UserSession> ActiveUsers { get; set; }
 
         public UserSessionManager() {
-            ActiveUsers = new List<UserSession>();
+            ActiveUsers = new Dictionary<string, UserSession>();
         }
 
         public UserSession AddOrUpdateUserSession(HttpListenerRequest req, HttpListenerResponse response)
@@ -47,14 +47,13 @@ namespace BuckshotPlusPlus
 
             if(SessionCookieFound)
             {
-                foreach(UserSession User in ActiveUsers)
+                UserSession Session;
+                if (ActiveUsers.TryGetValue(UserSessionId, out Session))
                 {
-                    if(User.SessionID == UserSessionId)
-                    {
-                        return User;
-                    }
+                    return Session;
+                } else {
+                    return CreateNewUserSession(req, response);
                 }
-                return CreateNewUserSession(req, response);
             }
             else
             {
@@ -65,18 +64,23 @@ namespace BuckshotPlusPlus
         public UserSession CreateNewUserSession(HttpListenerRequest req, HttpListenerResponse response)
         {
             UserSession NewUserSession = new UserSession(req.RemoteEndPoint.ToString());
-            ActiveUsers.Add(NewUserSession);
+            ActiveUsers.Add(NewUserSession.SessionID, NewUserSession);
+
             Cookie SessionIdCookie = new Cookie("bpp_session_id", NewUserSession.SessionID);
             response.SetCookie(SessionIdCookie);
+
             return NewUserSession;
         }
 
         public void RemoveInactiveUserSessions()
         {
             DateTime Now = DateTime.Now;
-            ActiveUsers.RemoveAll(User => (Now - User.LastUserInteraction).TotalSeconds > 10);
+            foreach (KeyValuePair<string, UserSession> User in ActiveUsers) 
+            {
+                if ((Now - User.Value.LastUserInteraction).TotalSeconds > 10) {
+                    ActiveUsers.Remove(User.Key);
+                }
+            }
         }
     }
-
-    
 }
