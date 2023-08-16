@@ -295,13 +295,11 @@ namespace BuckshotPlusPlus
             }
             else
             {
-                if (!File.Exists(FilePath))
-                {
-                    Formater.CriticalError($"File {FilePath} not found");
-                }
-                else if (File.Exists(FilePath))
+                if (File.Exists(FilePath))
                 {
                     Content = File.ReadAllText(FilePath, System.Text.Encoding.UTF8);
+                } else {
+                    Formater.CriticalError($"File {FilePath} not found");
                 }
             }
 
