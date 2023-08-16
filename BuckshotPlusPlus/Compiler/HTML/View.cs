@@ -30,16 +30,22 @@ namespace BuckshotPlusPlus.Compiler.HTML
             {
                 Formater.TokenCriticalError("Missing view type !!!!", MyViewToken);
             }
+
             string viewHTML =
                 "<"
                 + viewType
                 + " "
-                + HTML.Attributes.GetHTMLAttributes(ServerSideTokens, MyViewToken)
+                + Attributes.GetHTMLAttributes(ServerSideTokens, MyViewToken)
                 + " "
-                + HTML.Events.GetHTMLEvents(ServerSideTokens, MyViewToken)
-                + " style=\""
-                + CSS.Properties.GetCSSString(ServerSideTokens, MyViewToken)
-                + "\">";
+                + Events.GetHTMLEvents(ServerSideTokens, MyViewToken);
+
+            string Style = CSS.Properties.GetCSSString(ServerSideTokens, MyViewToken);
+            if (Style.Length > 0)
+            {
+                viewHTML += " style=\"" + Style + "\">";
+            } else {
+                viewHTML += ">";
+            }
 
             if (ViewContent != null)
             {
