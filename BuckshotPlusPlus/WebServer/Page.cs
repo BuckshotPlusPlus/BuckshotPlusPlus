@@ -1,16 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace BuckshotPlusPlus.WebServer
 {
     internal class Page
     {
+        static string BasicPage = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF - 8\"> <meta http-equiv=\"X - UA - Compatible\" content =\"IE = edge\" > <meta name=\"viewport\" content =\"width=device-width, height=device-height, initial-scale=1.0, user-scalable=yes\" ><title>";
+
         public static string RenderWebPage(List<Token> ServerSideTokens, Token MyPage)
         {
-
             TokenUtils.EditAllTokensOfContainer(ServerSideTokens, MyPage);
-
-            string HTML_code =
-                "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF - 8\"> <meta http-equiv=\"X - UA - Compatible\" content =\"IE = edge\" > <meta name=\"viewport\" content =\"width=device-width, height=device-height, initial-scale=1.0, user-scalable=yes\" ><title>";
 
             TokenDataContainer MyPageContainer = (TokenDataContainer)MyPage.Data;
             TokenDataVariable MyPageTitle = TokenUtils.TryFindTokenDataVariableValueByName(
@@ -24,26 +23,28 @@ namespace BuckshotPlusPlus.WebServer
                 "body"
             );
 
+            string Page = (String)BasicPage.Clone();
             if (MyPageTitle != null)
             {
-                HTML_code += MyPageTitle.GetCompiledVariableData(ServerSideTokens);
+                Page += MyPageTitle.GetCompiledVariableData(ServerSideTokens);
             }
             else
             {
-                HTML_code += MyPageContainer.ContainerName;
+                Page += MyPageContainer.ContainerName;
             }
-            HTML_code += "</title>";
+
+            Page += "</title>";
 
             Token MyPageFonts = TokenUtils.FindTokenByName(MyPageContainer.ContainerData, "fonts");
             if (MyPageFonts != null)
             {
-                HTML_code += "<style>";
+                Page += "<style>";
                 foreach (Token ArrayValue in Analyzer.Array.GetArrayValues(MyPageFonts))
                 {
                     TokenDataVariable ArrayVar = (TokenDataVariable)ArrayValue.Data;
-                    HTML_code += "@import url('" + ArrayVar.VariableData + "');";
+                    Page += "@import url('" + ArrayVar.VariableData + "');";
                 }
-                HTML_code += "</style>";
+                Page += "</style>";
             }
 
             Token MyPageCSS = TokenUtils.FindTokenByName(MyPageContainer.ContainerData, "css");
@@ -52,7 +53,7 @@ namespace BuckshotPlusPlus.WebServer
                 foreach (Token ArrayValue in Analyzer.Array.GetArrayValues(MyPageCSS))
                 {
                     TokenDataVariable ArrayVar = (TokenDataVariable)ArrayValue.Data;
-                    HTML_code += $"<link rel=\"stylesheet\" href=\"{ArrayVar.VariableData}\">";
+                    Page += $"<link rel=\"stylesheet\" href=\"{ArrayVar.VariableData}\">";
                 }
             }
 
@@ -60,32 +61,31 @@ namespace BuckshotPlusPlus.WebServer
                 MyPageContainer.ContainerData,
                 "script"
             );
+
             if (MyPageScript != null)
             {
                 foreach (Token ArrayValue in Analyzer.Array.GetArrayValues(MyPageCSS))
                 {
                     TokenDataVariable ArrayVar = (TokenDataVariable)ArrayValue.Data;
-                    HTML_code += $"<script src=\"{ArrayVar.VariableData}\">";
+                    Page += $"<script src=\"{ArrayVar.VariableData}\">";
                 }
             }
 
-            HTML_code += "</head>";
+            Page += "</head>";
 
             if (MyPageBody != null)
             {
-                HTML_code += Compiler.HTML.View.CompileView(
+                Page += Compiler.HTML.View.CompileView(
                     ServerSideTokens,
                     MyPageBody
                 );
             }
             else
             {
-                HTML_code += "<body><h1>" + MyPageContainer.ContainerName + "</h1></body>";
+                Page += "<body><h1>" + MyPageContainer.ContainerName + "</h1></body>";
             }
 
-            HTML_code += "</html>";
-
-            return HTML_code;
+            return Page + "</html>";
         }
     }
 }
