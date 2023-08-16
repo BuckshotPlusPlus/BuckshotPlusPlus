@@ -8,6 +8,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
     {
         public static string CompileView(List<Token> ServerSideTokens,Token MyViewToken)
         {
+            //Console.WriteLine("Token:" + MyViewToken.LineData);
             TokenUtils.EditAllTokensOfContainer(ServerSideTokens, MyViewToken);
 
             TokenDataContainer MyContainer = (TokenDataContainer)MyViewToken.Data;
@@ -56,13 +57,31 @@ namespace BuckshotPlusPlus.Compiler.HTML
                 }
                 else if (ViewContent.VariableType == "ref")
                 {
-                    viewHTML += CompileView(
-                        ServerSideTokens,
-                        TokenUtils.FindTokenByName(
+                    Console.WriteLine("Variable name:" + ViewContent.VariableName);
+                    Console.WriteLine("Data:" + ViewContent.VariableData);
+                    Console.WriteLine("Compiled:" + ViewContent.GetCompiledVariableData(ServerSideTokens));
+
+                    Token FoundToken = TokenUtils.FindTokenByName(
                             MyViewToken.MyTokenizer.FileTokens,
                             ViewContent.GetCompiledVariableData(ServerSideTokens)
-                        )
-                    );
+                        );
+
+                    if ( FoundToken.Data.GetType() == typeof(TokenDataContainer) ) {
+                        viewHTML += CompileView(
+                            ServerSideTokens,
+                            TokenUtils.FindTokenByName(
+                                MyViewToken.MyTokenizer.FileTokens,
+                                ViewContent.GetCompiledVariableData(ServerSideTokens)
+                            )
+                        );
+                    }
+                    else
+                    {
+                        viewHTML += ViewContent.GetCompiledVariableData(ServerSideTokens, true);
+                    }
+
+
+                    
                 }
                 else if (ViewContent.VariableType == "array")
                 {

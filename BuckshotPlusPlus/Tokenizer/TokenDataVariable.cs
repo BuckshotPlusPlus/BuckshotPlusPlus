@@ -144,7 +144,7 @@ namespace BuckshotPlusPlus
             }
         }
 
-        public string GetCompiledVariableData(List<Token> FileTokens)
+        public string GetCompiledVariableData(List<Token> FileTokens, bool compile_ref = false)
         {
             if(this.VariableType == "multiple") {
                 List<string> Variables = Formater.SafeSplit(this.VariableData, '+');
@@ -171,6 +171,17 @@ namespace BuckshotPlusPlus
                     }
                 }
                 return Result;
+            }else if(this.VariableType == "ref" && compile_ref)
+            {
+                TokenDataVariable FoundToken = TokenUtils.FindTokenDataVariableByName(FileTokens, this.VariableData);
+                if (FoundToken != null)
+                {
+                    return FoundToken.VariableData;
+                }
+                else
+                {
+                    Formater.RuntimeError("Token not found!", this.VariableToken);
+                }
             }
 
             return this.VariableData;
