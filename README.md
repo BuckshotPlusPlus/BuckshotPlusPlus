@@ -25,13 +25,13 @@
 
 ## Getting Started
 
-Get the lastest executable for Buckshot++ in teh release section or compile from source.
+Get the lastest executable for Buckshot++ in the release section or compile from source.
 
 Create a main.bpp
 
 **Main.bpp**
 
-The example code below will create a simple buckshgot++ website with an index page displaying the title "Hello World!".
+The example code below will create a simple buckshot++ website with an index page displaying the title "Hello World!".
 
 ```lua
 view Title {
