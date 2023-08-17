@@ -1,14 +1,15 @@
-﻿namespace BuckshotPlusPlus
+﻿using System.Collections.Generic;
+using System.IO;
+
+namespace BuckshotPlusPlus
 {
     public abstract class BaseDatabase
     {
 
-        public string Url { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
+        public Dictionary<string, string> DatabaseParameters { get; set; }
 
-        public BaseDatabase(string url, string username = "", string password = "") { 
-            
+        public BaseDatabase(Dictionary<string, string> Parameters) { 
+            DatabaseParameters = Parameters;
         }
 
         public abstract string Read(string path);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Xml;
 
 namespace BuckshotPlusPlus
@@ -8,10 +9,9 @@ namespace BuckshotPlusPlus
         public XmlReader DatabaseXmlReader { get; set; }
         // This module is a simple database stored in an XmlFile
 
-        public FileStorageDatabase(string url, string username = "", string password = "") : base(url, username, password)
+        public FileStorageDatabase(Dictionary<string, string> Parameters) : base(Parameters)
         {
-            this.Url = url;
-            DatabaseXmlReader = XmlReader.Create(url);
+            
         }
 
         public override string Read(string Path)
