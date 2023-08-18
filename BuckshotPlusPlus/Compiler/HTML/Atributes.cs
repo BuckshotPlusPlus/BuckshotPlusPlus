@@ -21,7 +21,8 @@ namespace BuckshotPlusPlus.Compiler.HTML
             
             foreach ((String Name, bool WithoutValue) in Props)
             {
-                TokenDataVariable MyHTMLAttribute = TokenUtils.FindTokenDataVariableByName(
+                TokenDataVariable MyHTMLAttribute = TokenUtils.TryFindTokenDataVariableValueByName(
+                    ServerSideTokens,
                     ViewContainer.ContainerData,
                     Name
                 );
