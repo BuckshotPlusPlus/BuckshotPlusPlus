@@ -50,7 +50,7 @@ namespace BuckshotPlusPlus
                         List<string> MyArgs = Formater.SafeSplit(LineData, ' ');
 
                         // STORE CONTAINER NAME
-                        if (MyArgs[1][MyArgs[1].Length - 1] == '{')
+                        if (MyArgs[1][^1] == '{')
                         {
                             this.ContainerName = MyArgs[1].Substring(0, MyArgs[1].Length - 1);
                         }

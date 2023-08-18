@@ -101,7 +101,7 @@ namespace BuckshotPlusPlus
             float VariableFloatData = 0;
             bool VariableBoolData = false;
 
-            if (Value[0] == '[' && Value[Value.Length - 1] == ']')
+            if (Value[0] == '[' && Value[^1] == ']')
             {
                 return "array";
             }

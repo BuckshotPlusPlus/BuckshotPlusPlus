@@ -52,13 +52,13 @@ namespace BuckshotPlusPlus
                 Directory.CreateDirectory(CurrentDirectory);
             }
 
-            string FilePath = CurrentDirectory + PathElements[PathElements.Length - 2];
-
+            string FilePath = CurrentDirectory + PathElements[^2];
             if (!File.Exists(FilePath))
             {
                 File.WriteAllText(FilePath, "{}");
             }
-            string[] result = { FilePath, PathElements[PathElements.Length - 1] };
+
+            string[] result = { FilePath, PathElements[^1] };
             return result;
         }
     }
