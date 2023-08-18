@@ -130,6 +130,15 @@ namespace BuckshotPlusPlus
             foreach (Token PageToken in MyTokenizer.PagesTokens)
             {
                 TokenDataContainer MyPageData = (TokenDataContainer)PageToken.Data;
+
+                var Icon = TokenUtils.FindTokenByName(MyPageData.ContainerData, "icon");
+                if (Icon != null)
+                {
+                    var Data = Icon.Data;
+                    var FileName = ((Data as TokenDataVariable)!).VariableData;
+                    File.WriteAllBytes(exportDirectory + "/" + FileName, File.ReadAllBytes(FileName));
+                }
+
                 Formater.DebugMessage("Starting to export page " + MyPageData.ContainerName + "...");
                 File.WriteAllText(exportDirectory + "/" + MyPageData.ContainerName + ".html", Page.RenderWebPage(MyTokenizer.FileTokens, PageToken));
                 Formater.SuccessMessage("Successfully exported page " + MyPageData.ContainerName + ".html");

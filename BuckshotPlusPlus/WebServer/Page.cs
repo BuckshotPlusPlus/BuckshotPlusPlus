@@ -47,6 +47,13 @@ namespace BuckshotPlusPlus.WebServer
 
             Page += "</title>";
 
+            Token MyPageIcon = TokenUtils.FindTokenByName(MyPageContainer.ContainerData, "icon");
+            if (MyPageIcon != null)
+            {
+                TokenDataVariable Var = (TokenDataVariable)MyPageIcon.Data;
+                Page += "<link rel=\"icon\" type=\"image/x-icon\" href=\"" + Var.VariableData + "\">";
+            }
+
             Token MyPageFonts = TokenUtils.FindTokenByName(MyPageContainer.ContainerData, "fonts");
             if (MyPageFonts != null)
             {
