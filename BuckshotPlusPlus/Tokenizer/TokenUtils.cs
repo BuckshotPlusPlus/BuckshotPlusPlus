@@ -76,7 +76,6 @@ namespace BuckshotPlusPlus
             Token TokenToEdit = FindTokenByName(MyTokenList, Var.VariableName);
             if(TokenToEdit == null)
             {
-                Console.WriteLine("Token not found : " + Var.VariableName);
                 Token ParentToken = FindTokenByName(MyTokenList, Var.VariableName, true);
                 if(ParentToken == null)
                 {
@@ -189,14 +188,9 @@ namespace BuckshotPlusPlus
             {
                 if (FoundToken.Data.GetType() == typeof(TokenDataVariable))
                 {
-                    Console.WriteLine("FOUND TOKEN DATA VARIABLE CONFIRMED");
                     TokenDataVariable MyVar = (TokenDataVariable)FoundToken.Data;
                     return MyVar;
 
-                }
-                else
-                {
-                    Console.WriteLine(FoundToken.LineData + " IS " + FoundToken.Data.GetType().ToString() + " searching for " + TokenName);
                 }
             }
             return null;
@@ -217,7 +211,6 @@ namespace BuckshotPlusPlus
                     TokenDataVariable MyVar = (TokenDataVariable)FoundToken.Data;
                     if(MyVar.VariableType == "ref" && replaceRef)
                     {
-                        Console.WriteLine("Found reference!!!!!!!!!!!!!");
                         return TryFindTokenValueByName(FileTokens, FileTokens, MyVar.VariableData);
                     }
                     else

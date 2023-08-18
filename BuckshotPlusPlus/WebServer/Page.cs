@@ -76,7 +76,6 @@ namespace BuckshotPlusPlus.WebServer
 
             if (MyPageBody != null)
             {
-                Console.WriteLine("My page is a " + MyPageBody.VariableType);
                 Page += Compiler.HTML.View.CompileContent(ServerSideTokens, MyPageBody, MyPageContainer);
                 /*Page += Compiler.HTML.View.CompileView(
                     ServerSideTokens,

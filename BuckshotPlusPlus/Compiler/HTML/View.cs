@@ -92,7 +92,6 @@ namespace BuckshotPlusPlus.Compiler.HTML
                 else if (ViewContent.VariableType == "array")
                 {
                     string result = "";
-                    Console.WriteLine("Compiling array");
                     foreach (
                         Token ChildViewToken in Analyzer.Array.GetArrayValues(ViewContent.VariableToken)
                     )
