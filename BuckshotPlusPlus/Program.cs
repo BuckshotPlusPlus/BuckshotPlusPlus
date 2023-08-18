@@ -118,15 +118,37 @@ namespace BuckshotPlusPlus
             return MyTokenizer;
         }
 
+        public static void DeleteDirectory(string TargetDir)
+        {
+            string[] files = Directory.GetFiles(TargetDir);
+            string[] dirs = Directory.GetDirectories(TargetDir);
+
+            foreach (string file in files)
+            {
+                File.SetAttributes(file, FileAttributes.Normal);
+                File.Delete(file);
+            }
+
+            foreach (string dir in dirs)
+            {
+                DeleteDirectory(dir);
+            }
+
+            Directory.Delete(TargetDir, false);
+        }
+
         public static void ExportWebsite(string filePath, string exportDirectory)
         {
             // For now export directory is absolute only
             Tokenizer MyTokenizer = CompileMainFile(filePath);
 
-            if(!Path.Exists(exportDirectory))
+            if (Path.Exists(exportDirectory))
             {
-                Directory.CreateDirectory(exportDirectory);
+                DeleteDirectory(exportDirectory);
             }
+
+            Directory.CreateDirectory(exportDirectory);
+
             foreach (Token PageToken in MyTokenizer.PagesTokens)
             {
                 TokenDataContainer MyPageData = (TokenDataContainer)PageToken.Data;
