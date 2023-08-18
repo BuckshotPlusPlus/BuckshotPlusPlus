@@ -38,6 +38,8 @@ namespace BuckshotPlusPlus
             int OpenCount = 0;
             List<string> ChildContainerLines = new List<string>();
 
+            Console.WriteLine("Analyzing container:" + LinesData);
+
             foreach (string LineData in LinesData)
             {
                 if (Formater.SafeContains(LineData, '{'))
@@ -187,6 +189,7 @@ namespace BuckshotPlusPlus
             {
                 if (Formater.SafeSplit(MyToken.LineData, ' ')[0] == Type)
                 {
+                    Console.WriteLine(MyToken.LineData + " is of type " + Type);
                     return true;
                 }
             }

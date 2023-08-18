@@ -17,10 +17,11 @@ namespace BuckshotPlusPlus.WebServer
                 MyPageContainer.ContainerData,
                 "title"
             );
-            Token MyPageBody = TokenUtils.TryFindTokenValueByName(
+            TokenDataVariable MyPageBody = TokenUtils.TryFindTokenDataVariableValueByName(
                 ServerSideTokens,
                 MyPageContainer.ContainerData,
-                "body"
+                "body",
+                false
             );
 
             string Page = (String)BasicPage.Clone();
@@ -75,10 +76,12 @@ namespace BuckshotPlusPlus.WebServer
 
             if (MyPageBody != null)
             {
-                Page += Compiler.HTML.View.CompileView(
+                Console.WriteLine("My page is a " + MyPageBody.VariableType);
+                Page += Compiler.HTML.View.CompileContent(ServerSideTokens, MyPageBody, MyPageContainer);
+                /*Page += Compiler.HTML.View.CompileView(
                     ServerSideTokens,
                     MyPageBody
-                );
+                );*/
             }
             else
             {

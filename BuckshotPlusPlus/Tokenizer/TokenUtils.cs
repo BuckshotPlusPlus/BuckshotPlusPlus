@@ -33,6 +33,7 @@ namespace BuckshotPlusPlus
                 {
                     if (MyToken.Data.GetType() == typeof(TokenDataVariable))
                     {
+                        
                         TokenDataVariable MyVar = (TokenDataVariable)MyToken.Data;
                         if (MyVar.VariableName == LocalTokenName)
                         {
@@ -179,17 +180,23 @@ namespace BuckshotPlusPlus
         public static TokenDataVariable TryFindTokenDataVariableValueByName(
             List<Token> FileTokens,
             List<Token> LocalTokenList,
-            string TokenName
+            string TokenName,
+            bool replaceRef = true
             )
         {
-            Token FoundToken = TryFindTokenValueByName(FileTokens, LocalTokenList, TokenName);
+            Token FoundToken = TryFindTokenValueByName(FileTokens, LocalTokenList, TokenName, replaceRef);
             if (FoundToken != null)
             {
                 if (FoundToken.Data.GetType() == typeof(TokenDataVariable))
                 {
+                    Console.WriteLine("FOUND TOKEN DATA VARIABLE CONFIRMED");
                     TokenDataVariable MyVar = (TokenDataVariable)FoundToken.Data;
                     return MyVar;
-                    
+
+                }
+                else
+                {
+                    Console.WriteLine(FoundToken.LineData + " IS " + FoundToken.Data.GetType().ToString() + " searching for " + TokenName);
                 }
             }
             return null;
@@ -198,7 +205,8 @@ namespace BuckshotPlusPlus
         public static Token TryFindTokenValueByName(
             List<Token> FileTokens,
             List<Token> LocalTokenList,
-            string TokenName
+            string TokenName,
+            bool replaceRef = true
             )
         {
             Token FoundToken = FindTokenByName(LocalTokenList, TokenName);
@@ -207,8 +215,9 @@ namespace BuckshotPlusPlus
                 if (FoundToken.Data.GetType() == typeof(TokenDataVariable))
                 {
                     TokenDataVariable MyVar = (TokenDataVariable)FoundToken.Data;
-                    if(MyVar.VariableType == "ref")
+                    if(MyVar.VariableType == "ref" && replaceRef)
                     {
+                        Console.WriteLine("Found reference!!!!!!!!!!!!!");
                         return TryFindTokenValueByName(FileTokens, FileTokens, MyVar.VariableData);
                     }
                     else

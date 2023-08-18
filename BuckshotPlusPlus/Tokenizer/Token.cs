@@ -1,4 +1,6 @@
-﻿namespace BuckshotPlusPlus
+﻿using System;
+
+namespace BuckshotPlusPlus
 {
     public class Token
     {
@@ -25,9 +27,11 @@
             this.LineNumber = LineNumber;
             this.MyTokenizer = MyTokenizer;
             this.Parent = Parent;
+
             // If Line Contains "=" load data of a variable
             if (TokenDataContainer.IsTokenDataContainer(this))
             {
+                Console.WriteLine("THIS IS A CONTAINER");
                 Data = new TokenDataContainer(this);
             }
             else if (TokenDataFunctionCall.IsTokenDataFunctionCall(this))
@@ -43,6 +47,7 @@
             }
             else if (TokenDataVariable.IsTokenDataVariable(this))
             {
+                Console.WriteLine("THIS IS A VARIABLE");
                 Data = new TokenDataVariable(this);
             }
             else
