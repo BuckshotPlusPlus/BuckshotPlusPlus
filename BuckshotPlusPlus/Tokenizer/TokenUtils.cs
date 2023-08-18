@@ -236,13 +236,14 @@ namespace BuckshotPlusPlus
         )
         {
             Token FoundToken = FindTokenByName(MyTokenList, TokenName);
+            if (FoundToken == null) return null;
             if (FoundToken.Data.GetType() == typeof(TokenDataContainer))
             {
                 TokenDataContainer MyVar = (TokenDataContainer)FoundToken.Data;
                 return MyVar;
             }
+
             return null;
-            //Formater.CriticalError(TokenName + " does not exist");=
         }
     }
 }
