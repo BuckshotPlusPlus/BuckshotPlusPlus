@@ -13,10 +13,17 @@ namespace BuckshotPlusPlus.WebServer
 
             TokenDataContainer MyPageContainer = (TokenDataContainer)MyPage.Data;
             TokenDataVariable MyPageTitle = TokenUtils.TryFindTokenDataVariableValueByName(
-                ServerSideTokens, 
+                ServerSideTokens,
                 MyPageContainer.ContainerData,
                 "title"
             );
+
+            TokenDataVariable CustomHead = TokenUtils.TryFindTokenDataVariableValueByName(
+                ServerSideTokens,
+                MyPageContainer.ContainerData,
+                "head"
+            );
+
             TokenDataVariable MyPageBody = TokenUtils.TryFindTokenDataVariableValueByName(
                 ServerSideTokens,
                 MyPageContainer.ContainerData,
@@ -69,6 +76,14 @@ namespace BuckshotPlusPlus.WebServer
                 {
                     TokenDataVariable ArrayVar = (TokenDataVariable)ArrayValue.Data;
                     Page += $"<script src=\"{ArrayVar.VariableData}\">";
+                }
+            }
+
+            if (CustomHead != null)
+            {
+                if(CustomHead.VariableType == "string")
+                {
+                    Page += CustomHead.VariableData;
                 }
             }
 
