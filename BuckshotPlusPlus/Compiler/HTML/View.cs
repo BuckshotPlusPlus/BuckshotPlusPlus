@@ -5,56 +5,57 @@ namespace BuckshotPlusPlus.Compiler.HTML
 {
     public class View
     {
-        public static string CompileView(List<Token> ServerSideTokens,Token MyViewToken)
+        public static string CompileView(List<Token> ServerSideTokens, Token MyViewToken)
         {
-            //Console.WriteLine("Token:" + MyViewToken.LineData);
             TokenUtils.EditAllTokensOfContainer(ServerSideTokens, MyViewToken);
 
             TokenDataContainer MyContainer = (TokenDataContainer)MyViewToken.Data;
-
-            TokenDataVariable ViewType = TokenUtils.FindTokenDataVariableByName(
+            TokenDataVariable Type = TokenUtils.FindTokenDataVariableByName(
                 MyContainer.ContainerData,
                 "type"
             );
+
+            string ViewType = String.Empty;
+            if (Type == null)
+            {
+                Formater.TokenCriticalError("Missing view type !", MyViewToken);
+            } else
+            {
+                ViewType = Type.GetCompiledVariableData(ServerSideTokens);
+            }
+
             TokenDataVariable ViewContent = TokenUtils.FindTokenDataVariableByName(
                 MyContainer.ContainerData,
                 "content"
             );
 
-            string viewType = "h1";
-
-            if (ViewType != null)
+            string HTML = "<" + ViewType;
+            string HTMLAttributes = Attributes.GetHTMLAttributes(ServerSideTokens, MyViewToken);
+            if (HTMLAttributes.Length > 0)
             {
-                viewType = ViewType.GetCompiledVariableData(ServerSideTokens);
-            }
-            else
-            {
-                Formater.TokenCriticalError("Missing view type !!!!", MyViewToken);
+                HTML += " " + HTMLAttributes;
             }
 
-            string viewHTML =
-                "<"
-                + viewType
-                + " "
-                + Attributes.GetHTMLAttributes(ServerSideTokens, MyViewToken)
-                + " "
-                + Events.GetHTMLEvents(ServerSideTokens, MyViewToken);
+            string HTMLEvents = Events.GetHTMLEvents(ServerSideTokens, MyViewToken);
+            if (HTMLEvents.Length > 0)
+            {
+                HTML += " " + HTMLEvents;
+            }
 
             string Style = CSS.Properties.GetCSSString(ServerSideTokens, MyViewToken);
             if (Style.Length > 0)
             {
-                viewHTML += " style=\"" + Style + "\">";
+                HTML += " style=\"" + Style + "\">";
             } else {
-                viewHTML += ">";
+                HTML += ">";
             }
 
-            viewHTML += CompileContent(ServerSideTokens,ViewContent, MyContainer);
+            HTML += CompileContent(ServerSideTokens,ViewContent, MyContainer);
             
-
-            return viewHTML + "</" + viewType + ">";
+            return HTML + "</" + ViewType + ">";
         }
 
-        public static string CompileContent(List<Token> ServerSideTokens,TokenDataVariable ViewContent, TokenDataContainer MyContainer)
+        public static string CompileContent(List<Token> ServerSideTokens, TokenDataVariable ViewContent, TokenDataContainer MyContainer)
         {
             if (ViewContent != null)
             {
@@ -80,13 +81,8 @@ namespace BuckshotPlusPlus.Compiler.HTML
                             )
                         );
                     }
-                    else
-                    {
-                        return ViewContent.GetCompiledVariableData(ServerSideTokens, true);
-                    }
 
-
-
+                    return ViewContent.GetCompiledVariableData(ServerSideTokens, true);
                 }
                 else if (ViewContent.VariableType == "array")
                 {
@@ -104,9 +100,11 @@ namespace BuckshotPlusPlus.Compiler.HTML
                             )
                         );
                     }
+
                     return result;
                 }
             }
+
             return "";
         }
     }
