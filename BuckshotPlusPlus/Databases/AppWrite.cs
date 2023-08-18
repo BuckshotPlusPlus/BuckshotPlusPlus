@@ -15,17 +15,22 @@ namespace BuckshotPlusPlus.Databases
         string Endpoint { get; set; }
         string Project { get; set; }
         string SecretKey { get; set; }
+        string DatbaseId { get; set; }
         Client AppwriteCLient { get; set; }
+        
 
         public AppWrite(Dictionary<string, string> Parameters) : base(Parameters)
         {
             this.Endpoint = Parameters["endpoint"];
             this.Project = Parameters["project"];
             this.SecretKey = Parameters["secret_key"];
+            this.DatbaseId = Parameters["database_id"];
             this.AppwriteCLient = new Client().SetEndpoint(Endpoint).SetProject(Project).SetKey(SecretKey);
+
+            Appwrite.Services.Databases Databases = new Appwrite.Services.Databases(AppwriteCLient);
         }
 
-        public override string Read(string path)
+        public override string Get(string path)
         {
             throw new NotImplementedException();
         }

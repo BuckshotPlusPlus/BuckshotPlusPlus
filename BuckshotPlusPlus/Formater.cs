@@ -6,11 +6,25 @@ namespace BuckshotPlusPlus
 {
     public static class Formater
     {
+        public struct SpecialCharacterToClean
+        {
+            public char Character;
+            public bool CleanLeft;
+            public bool CleanRight;
+        }
+
         public static string FormatFileData(string FileData)
         {
             int i = 0;
             int spaceCount = 0;
             bool isQuote = false;
+
+            List<SpecialCharacterToClean> CharactersToClean = new List<SpecialCharacterToClean>();
+
+            CharactersToClean.Add(new SpecialCharacterToClean{ Character = '+', CleanLeft = true, CleanRight = true });
+            CharactersToClean.Add(new SpecialCharacterToClean{ Character = ',', CleanLeft = true, CleanRight = true });
+
+
 
             while (i < FileData.Length)
             {
@@ -36,14 +50,23 @@ namespace BuckshotPlusPlus
                     }
                     else
                     {
-                        if(FileData[spaceCount + i] == '+')
+                        bool CleanedSpecialChar = false;
+
+                        foreach(SpecialCharacterToClean CharToCLean in CharactersToClean)
                         {
-                            FileData = FileData.Remove(i, spaceCount);
+                            if (FileData[spaceCount + i] == CharToCLean.Character && CharToCLean.CleanLeft)
+                            {
+                                FileData = FileData.Remove(i, spaceCount);
+                                CleanedSpecialChar = true;
+                            }
+                            else if (FileData[i - 1] == CharToCLean.Character && CharToCLean.CleanRight)
+                            {
+                                FileData = FileData.Remove(i, spaceCount);
+                                CleanedSpecialChar = true;
+                            }
                         }
-                        else if (FileData[i - 1] == '+')
-                        {
-                            FileData = FileData.Remove(i, spaceCount);
-                        }else if (spaceCount > 1)
+
+                        if (spaceCount > 1 && CleanedSpecialChar)
                         {
                             FileData = FileData.Remove(i, spaceCount - 1);
                         }

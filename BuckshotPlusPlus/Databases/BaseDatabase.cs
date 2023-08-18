@@ -12,7 +12,7 @@ namespace BuckshotPlusPlus
             DatabaseParameters = Parameters;
         }
 
-        public abstract string Read(string path);
+        public abstract string Get(string path);
 
         public abstract bool Write(string path, string value);
     }
