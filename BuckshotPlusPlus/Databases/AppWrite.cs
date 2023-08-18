@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Appwrite;
-using Appwrite.Services;
-using Appwrite.Models;
 
 namespace BuckshotPlusPlus.Databases
 {

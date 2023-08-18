@@ -28,14 +28,7 @@ namespace BuckshotPlusPlus
             FileDataDictionary = new Dictionary<string, string>();
             RelativePath = Path.GetDirectoryName(FilePath);
 
-            if (IsHTTP(FilePath))
-            {
-                IncludeHTTP(FilePath);
-            }
-            else
-            {
-                IncludeFile(FilePath);
-            }
+            IncludeFile(FilePath);
         }
 
         public bool IsHTTP(string FilePath)
@@ -80,16 +73,16 @@ namespace BuckshotPlusPlus
             return FilePath;
         }
 
-        public void AnalyzeFileData(string FileName, string FileData, bool ForHTTP)
+        public void AnalyzeFileData(string FileName, string FileData)
         {
-            if (this.UnprocessedFileDataDictionary.ContainsKey(FileName))
+            if (UnprocessedFileDataDictionary.ContainsKey(FileName))
             {
                 Formater.CriticalError("Circular dependency detected of " + FileName);
             }
             else
             {
-                this.UnprocessedFileDataDictionary.Add(FileName, FileData);
-                this.FileDataDictionary.Add(FileName, FileData);
+                UnprocessedFileDataDictionary.Add(FileName, FileData);
+                FileDataDictionary.Add(FileName, FileData);
 
                 int CurrentLineNumber = 0;
                 int ContainerCount = 0;
@@ -103,7 +96,7 @@ namespace BuckshotPlusPlus
                     string LineData = MyFileLines[CurrentLineNumber];
                     if (LineData.Length > 1)
                     {
-                        if ((int)LineData[LineData.Length - 1] == 13)
+                        if (LineData[^1] == 13)
                         {
                             LineData = LineData.Substring(0, LineData.Length - 1);
                         }
@@ -113,9 +106,9 @@ namespace BuckshotPlusPlus
                             string IncludePath = Formater.SafeSplit(LineData, ' ')[1];
                             IncludePath = GetIncludeValue(IncludePath);
                             
-                            if (ForHTTP)
+                            if (IsHTTP(IncludePath))
                             {
-                                IncludeHTTP(
+                                IncludeFile(
                                     IncludePath.Substring(
                                         1,
                                         IncludePath.Length - 2
@@ -124,27 +117,15 @@ namespace BuckshotPlusPlus
                             }
                             else
                             {
-                                if (IsHTTP(IncludePath))
-                                {
-                                    IncludeFile(
+                                IncludeFile(
+                                    Path.Combine(
+                                        RelativePath,
                                         IncludePath.Substring(
                                             1,
                                             IncludePath.Length - 2
                                         )
-                                    );
-                                }
-                                else
-                                {
-                                    IncludeFile(
-                                        Path.Combine(
-                                            RelativePath,
-                                            IncludePath.Substring(
-                                                1,
-                                                IncludePath.Length - 2
-                                            )
-                                        )
-                                    );
-                                }
+                                    )
+                                );
                             }
                         }
                         else
@@ -251,47 +232,13 @@ namespace BuckshotPlusPlus
             }
         }
 
-        public void IncludeHTTP(string FilePath)
-        {
-            string Content = "";
-            if (IsHTTP(FilePath))
-            {
-                using (var webClient = new HttpClient())
-                {
-                    Content = webClient.GetStringAsync(FilePath).Result;
-                }
-            }
-            else
-            {
-                IncludeHTTP(
-                    $"https://raw.githubusercontent.com/MoskalykA/BuckshotPlusPlus-Examples/main/Buttons/{FilePath}"
-                );
-                return;
-            }
-
-            if (Content.Length == 0)
-            {
-                Formater.CriticalError($"File {FilePath} has no contents");
-            }
-
-            Console.WriteLine($"[HTTP] File {FilePath} Found!");
-
-            AnalyzeFileData(FilePath, Formater.FormatFileData(Content), true);
-
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"[HTTP] Compilation of {FilePath} done");
-            Console.ForegroundColor = ConsoleColor.White;
-        }
-
         public void IncludeFile(string FilePath)
         {
             string Content = "";
             if (IsHTTP(FilePath))
             {
-                using (var webClient = new HttpClient())
-                {
-                    Content = webClient.GetStringAsync(FilePath).Result;
-                }
+                using var webClient = new HttpClient();
+                Content = webClient.GetStringAsync(FilePath).Result;
             }
             else
             {
@@ -305,12 +252,13 @@ namespace BuckshotPlusPlus
 
             if (Content.Length == 0)
             {
-                Formater.CriticalError($"File {FilePath} has no contents");
+                Formater.DebugMessage($"File {FilePath} has no contents");
+                return;
             }
 
             Formater.DebugMessage($"File {FilePath} Found!");
 
-            AnalyzeFileData(FilePath, Formater.FormatFileData(Content), false);
+            AnalyzeFileData(FilePath, Formater.FormatFileData(Content));
 
             Formater.DebugMessage($"Compilation of {FilePath} done");
         }
