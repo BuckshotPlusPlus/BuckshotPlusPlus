@@ -15,7 +15,7 @@ namespace BuckshotPlusPlus.Databases
         string Endpoint { get; set; }
         string Project { get; set; }
         string SecretKey { get; set; }
-        string DatbaseId { get; set; }
+        string DatabaseId { get; set; }
         Client AppwriteCLient { get; set; }
         
 
@@ -24,7 +24,7 @@ namespace BuckshotPlusPlus.Databases
             this.Endpoint = Parameters["endpoint"];
             this.Project = Parameters["project"];
             this.SecretKey = Parameters["secret_key"];
-            this.DatbaseId = Parameters["database_id"];
+            this.DatabaseId = Parameters["database_id"];
             this.AppwriteCLient = new Client().SetEndpoint(Endpoint).SetProject(Project).SetKey(SecretKey);
 
             Appwrite.Services.Databases Databases = new Appwrite.Services.Databases(AppwriteCLient);
