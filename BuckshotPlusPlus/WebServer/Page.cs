@@ -18,11 +18,15 @@ namespace BuckshotPlusPlus.WebServer
                 "title"
             );
 
+            Console.WriteLine("before");
+
             TokenDataVariable CustomHead = TokenUtils.TryFindTokenDataVariableValueByName(
                 ServerSideTokens,
                 MyPageContainer.ContainerData,
                 "head"
             );
+
+            Console.WriteLine("AFTER");
 
             TokenDataVariable MyPageBody = TokenUtils.TryFindTokenDataVariableValueByName(
                 ServerSideTokens,
@@ -79,7 +83,7 @@ namespace BuckshotPlusPlus.WebServer
                 }
             }
 
-            if (CustomHead != null)
+            if (CustomHead != null) 
             {
                 if(CustomHead.VariableType == "string")
                 {

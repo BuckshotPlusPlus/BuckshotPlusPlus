@@ -11,7 +11,6 @@ namespace BuckshotPlusPlus.WebServer
     internal class WebServer
     {
         public HttpListener listener;
-        public int pageViews = 0;
         public int requestCount = 0;
         public bool runServer = true;
         public CancellationToken token;
@@ -77,14 +76,18 @@ namespace BuckshotPlusPlus.WebServer
                                 string pageData = Page.RenderWebPage(ServerSideTokenList, MyToken);
 
                                 byte[] data = Encoding.UTF8.GetBytes(
-                                    String.Format(pageData, pageViews, disableSubmit)
+                                    pageData
                                 );
+
                                 resp.ContentType = "text/html";
                                 resp.ContentEncoding = Encoding.UTF8;
                                 resp.ContentLength64 = data.LongLength;
 
                                 // Write out to the response stream (asynchronously), then close it
                                 await resp.OutputStream.WriteAsync(data, 0, data.Length);
+
+                                
+
                                 resp.Close();
 
                                 stopwatch.Stop();
@@ -100,7 +103,7 @@ namespace BuckshotPlusPlus.WebServer
                     string pageData = "404 not found";
 
                     byte[] data = Encoding.UTF8.GetBytes(
-                        String.Format(pageData, pageViews, disableSubmit)
+                        pageData
                     );
                     resp.ContentType = "text";
                     resp.ContentEncoding = Encoding.UTF8;
