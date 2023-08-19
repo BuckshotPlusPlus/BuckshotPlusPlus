@@ -11,11 +11,11 @@ namespace BuckshotPlusPlus.Security
         public List<AnalyticTimedEvent> UrlHistory { get; set; }
         public DateTime LastUserInteraction { get; set; }
 
-        public UserSession(string SessionIP)
+        public UserSession(string IP)
         {
             SessionID = Keys.CreateRandomUniqueKey();
             UrlHistory = new List<AnalyticTimedEvent>();
-            SessionIP = SessionIP;
+            SessionIP = IP;
             LastUserInteraction = DateTime.Now;
         }
 
