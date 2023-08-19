@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using BuckshotPlusPlus.Analytics;
 
-namespace BuckshotPlusPlus
+namespace BuckshotPlusPlus.Security
 {
     public class UserSession
     {
@@ -10,20 +11,21 @@ namespace BuckshotPlusPlus
         public List<AnalyticTimedEvent> UrlHistory { get; set; }
         public DateTime LastUserInteraction { get; set; }
 
-        public UserSession(string session_ip) {
+        public UserSession(string SessionIP)
+        {
             SessionID = Keys.CreateRandomUniqueKey();
             UrlHistory = new List<AnalyticTimedEvent>();
-            SessionIP = session_ip;
+            SessionIP = SessionIP;
             LastUserInteraction = DateTime.Now;
         }
 
         public string GetUserSessionLineData()
         {
             return "data session{\n" +
-                "ip = \"" + SessionIP + "\"\n" +
-                "id = \"" + SessionID + "\"\n" +
-                "url_visited_num = \"" + UrlHistory.Count.ToString() + "\"\n" +
-                "}\n";
+                   "ip = \"" + SessionIP + "\"\n" +
+                   "id = \"" + SessionID + "\"\n" +
+                   "url_visited_num = \"" + UrlHistory.Count + "\"\n" +
+                   "}\n";
         }
 
         public Token GetToken(Tokenizer MyTokenizer)

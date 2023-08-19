@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace BuckshotPlusPlus
+namespace BuckshotPlusPlus.Security
 {
     public class Keys
     {

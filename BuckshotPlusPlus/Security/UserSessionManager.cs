@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Net;
 
-namespace BuckshotPlusPlus
+namespace BuckshotPlusPlus.Security
 {
     public class UserSessionManager
     {
         public Dictionary<string, UserSession> ActiveUsers { get; set; }
 
-        public UserSessionManager() {
+        public UserSessionManager()
+        {
             ActiveUsers = new Dictionary<string, UserSession>();
         }
 
@@ -19,8 +20,7 @@ namespace BuckshotPlusPlus
 
             foreach (Cookie cook in req.Cookies)
             {
-
-                if(cook.Name == "bpp_session_id")
+                if (cook.Name == "bpp_session_id")
                 {
                     SessionCookieFound = true;
                     UserSessionId = cook.Value;
@@ -45,20 +45,18 @@ namespace BuckshotPlusPlus
                 Console.WriteLine("String: {0}", cook.ToString());*/
             }
 
-            if(SessionCookieFound)
+            if (SessionCookieFound)
             {
                 UserSession Session;
                 if (ActiveUsers.TryGetValue(UserSessionId, out Session))
                 {
                     return Session;
-                } else {
-                    return CreateNewUserSession(req, response);
                 }
-            }
-            else
-            {
+
                 return CreateNewUserSession(req, response);
             }
+
+            return CreateNewUserSession(req, response);
         }
 
         public UserSession CreateNewUserSession(HttpListenerRequest req, HttpListenerResponse response)
@@ -75,9 +73,10 @@ namespace BuckshotPlusPlus
         public void RemoveInactiveUserSessions()
         {
             DateTime Now = DateTime.Now;
-            foreach (KeyValuePair<string, UserSession> User in ActiveUsers) 
+            foreach (KeyValuePair<string, UserSession> User in ActiveUsers)
             {
-                if ((Now - User.Value.LastUserInteraction).TotalSeconds > 10) {
+                if ((Now - User.Value.LastUserInteraction).TotalSeconds > 10)
+                {
                     ActiveUsers.Remove(User.Key);
                 }
             }
