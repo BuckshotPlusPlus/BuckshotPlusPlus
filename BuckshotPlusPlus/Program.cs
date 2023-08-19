@@ -158,7 +158,7 @@ namespace BuckshotPlusPlus
                 {
                     var Data = Icon.Data;
                     var FileName = ((Data as TokenDataVariable)!).VariableData;
-                    string icoPath = System.IO.Path.Combine(filePath, @"..\" + FileName);
+                    string icoPath = Path.Combine(filePath, @"..\" + FileName);
                     File.WriteAllBytes(exportDirectory + "/" + FileName, File.ReadAllBytes(icoPath));
                 }
 
@@ -194,11 +194,9 @@ namespace BuckshotPlusPlus
             else
             {
                 FileMonitor fileMonitor = new FileMonitor(FilePath);
-                Thread workerThread = new Thread(new ThreadStart(fileMonitor.FileMonitoring));
+                Thread workerThread = new Thread(fileMonitor.FileMonitoring);
                 workerThread.Start();
             }
-
-            
         }
     }
 }

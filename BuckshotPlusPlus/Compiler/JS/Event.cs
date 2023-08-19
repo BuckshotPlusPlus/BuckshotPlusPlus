@@ -31,14 +31,14 @@ namespace BuckshotPlusPlus.Compiler.JS
                     }
                     else
                     {
-                        EventString +=
-                            JS.Variables.GetVarString(ServerSideTokens,MyJSEvent.ContainerData, TokenId) + ";";
+                        EventString += Variables.GetVarString(ServerSideTokens,MyJSEvent.ContainerData, TokenId) + ";";
                     }
                 }
                 else
                 {
                     EventString += ChildToken.LineData.Replace("\"", "'") + ";";
                 }
+                
                 TokenId++;
             }
 

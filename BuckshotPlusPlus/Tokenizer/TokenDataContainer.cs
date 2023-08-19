@@ -6,7 +6,6 @@ namespace BuckshotPlusPlus
     public class TokenDataContainer : TokenData
     {
         public string ContainerName { get; set; }
-        public Token ContainerParent { get; set; }
         public List<Token> ContainerData { get; set; }
         public string ContainerType { get; set; }
         public TokenData ContainerMetaData { get; set; }
@@ -93,14 +92,12 @@ namespace BuckshotPlusPlus
 
                             foreach (Token LocalToken in MyToken.MyTokenizer.FileTokens)
                             {
-                                if (LocalToken.Data is TokenDataContainer)
+                                if (LocalToken.Data is TokenDataContainer localTokenDataContainer)
                                 {
-                                    TokenDataContainer LocalTokenDataContainer =
-                                        (TokenDataContainer)LocalToken.Data;
-                                    if (LocalTokenDataContainer.ContainerName == ParentName)
+                                    if (localTokenDataContainer.ContainerName == ParentName)
                                     {
                                         if (
-                                            LocalTokenDataContainer.ContainerType
+                                            localTokenDataContainer.ContainerType
                                             != this.ContainerType
                                         )
                                         {
@@ -110,7 +107,7 @@ namespace BuckshotPlusPlus
                                             );
                                         }
                                         foreach (
-                                            Token LocalTokenData in LocalTokenDataContainer.ContainerData
+                                            Token LocalTokenData in localTokenDataContainer.ContainerData
                                         )
                                         {
                                             //Token LocalTokenCopy = new Token(LocalTokenData.FileName, LocalTokenData.LineData, LocalTokenData.LineNumber, LocalTokenData.MyTokenizer);
@@ -173,23 +170,26 @@ namespace BuckshotPlusPlus
                     ContainerData,
                     TokenUtils.GetTokenName(NewChild)
                 );
+                
                 if (FoundToken != null)
                 {
                     ContainerData.Remove(FoundToken);
                 }
             }
+
             ContainerData.Add(NewChild);
         }
 
         public static bool IsTokenDataContainer(Token MyToken)
         {
-            foreach (string Type in TokenDataContainer.SupportedContainerTypes)
+            foreach (string Type in SupportedContainerTypes)
             {
                 if (Formater.SafeSplit(MyToken.LineData, ' ')[0] == Type)
                 {
                     return true;
                 }
             }
+
             return false;
         }
     }

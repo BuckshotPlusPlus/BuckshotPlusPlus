@@ -4,8 +4,6 @@ namespace BuckshotPlusPlus
 {
     public class TokenDataLogic : TokenData
     {
-        public string LogicToken { get; set; }
-
         public static string[] LogicTokens = { "if" };
 
         public string LogicType { get; set; }

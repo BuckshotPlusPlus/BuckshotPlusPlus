@@ -19,16 +19,14 @@ namespace BuckshotPlusPlus
             int spaceCount = 0;
             bool isQuote = false;
 
-            List<SpecialCharacterToClean> CharactersToClean = new List<SpecialCharacterToClean>();
-
-            CharactersToClean.Add(new SpecialCharacterToClean{ Character = '+', CleanLeft = true, CleanRight = true });
-            CharactersToClean.Add(new SpecialCharacterToClean{ Character = ',', CleanLeft = true, CleanRight = true });
-
-
+            List<SpecialCharacterToClean> CharactersToClean = new List<SpecialCharacterToClean>
+            {
+                new() { Character = '+', CleanLeft = true, CleanRight = true },
+                new() { Character = ',', CleanLeft = true, CleanRight = true }
+            };
 
             while (i < FileData.Length)
             {
-                // Gérer les chaines de character
                 if (FileData[i] == '"')
                 {
                     isQuote = !isQuote;
@@ -50,8 +48,6 @@ namespace BuckshotPlusPlus
                     }
                     else
                     {
-                        bool CleanedSpecialChar = false;
-
                         foreach(SpecialCharacterToClean CharToCLean in CharactersToClean)
                         {
                             if (FileData[spaceCount + i] == CharToCLean.Character && CharToCLean.CleanLeft)
@@ -61,7 +57,6 @@ namespace BuckshotPlusPlus
                             else if (FileData[i - 1] == CharToCLean.Character && CharToCLean.CleanRight)
                             {
                                 FileData = FileData.Remove(i, spaceCount);
-                                CleanedSpecialChar = true;
                                 i--;
                             }
                         }
@@ -181,7 +176,7 @@ namespace BuckshotPlusPlus
                 Count++;
                 if (LastUnsafeChar.IsUnsafeChar)
                 {
-                    UnsafeCharStruct CurrentUnsafeChar = Formater.IsUnsafeChar(
+                    UnsafeCharStruct CurrentUnsafeChar = IsUnsafeChar(
                         UnsafeChars,
                         Value[i]
                     );
@@ -201,7 +196,7 @@ namespace BuckshotPlusPlus
                 }
                 else
                 {
-                    UnsafeCharStruct CurrentUnsafeChar = Formater.IsUnsafeChar(
+                    UnsafeCharStruct CurrentUnsafeChar = IsUnsafeChar(
                         UnsafeChars,
                         Value[i]
                     );
@@ -240,7 +235,7 @@ namespace BuckshotPlusPlus
             }
             else
             {
-                AnsiConsole.Markup($"[maroon on default]Runtime error : " +
+                AnsiConsole.Markup("[maroon on default]Runtime error : " +
                 error +
                 " in file : "
                     + MyToken.FileName
@@ -260,7 +255,7 @@ namespace BuckshotPlusPlus
 
         public static void TokenCriticalError(string Error, Token MyToken)
         {
-            Formater.CriticalError(
+            CriticalError(
                 Error
                     + " in file : "
                     + MyToken.FileName

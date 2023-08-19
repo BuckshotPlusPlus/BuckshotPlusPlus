@@ -5,7 +5,7 @@ namespace BuckshotPlusPlus.Compiler.CSS
 {
     public class Properties
     {
-        static List<String> Props = new List<string>
+        static List<String> Props = new()
         {
             "align-content",
             "align-items",

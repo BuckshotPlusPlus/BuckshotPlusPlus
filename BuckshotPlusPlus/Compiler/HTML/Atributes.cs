@@ -5,7 +5,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
 {
     public class Attributes
     {
-        static List<(String, Boolean)> Props = new List<(string, bool)>
+        static List<(String, Boolean)> Props = new()
         {
             ("href", false),
             ("id", false),

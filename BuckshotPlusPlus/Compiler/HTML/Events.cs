@@ -5,7 +5,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
 {
     class Events
     {
-        static List<String> Props = new List<string>
+        static List<String> Props = new()
         {
             // Window Events
             "onafterprint",

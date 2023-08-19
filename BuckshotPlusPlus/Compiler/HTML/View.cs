@@ -65,11 +65,10 @@ namespace BuckshotPlusPlus.Compiler.HTML
                 }
                 else if (ViewContent.VariableType == "ref")
                 {
-                    Console.WriteLine("REEEF");
                     Token FoundToken = TokenUtils.FindTokenByName(
-                            ServerSideTokens,
-                            ViewContent.GetCompiledVariableData(ServerSideTokens)
-                        );
+                        ServerSideTokens,
+                        ViewContent.GetCompiledVariableData(ServerSideTokens)
+                    );
 
                     if (FoundToken.Data.GetType() == typeof(TokenDataContainer))
                     {

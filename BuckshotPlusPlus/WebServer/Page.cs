@@ -18,15 +18,11 @@ namespace BuckshotPlusPlus.WebServer
                 "title"
             );
 
-            Console.WriteLine("before");
-
             TokenDataVariable CustomHead = TokenUtils.TryFindTokenDataVariableValueByName(
                 ServerSideTokens,
                 MyPageContainer.ContainerData,
                 "head"
             );
-
-            Console.WriteLine("AFTER");
 
             TokenDataVariable MyPageBody = TokenUtils.TryFindTokenDataVariableValueByName(
                 ServerSideTokens,
@@ -90,12 +86,9 @@ namespace BuckshotPlusPlus.WebServer
                 }
             }
 
-            if (CustomHead != null) 
+            if (CustomHead is { VariableType: "string" })
             {
-                if(CustomHead.VariableType == "string")
-                {
-                    Page += CustomHead.VariableData;
-                }
+                Page += CustomHead.VariableData;
             }
 
             Page += "</head>";
@@ -103,10 +96,6 @@ namespace BuckshotPlusPlus.WebServer
             if (MyPageBody != null)
             {
                 Page += Compiler.HTML.View.CompileContent(ServerSideTokens, MyPageBody, MyPageContainer);
-                /*Page += Compiler.HTML.View.CompileView(
-                    ServerSideTokens,
-                    MyPageBody
-                );*/
             }
             else
             {

@@ -17,7 +17,7 @@ namespace BuckshotPlusPlus
                 TokenDataContainer MyContainer = (TokenDataContainer)MyToken.Data;
                 return MyContainer.ContainerName;
             }
-            //Formater.CriticalError(TokenName + " does not exist");
+
             return null;
         }
 
@@ -32,7 +32,6 @@ namespace BuckshotPlusPlus
                 {
                     if (MyToken.Data.GetType() == typeof(TokenDataVariable))
                     {
-                        
                         TokenDataVariable MyVar = (TokenDataVariable)MyToken.Data;
                         if (MyVar.VariableName == LocalTokenName)
                         {
@@ -42,7 +41,6 @@ namespace BuckshotPlusPlus
                             }
                             else
                             {
-                                //Formater.Warn("Token found");
                                 return MyToken;
                             }
                         }
@@ -57,15 +55,13 @@ namespace BuckshotPlusPlus
                                 MyTokenList = MyContainer.ContainerData;
                                 break;
                             }
-                            else
-                            {
-                                return MyToken;
-                            }
+
+                            return MyToken;
                         }
                     }
                 }
             }
-            //Formater.CriticalError(TokenName + " does not exist");
+
             return null;
         }
 
@@ -81,31 +77,27 @@ namespace BuckshotPlusPlus
                     Formater.TokenCriticalError("Can't find token with name: " + Var.VariableName, MyToken);
                     return false;
                 }
+
                 TokenDataContainer Container = (TokenDataContainer)ParentToken.Data;
                 Var.VariableName = Var.VariableName.Split('.').Last();
                 Container.ContainerData.Add(MyToken);
                 return true;
-                
             }
+
             TokenDataVariable MyVar = (TokenDataVariable)TokenToEdit.Data;
             MyVar.VariableData = Var.GetCompiledVariableData(MyTokenList);
+            MyVar.VariableType = Var.VariableType == "multiple" ? "string" : Var.VariableType;
 
-            if(Var.VariableType == "multiple") {
-                MyVar.VariableType = "string";
-            }
-            else
-            {
-                MyVar.VariableType = Var.VariableType;
-            }
             return true;
         }
 
         public static bool SafeEditTokenData(string LineData,List<Token> MyTokenList, Token MyToken)
         {
-            if(Formater.SafeSplit(LineData, '.').Count > 1)
+            if (Formater.SafeSplit(LineData, '.').Count > 1)
             {
                 return EditTokenData(MyTokenList, MyToken);
             }
+
             return false;
         }
 
@@ -128,26 +120,11 @@ namespace BuckshotPlusPlus
 
                         if(VarToken.VariableType == "ref")
                         {
-                            Token ReferencedToken = TokenUtils.FindTokenByName(FileTokens,VarToken.VariableData);
-
+                            Token ReferencedToken = FindTokenByName(FileTokens,VarToken.VariableData);
                             if (ReferencedToken == null)
                             {
                                 Formater.TokenCriticalError("Token not found " + VarToken.VariableData, ChildToken);
                             }
-                            // This is not necessary, because we run EditAllTokensOfContainer for each views
-                            /*
-                            else
-                            {
-                                if (ReferencedToken.Data.GetType() == typeof(TokenDataContainer))
-                                {
-                                    TokenDataContainer ContainerToken = (TokenDataContainer)ReferencedToken.Data;
-                                    if (ContainerToken != null)
-                                    {
-                                        EditAllTokensOfContainer(FileTokens, ReferencedToken);
-                                    }
-                                }
-                                
-                            }    */
                         }
                     }
                 }
@@ -168,10 +145,7 @@ namespace BuckshotPlusPlus
                     return MyVar;
                 }
             }
-            else
-            {
-                //Formater.Warn("Token of name : " + TokenName + " not found");
-            }
+
             return null;
         }
 
@@ -189,7 +163,6 @@ namespace BuckshotPlusPlus
                 {
                     TokenDataVariable MyVar = (TokenDataVariable)FoundToken.Data;
                     return MyVar;
-
                 }
             }
             return null;
@@ -212,21 +185,13 @@ namespace BuckshotPlusPlus
                     {
                         return TryFindTokenValueByName(FileTokens, FileTokens, MyVar.VariableData);
                     }
-                    else
-                    {
-                        return FoundToken;
-                    }
 
-                }
-                else
-                {
                     return FoundToken;
                 }
+
+                return FoundToken;
             }
-            else
-            {
-                //Formater.Warn("Token of name : " + TokenName + " not found");
-            }
+
             return null;
         }
 
