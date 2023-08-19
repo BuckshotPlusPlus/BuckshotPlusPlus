@@ -33,7 +33,7 @@ namespace BuckshotPlusPlus
                 {
                     isQuote = !isQuote;
                 }
-                if (FileData[i] == ' ' || FileData[i] == '\t' && isQuote == false)
+                if ((FileData[i] == ' ' || FileData[i] == '\t') && isQuote == false)
                 {
                     while (FileData[spaceCount + i] == ' ' || FileData[spaceCount + i] == '\t')
                     {
@@ -57,18 +57,13 @@ namespace BuckshotPlusPlus
                             if (FileData[spaceCount + i] == CharToCLean.Character && CharToCLean.CleanLeft)
                             {
                                 FileData = FileData.Remove(i, spaceCount);
-                                CleanedSpecialChar = true;
                             }
                             else if (FileData[i - 1] == CharToCLean.Character && CharToCLean.CleanRight)
                             {
                                 FileData = FileData.Remove(i, spaceCount);
                                 CleanedSpecialChar = true;
+                                i--;
                             }
-                        }
-
-                        if (spaceCount > 1 && CleanedSpecialChar)
-                        {
-                            FileData = FileData.Remove(i, spaceCount - 1);
                         }
                     }
                     spaceCount = 0;
