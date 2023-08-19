@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -34,84 +34,103 @@ namespace BuckshotPlusPlus.WebServer
                     runServer = false;
                 }
 
-                bool page_found = false;
-
-                foreach (Token MyToken in MyTokenizer.FileTokens)
+                string AbsolutePath = req.Url!.AbsolutePath;
+                if (AbsolutePath.Contains(".ico"))
                 {
-                    if (MyToken.Data.GetType() == typeof(TokenDataContainer))
+                    string Path = "." + AbsolutePath;
+                    if (File.Exists(Path))
                     {
-                        TokenDataContainer MyTokenDataContainer = (TokenDataContainer)MyToken.Data;
-                        if (MyTokenDataContainer.ContainerType == "page")
+                        var Data = File.ReadAllBytes("." + AbsolutePath);
+                        resp.ContentType = "image/x-icon";
+                        resp.ContentEncoding = Encoding.UTF8;
+                        resp.ContentLength64 = Data.LongLength;
+
+                        await resp.OutputStream.WriteAsync(Data, 0, Data.Length);
+
+                        resp.Close();
+                    }
+                }
+                else
+                {
+                    bool page_found = false;
+
+                    foreach (Token MyToken in MyTokenizer.FileTokens)
+                    {
+                        if (MyToken.Data.GetType() == typeof(TokenDataContainer))
                         {
-                            string PageName = MyTokenDataContainer.ContainerName;
-
-                            if (
-                                req.Url.AbsolutePath == "/" + PageName
-                                || (req.Url.AbsolutePath == "/" && PageName == "index")
-                            )
+                            TokenDataContainer MyTokenDataContainer = (TokenDataContainer)MyToken.Data;
+                            if (MyTokenDataContainer.ContainerType == "page")
                             {
-                                
+                                string PageName = MyTokenDataContainer.ContainerName;
 
-                                page_found = true;
+                                if (
+                                    req.Url.AbsolutePath == "/" + PageName
+                                    || (req.Url.AbsolutePath == "/" && PageName == "index")
+                                )
+                                {
 
-                                var stopwatch = new Stopwatch();
-                                stopwatch.Start();
 
-                                UserSessions.RemoveInactiveUserSessions();
+                                    page_found = true;
 
-                                string clientIP = ctx.Request.RemoteEndPoint.ToString();
+                                    var stopwatch = new Stopwatch();
+                                    stopwatch.Start();
 
-                                List<Token> ServerSideTokenList = new List<Token>();
+                                    UserSessions.RemoveInactiveUserSessions();
 
-                                ServerSideTokenList.AddRange(MyTokenizer.FileTokens);
+                                    string clientIP = ctx.Request.RemoteEndPoint.ToString();
 
-                                UserSession FoundUserSession = UserSessions.AddOrUpdateUserSession(req, resp);
+                                    List<Token> ServerSideTokenList = new List<Token>();
 
-                                FoundUserSession.AddUrl(req.Url.AbsolutePath);
+                                    ServerSideTokenList.AddRange(MyTokenizer.FileTokens);
 
-                                ServerSideTokenList.Add(FoundUserSession.GetToken(MyTokenizer));
+                                    UserSession FoundUserSession = UserSessions.AddOrUpdateUserSession(req, resp);
 
-                                // Write the response info
-                                string disableSubmit = !runServer ? "disabled" : "";
-                                string pageData = Page.RenderWebPage(ServerSideTokenList, MyToken);
+                                    FoundUserSession.AddUrl(req.Url.AbsolutePath);
 
-                                byte[] data = Encoding.UTF8.GetBytes(
-                                    pageData
-                                );
+                                    ServerSideTokenList.Add(FoundUserSession.GetToken(MyTokenizer));
 
-                                resp.ContentType = "text/html";
-                                resp.ContentEncoding = Encoding.UTF8;
-                                resp.ContentLength64 = data.LongLength;
+                                    // Write the response info
+                                    string disableSubmit = !runServer ? "disabled" : "";
+                                    string pageData = Page.RenderWebPage(ServerSideTokenList, MyToken);
 
-                                // Write out to the response stream (asynchronously), then close it
-                                await resp.OutputStream.WriteAsync(data, 0, data.Length);
+                                    byte[] data = Encoding.UTF8.GetBytes(
+                                        pageData
+                                    );
 
-                                
+                                    resp.ContentType = "text/html";
+                                    resp.ContentEncoding = Encoding.UTF8;
+                                    resp.ContentLength64 = data.LongLength;
 
-                                resp.Close();
+                                    // Write out to the response stream (asynchronously), then close it
+                                    await resp.OutputStream.WriteAsync(data, 0, data.Length);
 
-                                stopwatch.Stop();
-                                Formater.SuccessMessage($"Successfully sent page {PageName} in {stopwatch.ElapsedMilliseconds} ms");
+
+
+                                    resp.Close();
+
+                                    stopwatch.Stop();
+                                    Formater.SuccessMessage($"Successfully sent page {PageName} in {stopwatch.ElapsedMilliseconds} ms");
+                                }
                             }
                         }
                     }
-                }
 
-                if (!page_found)
-                {
-                    string disableSubmit = !runServer ? "disabled" : "";
-                    string pageData = "404 not found";
+                    if (!page_found)
+                    {
+                        string disableSubmit = !runServer ? "disabled" : "";
+                        string pageData = "404 not found";
 
-                    byte[] data = Encoding.UTF8.GetBytes(
-                        pageData
-                    );
-                    resp.ContentType = "text";
-                    resp.ContentEncoding = Encoding.UTF8;
-                    resp.ContentLength64 = data.LongLength;
+                        byte[] data = Encoding.UTF8.GetBytes(
+                            pageData
+                        );
+                        resp.ContentType = "text";
+                        resp.ContentEncoding = Encoding.UTF8;
+                        resp.ContentLength64 = data.LongLength;
 
-                    // Write out to the response stream (asynchronously), then close it
-                    await resp.OutputStream.WriteAsync(data, 0, data.Length);
-                    resp.Close();
+                        // Write out to the response stream (asynchronously), then close it
+                        await resp.OutputStream.WriteAsync(data, 0, data.Length);
+                        resp.Close();
+                    }
                 }
             }
         }
