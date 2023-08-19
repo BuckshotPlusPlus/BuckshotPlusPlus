@@ -158,7 +158,8 @@ namespace BuckshotPlusPlus
                 {
                     var Data = Icon.Data;
                     var FileName = ((Data as TokenDataVariable)!).VariableData;
-                    File.WriteAllBytes(exportDirectory + "/" + FileName, File.ReadAllBytes(FileName));
+                    string icoPath = System.IO.Path.Combine(filePath, @"..\" + FileName);
+                    File.WriteAllBytes(exportDirectory + "/" + FileName, File.ReadAllBytes(icoPath));
                 }
 
                 Formater.DebugMessage("Starting to export page " + MyPageData.ContainerName + "...");
