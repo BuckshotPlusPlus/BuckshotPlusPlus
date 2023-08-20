@@ -15,6 +15,7 @@ namespace BuckshotPlusPlus
             "data",
             "database",
             "object",
+            "meta",
             "function",
             "view",
             "server",

@@ -94,6 +94,14 @@ namespace BuckshotPlusPlus
                 {
                     // Check if last char is a new line \n / char 13
                     string LineData = MyFileLines[CurrentLineNumber];
+                    if (LineData.Length >= 2)
+                    {
+                        if (LineData[0] + "" + LineData[1] == "##")
+                        {
+                            CurrentLineNumber++;
+                            continue;
+                        }
+                    }
                     if (LineData.Length > 1)
                     {
                         if (LineData[^1] == 13)

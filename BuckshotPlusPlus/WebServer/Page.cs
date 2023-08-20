@@ -43,6 +43,17 @@ namespace BuckshotPlusPlus.WebServer
 
             Page += "</title>";
 
+            /*Token MyPageMeta = TokenUtils.FindTokenByName(MyPageContainer.ContainerData, "meta");
+            if (MyPageMeta != null)
+            {
+                foreach (Token ArrayValue in Analyzer.Array.GetArrayValues(MyPageMeta))
+                {
+                    TokenDataVariable ArrayVar = (TokenDataVariable)ArrayValue.Data;
+                    Console.WriteLine(ArrayVar);
+                    //Page += $"<script src=\"{ArrayVar.VariableData}\">";
+                }
+            }*/
+
             Token MyPageIcon = TokenUtils.FindTokenByName(MyPageContainer.ContainerData, "icon");
             if (MyPageIcon != null)
             {
@@ -90,6 +101,8 @@ namespace BuckshotPlusPlus.WebServer
             {
                 Page += CustomHead.VariableData;
             }
+
+            
 
             Page += "</head>";
 
