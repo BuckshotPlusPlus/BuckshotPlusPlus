@@ -168,6 +168,26 @@ namespace BuckshotPlusPlus
             return null;
         }
 
+
+        public static TokenDataContainer TryFindTokenDataContainerValueByName(
+            List<Token> FileTokens,
+            List<Token> LocalTokenList,
+            string TokenName,
+            bool replaceRef = true
+            )
+        {
+            Token FoundToken = TryFindTokenValueByName(FileTokens, LocalTokenList, TokenName, replaceRef);
+            if (FoundToken != null)
+            {
+                if (FoundToken.Data.GetType() == typeof(TokenDataContainer))
+                {
+                    TokenDataContainer MyContainer = (TokenDataContainer)FoundToken.Data;
+                    return MyContainer;
+                }
+            }
+            return null;
+        }
+
         public static Token TryFindTokenValueByName(
             List<Token> FileTokens,
             List<Token> LocalTokenList,
