@@ -96,6 +96,26 @@ namespace BuckshotPlusPlus
                     string LineData = MyFileLines[CurrentLineNumber];
                     if (LineData.Length >= 2)
                     {
+                        
+                        if (LineData[0] + "" + LineData[1] + LineData[2] == "###")
+                        {
+                            while(CurrentLineNumber < MyFileLines.Count)
+                            {
+                                CurrentLineNumber++;
+                                string NextLine = MyFileLines[CurrentLineNumber];
+                                if(NextLine.Length > 2)
+                                {
+                                    if (NextLine[0] + "" + NextLine[1] + NextLine[2] == "###" || NextLine[^1] + "" + NextLine[^2] + NextLine[3] == "###")
+                                    {
+                                        CurrentLineNumber++;
+                                        break;
+                                    }
+                                }
+                                
+                            }
+                            continue;
+                        }
+
                         if (LineData[0] + "" + LineData[1] == "##")
                         {
                             CurrentLineNumber++;
