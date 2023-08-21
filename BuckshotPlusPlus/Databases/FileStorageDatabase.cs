@@ -15,18 +15,14 @@ namespace BuckshotPlusPlus
             BaseUrl = "/data/";
         }
 
-        public override string Get(string Path)
+        public override Dictionary<string, object> GetObject(string Path)
         {
             string[] FilePath = GetFilePath(Path);
 
             string FileContent = File.ReadAllText(FilePath[0]);
-            Dictionary<string, string> FileData = JsonConvert.DeserializeObject<Dictionary<string, string>>(FileContent);
+            Dictionary<string, object> FileData = JsonConvert.DeserializeObject<Dictionary<string, object>>(FileContent);
 
-            if (FileData[FilePath[1]] != null )
-            {
-                return FileData[FilePath[1]];
-            }
-            return "not_found";
+            return FileData;
         }
 
         public override bool Write(string path, string value)

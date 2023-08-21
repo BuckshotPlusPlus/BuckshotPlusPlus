@@ -23,6 +23,7 @@ namespace BuckshotPlusPlus
                     + " args"
             );
         }
+        
 
         public static bool IsTokenDataFunctionCall(Token MyToken)
         {

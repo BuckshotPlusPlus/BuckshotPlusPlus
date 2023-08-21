@@ -11,7 +11,7 @@ namespace BuckshotPlusPlus
             DatabaseParameters = Parameters;
         }
 
-        public abstract string Get(string path);
+        public abstract Dictionary<string, object> GetObject(string path);
 
         public abstract bool Write(string path, string value);
     }
