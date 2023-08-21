@@ -48,6 +48,9 @@ namespace BuckshotPlusPlus.Security
 
         public string GetUserSessionLineData()
         {
+            Console.WriteLine("Platform:" + SessionPlatform);
+            Console.WriteLine("Lang:" + SessionLang);
+            Console.WriteLine("id:" + SessionID);
             return "data session{\n" +
                    "ip = \"" + SessionIP + "\"\n" +
                    "id = \"" + SessionID + "\"\n" +
