@@ -170,7 +170,6 @@ namespace BuckshotPlusPlus
                                     string ContainerType in TokenDataContainer.SupportedContainerTypes
                                 )
                                 {
-                                    Console.WriteLine(MyString[0]);
                                     if (MyString[0] == ContainerType)
                                     {
                                         ContainerCount++;
@@ -182,10 +181,8 @@ namespace BuckshotPlusPlus
                             if (ContainerCount > 0)
                             {
                                 ContainerData.Add(LineData);
-                                Console.WriteLine("In a container");
                                 if (Formater.SafeContains(LineData, '}'))
                                 {
-                                    Console.WriteLine("LD:" + LineData);
                                     ContainerCount--;
                                     if (ContainerCount == 0)
                                     {
