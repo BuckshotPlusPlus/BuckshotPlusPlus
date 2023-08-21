@@ -18,6 +18,26 @@ namespace BuckshotPlusPlus.Security
             bool SessionCookieFound = false;
             string UserSessionId = null;
 
+            Dictionary<string, string> RequestHeaders = new Dictionary<string, string>();
+            RequestHeaders.Add("ip", req.RemoteEndPoint.ToString());
+
+            System.Collections.Specialized.NameValueCollection headers = req.Headers;
+            // Get each header and display each value.
+            foreach (string key in headers.AllKeys)
+            {
+                string[] values = headers.GetValues(key);
+                if (values.Length > 0)
+                {
+                    if(key == "sec-ch-ua-platform")
+                    {
+                        RequestHeaders.Add("platform", values[0]);
+                    }else if(key == "Accept-Language")
+                    {
+                        RequestHeaders.Add("lang", values[0]);
+                    }
+                }
+            }
+
             foreach (Cookie cook in req.Cookies)
             {
                 if (cook.Name == "bpp_session_id")
@@ -53,15 +73,15 @@ namespace BuckshotPlusPlus.Security
                     return Session;
                 }
 
-                return CreateNewUserSession(req, response);
+                return CreateNewUserSession(RequestHeaders, response);
             }
 
-            return CreateNewUserSession(req, response);
+            return CreateNewUserSession(RequestHeaders, response);
         }
 
-        public UserSession CreateNewUserSession(HttpListenerRequest req, HttpListenerResponse response)
+        public UserSession CreateNewUserSession(Dictionary<string, string> RequestHeaders, HttpListenerResponse response)
         {
-            UserSession NewUserSession = new UserSession(req.RemoteEndPoint.ToString());
+            UserSession NewUserSession = new UserSession(RequestHeaders);
             ActiveUsers.Add(NewUserSession.SessionID, NewUserSession);
 
             Cookie SessionIdCookie = new Cookie("bpp_session_id", NewUserSession.SessionID);

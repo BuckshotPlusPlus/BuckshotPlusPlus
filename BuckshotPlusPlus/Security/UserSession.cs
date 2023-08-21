@@ -7,15 +7,42 @@ namespace BuckshotPlusPlus.Security
     public class UserSession
     {
         public string SessionID { get; set; }
+        public string SessionLang { get; set; }
+        public string SessionPlatform { get; set; }
         public string SessionIP { get; set; }
         public List<AnalyticTimedEvent> UrlHistory { get; set; }
         public DateTime LastUserInteraction { get; set; }
 
-        public UserSession(string IP)
+        public UserSession(Dictionary<string, string> RequestHeaders)
         {
             SessionID = Keys.CreateRandomUniqueKey();
             UrlHistory = new List<AnalyticTimedEvent>();
-            SessionIP = IP;
+            if (RequestHeaders.ContainsKey("platform"))
+            {
+                SessionPlatform = RequestHeaders["platform"];
+            }
+            else
+            {
+                SessionPlatform = "unknown";
+            }
+
+            if (RequestHeaders.ContainsKey("lang"))
+            {
+                SessionLang = RequestHeaders["lang"];
+            }
+            else
+            {
+                SessionLang = "unknown";
+            }
+
+            if (RequestHeaders.ContainsKey("ip"))
+            {
+                SessionIP = RequestHeaders["ip"];
+            }
+            else
+            {
+                SessionIP = "unknown";
+            }
             LastUserInteraction = DateTime.Now;
         }
 
@@ -24,6 +51,8 @@ namespace BuckshotPlusPlus.Security
             return "data session{\n" +
                    "ip = \"" + SessionIP + "\"\n" +
                    "id = \"" + SessionID + "\"\n" +
+                   "lang = \"" + SessionLang + "\"\n" +
+                   "platform = \"" + SessionPlatform + "\"\n" +
                    "url_visited_num = \"" + UrlHistory.Count + "\"\n" +
                    "}\n";
         }
