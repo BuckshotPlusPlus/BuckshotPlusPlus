@@ -46,6 +46,7 @@ namespace BuckshotPlusPlus.WebServer
             /*Token MyPageMeta = TokenUtils.FindTokenByName(MyPageContainer.ContainerData, "meta");
             if (MyPageMeta != null)
             {
+                Console.WriteLine("Found a meta variable");
                 foreach (Token ArrayValue in Analyzer.Array.GetArrayValues(MyPageMeta))
                 {
                     TokenDataVariable ArrayVar = (TokenDataVariable)ArrayValue.Data;

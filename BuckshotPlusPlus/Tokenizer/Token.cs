@@ -1,4 +1,6 @@
-﻿namespace BuckshotPlusPlus
+﻿using System;
+
+namespace BuckshotPlusPlus
 {
     public class Token
     {

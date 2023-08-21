@@ -183,11 +183,22 @@ namespace BuckshotPlusPlus
 
         public static bool IsTokenDataContainer(Token MyToken)
         {
+            string LocalType = Formater.SafeSplit(MyToken.LineData, ' ')[0];
+            
             foreach (string Type in SupportedContainerTypes)
             {
-                if (Formater.SafeSplit(MyToken.LineData, ' ')[0] == Type)
+                if (LocalType == Type)
                 {
-                    return true;
+                    bool ContainsContainerSymbol = Formater.SafeContains(MyToken.LineData, '{');
+                    if (ContainsContainerSymbol)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                    
                 }
             }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace BuckshotPlusPlus
 {
@@ -173,6 +174,7 @@ namespace BuckshotPlusPlus
                 return Result;
             }else if(this.VariableType == "ref" && compile_ref)
             {
+                Console.WriteLine("Editing ref value for var " + this.VariableName);
                 TokenDataVariable FoundToken = TokenUtils.FindTokenDataVariableByName(FileTokens, this.VariableData);
                 if (FoundToken != null)
                 {
