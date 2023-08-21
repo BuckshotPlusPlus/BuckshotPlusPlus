@@ -43,17 +43,35 @@ namespace BuckshotPlusPlus.WebServer
 
             Page += "</title>";
 
-            /*Token MyPageMeta = TokenUtils.FindTokenByName(MyPageContainer.ContainerData, "meta");
+            Token MyPageMeta = TokenUtils.FindTokenByName(MyPageContainer.ContainerData, "meta");
             if (MyPageMeta != null)
             {
-                Console.WriteLine("Found a meta variable");
                 foreach (Token ArrayValue in Analyzer.Array.GetArrayValues(MyPageMeta))
                 {
                     TokenDataVariable ArrayVar = (TokenDataVariable)ArrayValue.Data;
-                    Console.WriteLine(ArrayVar);
+                    if(ArrayVar.VariableType == "ref")
+                    {
+                        TokenDataContainer Meta = TokenUtils.TryFindTokenDataContainerValueByName(
+                            ServerSideTokens,
+                            ServerSideTokens,
+                            ArrayVar.VariableData
+                        );
+
+                        string meta_args = "";
+
+                        foreach(Token MetaVarToken in Meta.ContainerData)
+                        {
+                            TokenDataVariable LocalMetaVar = (TokenDataVariable)MetaVarToken.Data;
+                            meta_args += " " + LocalMetaVar.VariableName + "=" + '"';
+                            meta_args += LocalMetaVar.GetCompiledVariableData(ServerSideTokens, true);
+                            meta_args += '"';
+                        }
+
+                        Page += "<meta " + meta_args + ">";
+                    }
                     //Page += $"<script src=\"{ArrayVar.VariableData}\">";
                 }
-            }*/
+            }
 
             Token MyPageIcon = TokenUtils.FindTokenByName(MyPageContainer.ContainerData, "icon");
             if (MyPageIcon != null)

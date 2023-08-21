@@ -10,7 +10,7 @@ namespace BuckshotPlusPlus.Analyzer
             List<Token> Values = new List<Token>();
             if (MyArray.VariableType != "array")
             {
-                Formater.CriticalError("Not an array");
+                Formater.TokenCriticalError("Can't read array variable, because the following token is not an array", MyToken);
             }
             else
             {

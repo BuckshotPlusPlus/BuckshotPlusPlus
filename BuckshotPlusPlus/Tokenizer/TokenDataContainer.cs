@@ -9,6 +9,7 @@ namespace BuckshotPlusPlus
         public List<Token> ContainerData { get; set; }
         public string ContainerType { get; set; }
         public TokenData ContainerMetaData { get; set; }
+        public Token ContainerToken { get; set; }
 
         public static string[] SupportedContainerTypes =
         {
@@ -34,6 +35,7 @@ namespace BuckshotPlusPlus
             this.ContainerData = new List<Token>();
             this.ContainerType = "";
             this.ContainerName = "";
+            this.ContainerToken = MyToken;
 
             int OpenCount = 0;
             List<string> ChildContainerLines = new List<string>();

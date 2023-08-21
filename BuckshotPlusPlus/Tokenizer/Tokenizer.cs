@@ -8,7 +8,8 @@ using File = System.IO.File;
 namespace BuckshotPlusPlus
 {
     // TokenData is the main class for all tokens
-    public abstract class TokenData { }
+    public abstract class TokenData { 
+    }
 
     public class Tokenizer
     {
