@@ -97,23 +97,26 @@ namespace BuckshotPlusPlus
                     if (LineData.Length >= 2)
                     {
                         
-                        if (LineData[0] + "" + LineData[1] + LineData[2] == "###")
+                        if(LineData.Length > 3)
                         {
-                            while(CurrentLineNumber < MyFileLines.Count)
+                            if (LineData[0] + "" + LineData[1] + LineData[2] == "###")
                             {
-                                CurrentLineNumber++;
-                                string NextLine = MyFileLines[CurrentLineNumber];
-                                if(NextLine.Length > 2)
+                                while (CurrentLineNumber < MyFileLines.Count)
                                 {
-                                    if (NextLine[0] + "" + NextLine[1] + NextLine[2] == "###" || NextLine[^1] + "" + NextLine[^2] + NextLine[3] == "###")
+                                    CurrentLineNumber++;
+                                    string NextLine = MyFileLines[CurrentLineNumber];
+                                    if (NextLine.Length > 2)
                                     {
-                                        CurrentLineNumber++;
-                                        break;
+                                        if (NextLine[0] + "" + NextLine[1] + NextLine[2] == "###" || NextLine[^1] + "" + NextLine[^2] + NextLine[3] == "###")
+                                        {
+                                            CurrentLineNumber++;
+                                            break;
+                                        }
                                     }
+
                                 }
-                                
+                                continue;
                             }
-                            continue;
                         }
 
                         if (LineData[0] + "" + LineData[1] == "##")
@@ -124,6 +127,7 @@ namespace BuckshotPlusPlus
                     }
                     if (LineData.Length > 1)
                     {
+                        
                         if (LineData[^1] == 13)
                         {
                             LineData = LineData.Substring(0, LineData.Length - 1);
@@ -166,6 +170,7 @@ namespace BuckshotPlusPlus
                                     string ContainerType in TokenDataContainer.SupportedContainerTypes
                                 )
                                 {
+                                    Console.WriteLine(MyString[0]);
                                     if (MyString[0] == ContainerType)
                                     {
                                         ContainerCount++;
@@ -177,8 +182,10 @@ namespace BuckshotPlusPlus
                             if (ContainerCount > 0)
                             {
                                 ContainerData.Add(LineData);
+                                Console.WriteLine("In a container");
                                 if (Formater.SafeContains(LineData, '}'))
                                 {
+                                    Console.WriteLine("LD:" + LineData);
                                     ContainerCount--;
                                     if (ContainerCount == 0)
                                     {
