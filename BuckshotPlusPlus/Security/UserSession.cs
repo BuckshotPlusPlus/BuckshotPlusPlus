@@ -10,6 +10,7 @@ namespace BuckshotPlusPlus.Security
         public string SessionLang { get; set; }
         public string SessionPlatform { get; set; }
         public string SessionIP { get; set; }
+        public long SessionStarted { get; set; }
         public List<AnalyticTimedEvent> UrlHistory { get; set; }
         public DateTime LastUserInteraction { get; set; }
 
@@ -43,19 +44,19 @@ namespace BuckshotPlusPlus.Security
             {
                 SessionIP = "unknown";
             }
+
+            SessionStarted = DateTimeOffset.Now.ToUnixTimeMilliseconds();
             LastUserInteraction = DateTime.Now;
         }
 
         public string GetUserSessionLineData()
         {
-            Console.WriteLine("Platform:" + SessionPlatform);
-            Console.WriteLine("Lang:" + SessionLang);
-            Console.WriteLine("id:" + SessionID);
             return "data session{\n" +
                    "ip = \"" + SessionIP + "\"\n" +
                    "id = \"" + SessionID + "\"\n" +
                    "lang = \"" + SessionLang + "\"\n" +
                    "platform = \"" + SessionPlatform + "\"\n" +
+                   "start = \"" + SessionStarted.ToString() + "\"\n" +
                    "url_visited_num = \"" + UrlHistory.Count + "\"\n" +
                    "}\n";
         }

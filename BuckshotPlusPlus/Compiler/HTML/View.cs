@@ -59,7 +59,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
         {
             if (ViewContent != null)
             {
-                if (ViewContent.VariableType == "string")
+                if (ViewContent.VariableType == "string" || ViewContent.VariableType == "multiple")
                 {
                     return ViewContent.GetCompiledVariableData(ServerSideTokens);
                 }
