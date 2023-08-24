@@ -104,15 +104,15 @@ namespace BuckshotPlusPlus.WebServer
 
             Token MyPageScript = TokenUtils.FindTokenByName(
                 MyPageContainer.ContainerData,
-                "script"
+                "scripts"
             );
 
             if (MyPageScript != null)
             {
-                foreach (Token ArrayValue in Analyzer.Array.GetArrayValues(MyPageCSS))
+                foreach (Token ArrayValue in Analyzer.Array.GetArrayValues(MyPageScript))
                 {
                     TokenDataVariable ArrayVar = (TokenDataVariable)ArrayValue.Data;
-                    Page += $"<script src=\"{ArrayVar.VariableData}\">";
+                    Page += $"<script src=\"{ArrayVar.VariableData}\"></script>";
                 }
             }
 
