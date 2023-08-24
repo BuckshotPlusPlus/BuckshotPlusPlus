@@ -12,5 +12,6 @@ public class AnalyticTimedEvent
         var Now = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeMilliseconds();
         EventTimestamp = Now.ToString();
         EventName = Event;
+
     }
 }

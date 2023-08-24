@@ -1,0 +1,522 @@
+{
+  "homepages": [],
+  "source_base_path": "C:/Users/victo/OneDrive/Documents/GitHub/BuckshotPlusPlus/BuckshotPlusPlus",
+  "xrefmap": "xrefmap.yml",
+  "files": [
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.Analytics.AnalyticTimedEvent.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.Analytics.AnalyticTimedEvent.html",
+          "hash": "YHvfSGqh4USEkz5Zn1vpXLqBbEiLmHVlu684Ie3n+CQ="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.Analytics.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.Analytics.html",
+          "hash": "Q2cPpSnTZ7L0dEtKTmCzJvJfqodlU8oc5vONWMi1qv4="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.Analyzer.Array.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.Analyzer.Array.html",
+          "hash": "cm7xboqrA3gLacy/JfCFKzZLxhbaMIX/eRsZH4DMLRs="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.Analyzer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.Analyzer.html",
+          "hash": "Ce5vkdWXX1RJYrnwJFGUMYPHlJg0lsrXSSufSoQx63o="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.BaseDatabase.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.BaseDatabase.html",
+          "hash": "G00Nqxn35crtZZc0A46y6Swvortg6IYaSAKUZpbuPik="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.Compiler.CSS.Properties.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.Compiler.CSS.Properties.html",
+          "hash": "nc/WEvwRF+vCDNUnSSKatd9dEY9hnCs2vOgitiUHfac="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.Compiler.CSS.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.Compiler.CSS.html",
+          "hash": "Y4OevCS2iRtIe80g2TqU6I2Aa9jB22m4lZzZqEX1HIc="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.Compiler.HTML.Attributes.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.Compiler.HTML.Attributes.html",
+          "hash": "0y0fjExNCbwbQlyucPI3I81PdUI7wZk2lcUWUgM+c2A="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.Compiler.HTML.View.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.Compiler.HTML.View.html",
+          "hash": "Zh54DUZT0rjouLjBswAF2/T6BZYodXoas8L7kp5oKHM="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.Compiler.HTML.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.Compiler.HTML.html",
+          "hash": "ksG/9rGka5HVa/R1bisFNFPquoyycrn3njkjS1QPm+A="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.Compiler.JS.Variables.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.Compiler.JS.Variables.html",
+          "hash": "l+0rcKi+5mVfHbZbzu/N5UIHEx/ZBi5fLe/+eqG+ggQ="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.Compiler.JS.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.Compiler.JS.html",
+          "hash": "glyVfkSPeooVNHCyO8Q7yGPVH6ZLtTlv2H+BpIaWH6Y="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.Databases.MySqlDatabase.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.Databases.MySqlDatabase.html",
+          "hash": "R/rzNSB4XLm9L5OX8tI1a1W6/4+3kcnO70tTqY45KMk="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.Databases.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.Databases.html",
+          "hash": "Pq4PxsZ0IzeRk5eyW7BDnmw0s7wKr3v67+moTBua3Hw="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.Formater.SpecialCharacterToClean.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.Formater.SpecialCharacterToClean.html",
+          "hash": "j1H/gVwCKvqEntS4SWo14ZZgr+ay5MPF1z/08SzD0RA="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.Formater.UnsafeCharStruct.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.Formater.UnsafeCharStruct.html",
+          "hash": "gz9dPsR0cjVVZUKFUTf5buPqV2em8GVh5MdOZ3R45FM="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.Formater.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.Formater.html",
+          "hash": "1+nwFXGCQEk7t18uIMwJuZpz4bvk5YgdEWBwbgrM784="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.LogicTest.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.LogicTest.html",
+          "hash": "8TMTNhudSli8q/Nlv7zz8k7L1z5bkT2B4I4cAJn7Ufg="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.Security.Keys.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.Security.Keys.html",
+          "hash": "DiR41ta4Kagzmw+Iv/XEd1T0Sef/1tJ87yIm1Fml9pc="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.Security.UserSession.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.Security.UserSession.html",
+          "hash": "+wwcq1j9kFPuXXgrrTE3EPWiiN0sZ9oG0l2OeGjJf4Q="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.Security.UserSessionManager.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.Security.UserSessionManager.html",
+          "hash": "tAx8tRFYIeMKr5aieQkmSr+B7MlaZRYtkfSvhOcrW6A="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.Security.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.Security.html",
+          "hash": "zJ11rmfvq3/uzjPJ6Kl7okOfbCigkXtpULviBDIYZiQ="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.Token.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.Token.html",
+          "hash": "+CU075K0zmu7tTqI7ZYixSL4JGRPc5yWfFTP3Bj6sKA="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.TokenData.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.TokenData.html",
+          "hash": "rN4PdW3zXSnT/QJwrDUHKUZW0FYFpRWKbXKMLEYQOKw="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.TokenDataContainer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.TokenDataContainer.html",
+          "hash": "I2EKsgtAiSvvIzQgBKr29px3lL+DvhmYh5fDl0xsHnI="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.TokenDataLogic.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.TokenDataLogic.html",
+          "hash": "hjg9EqWtIclmWCpI7WXBNIuV/5gi1qseXAXk2fUdeuc="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.TokenDataVariable.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.TokenDataVariable.html",
+          "hash": "iDh4LQoPPYHbb4qn1YQe+ypjKmhO76R87/M7nVMTIKk="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.TokenUtils.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.TokenUtils.html",
+          "hash": "Lzl510GWBICWxOGQ24K9Bm73Q6lST9OCE/UWYTsCr64="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.Tokenizer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.Tokenizer.html",
+          "hash": "V1vgWlbYxpbgk43RBNw9zzX/G1muzj6yiNarTLTk9EU="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.WebServer.MetaData.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.WebServer.MetaData.html",
+          "hash": "XOOS0CvfxnQD/Twf4iVYhglw6eLRx+Ng4hPCBIwdvQc="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.WebServer.WebMetaDataType.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.WebServer.WebMetaDataType.html",
+          "hash": "BWdYTsg/aY4Fb49CfJ++otC+oTQasY7k7yjO05qDqA8="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.WebServer.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.WebServer.html",
+          "hash": "g4nK55Mv/ym8oqyuGp/94fx9Osuetr5DxeuK3byenqY="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.html",
+          "hash": "5VvZdBKimTEbTXGVX0E5rDIreX3xFaw+dDTF8Yb6wuw="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "api/index.md",
+      "output": {
+        ".html": {
+          "relative_path": "api/index.html",
+          "hash": "gBGtxd3JCuiIfiTnfCChuhfHF8qafY4M6Nf1QR5Affw="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "api/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/toc.html",
+          "hash": "bD7Ozh89c29/vmJFuOVzB4x6ehu6VoQa01Dg8yf4N/s="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "articles/intro.md",
+      "output": {
+        ".html": {
+          "relative_path": "articles/intro.html",
+          "hash": "rN4iuNBIx/YZrSadEJddLcFt+nevxnT4muYL0ni7JO0="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "articles/toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "articles/toc.html",
+          "hash": "9CQlX43DzIA40V4Syxv3yUuQuA2RZRQ9NqQOpwfSUtY="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Conceptual",
+      "source_relative_path": "index.md",
+      "output": {
+        ".html": {
+          "relative_path": "index.html",
+          "hash": "dBBcVm4jwJ2LQKhdR4UyGD/b8iEQQwLCisdBlTr9Si4="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    },
+    {
+      "type": "Toc",
+      "source_relative_path": "toc.yml",
+      "output": {
+        ".html": {
+          "relative_path": "toc.html",
+          "hash": "+ZhMBnJww1L9MfNvOREE3C792J47FEy5z8H8Bn+1evc="
+        }
+      },
+      "is_incremental": false,
+      "version": ""
+    }
+  ],
+  "incremental_info": [
+    {
+      "status": {
+        "can_incremental": true,
+        "incrementalPhase": "build",
+        "total_file_count": 0,
+        "skipped_file_count": 0
+      },
+      "processors": {
+        "ConceptualDocumentProcessor": {
+          "can_incremental": true,
+          "incrementalPhase": "build",
+          "total_file_count": 3,
+          "skipped_file_count": 3
+        },
+        "ManagedReferenceDocumentProcessor": {
+          "can_incremental": true,
+          "incrementalPhase": "build",
+          "total_file_count": 33,
+          "skipped_file_count": 31
+        },
+        "TocDocumentProcessor": {
+          "can_incremental": false,
+          "details": "Processor TocDocumentProcessor cannot support incremental build because the processor doesn't implement ISupportIncrementalDocumentProcessor interface.",
+          "incrementalPhase": "build",
+          "total_file_count": 0,
+          "skipped_file_count": 0
+        }
+      }
+    },
+    {
+      "status": {
+        "can_incremental": true,
+        "details": "Can support incremental post processing.",
+        "incrementalPhase": "postProcessing",
+        "total_file_count": 0,
+        "skipped_file_count": 0
+      },
+      "processors": {}
+    }
+  ],
+  "version_info": {},
+  "groups": [
+    {
+      "xrefmap": "xrefmap.yml"
+    }
+  ]
+}

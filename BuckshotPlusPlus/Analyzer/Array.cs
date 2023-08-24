@@ -21,6 +21,8 @@ namespace BuckshotPlusPlus.Analyzer
                 foreach (string ArrayValue in ArrayValues)
                 {
                     Values.Add(
+
+
                         new Token(
                             MyToken.FileName,
                             ArrayValue,
