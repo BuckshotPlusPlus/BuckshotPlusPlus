@@ -105,28 +105,52 @@
     <div class="level0"><span class="xref">System.Object</span></div>
     <div class="level1"><span class="xref">Token</span></div>
   </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.Equals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetHashCode()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.GetType()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.MemberwiseClone()</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ReferenceEquals(System.Object, System.Object)</span>
+    </div>
+    <div>
+      <span class="xref">System.Object.ToString()</span>
+    </div>
+  </div>
   <h6><strong>Namespace</strong>: <a class="xref" href="BuckshotPlusPlus.html">BuckshotPlusPlus</a></h6>
   <h6><strong>Assembly</strong>: BuckshotPlusPlus.dll</h6>
   <h5 id="BuckshotPlusPlus_Token_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class Token : object</code></pre>
+    <pre><code class="lang-csharp hljs">public class Token</code></pre>
   </div>
   <h3 id="constructors">Constructors
   </h3>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
-    <a href="https://github.com/BuckshotPlusPlus/BuckshotPlusPlus/new/main/apiSpec/new?filename=BuckshotPlusPlus_Token__ctor_System_String_System_String_System_Int32_BuckshotPlusPlus_Tokenizer_BuckshotPlusPlus_TokenDataContainer_.md&amp;value=---%0Auid%3A%20BuckshotPlusPlus.Token.%23ctor(System.String%2CSystem.String%2CSystem.Int32%2CBuckshotPlusPlus.Tokenizer%2CBuckshotPlusPlus.TokenDataContainer)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+    <a href="https://github.com/BuckshotPlusPlus/BuckshotPlusPlus/new/main/apiSpec/new?filename=BuckshotPlusPlus_Token__ctor_System_String_System_String_System_Int32_BuckshotPlusPlus_Tokenizer_BuckshotPlusPlus_TokenDataContainer_BuckshotPlusPlus_Token_.md&amp;value=---%0Auid%3A%20BuckshotPlusPlus.Token.%23ctor(System.String%2CSystem.String%2CSystem.Int32%2CBuckshotPlusPlus.Tokenizer%2CBuckshotPlusPlus.TokenDataContainer%2CBuckshotPlusPlus.Token)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/BuckshotPlusPlus/BuckshotPlusPlus/blob/main/BuckshotPlusPlus/Tokenizer/Token.cs/#L17">View Source</a>
+    <a href="https://github.com/BuckshotPlusPlus/BuckshotPlusPlus/blob/main/BuckshotPlusPlus/Tokenizer/Token.cs/#L20">View Source</a>
   </span>
   <a id="BuckshotPlusPlus_Token__ctor_" data-uid="BuckshotPlusPlus.Token.#ctor*"></a>
-  <h4 id="BuckshotPlusPlus_Token__ctor_System_String_System_String_System_Int32_BuckshotPlusPlus_Tokenizer_BuckshotPlusPlus_TokenDataContainer_" data-uid="BuckshotPlusPlus.Token.#ctor(System.String,System.String,System.Int32,BuckshotPlusPlus.Tokenizer,BuckshotPlusPlus.TokenDataContainer)">Token(String, String, Int32, Tokenizer, TokenDataContainer)</h4>
+  <h4 id="BuckshotPlusPlus_Token__ctor_System_String_System_String_System_Int32_BuckshotPlusPlus_Tokenizer_BuckshotPlusPlus_TokenDataContainer_BuckshotPlusPlus_Token_" data-uid="BuckshotPlusPlus.Token.#ctor(System.String,System.String,System.Int32,BuckshotPlusPlus.Tokenizer,BuckshotPlusPlus.TokenDataContainer,BuckshotPlusPlus.Token)">Token(String, String, Int32, Tokenizer, TokenDataContainer, Token)</h4>
   <div class="markdown level1 summary"></div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public Token(string FileName, string LineData, int LineNumber, Tokenizer MyTokenizer, TokenDataContainer Parent = null)</code></pre>
+    <pre><code class="lang-csharp hljs">public Token(string FileName, string LineData, int LineNumber, Tokenizer MyTokenizer, TokenDataContainer Parent = null, Token PreviousToken = null)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -161,6 +185,11 @@
       <tr>
         <td><a class="xref" href="BuckshotPlusPlus.TokenDataContainer.html">TokenDataContainer</a></td>
         <td><span class="parametername">Parent</span></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td><a class="xref" href="BuckshotPlusPlus.Token.html">Token</a></td>
+        <td><span class="parametername">PreviousToken</span></td>
         <td></td>
       </tr>
     </tbody>
@@ -319,6 +348,36 @@
   </table>
   <span class="small pull-right mobile-hide">
     <span class="divider">|</span>
+    <a href="https://github.com/BuckshotPlusPlus/BuckshotPlusPlus/new/main/apiSpec/new?filename=BuckshotPlusPlus_Token_NextToken.md&amp;value=---%0Auid%3A%20BuckshotPlusPlus.Token.NextToken%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/BuckshotPlusPlus/BuckshotPlusPlus/blob/main/BuckshotPlusPlus/Tokenizer/Token.cs/#L17">View Source</a>
+  </span>
+  <a id="BuckshotPlusPlus_Token_NextToken_" data-uid="BuckshotPlusPlus.Token.NextToken*"></a>
+  <h4 id="BuckshotPlusPlus_Token_NextToken" data-uid="BuckshotPlusPlus.Token.NextToken">NextToken</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Token NextToken { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="BuckshotPlusPlus.Token.html">Token</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
     <a href="https://github.com/BuckshotPlusPlus/BuckshotPlusPlus/new/main/apiSpec/new?filename=BuckshotPlusPlus_Token_Parent.md&amp;value=---%0Auid%3A%20BuckshotPlusPlus.Token.Parent%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
@@ -343,6 +402,36 @@
     <tbody>
       <tr>
         <td><a class="xref" href="BuckshotPlusPlus.TokenDataContainer.html">TokenDataContainer</a></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/BuckshotPlusPlus/BuckshotPlusPlus/new/main/apiSpec/new?filename=BuckshotPlusPlus_Token_PreviousToken.md&amp;value=---%0Auid%3A%20BuckshotPlusPlus.Token.PreviousToken%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/BuckshotPlusPlus/BuckshotPlusPlus/blob/main/BuckshotPlusPlus/Tokenizer/Token.cs/#L18">View Source</a>
+  </span>
+  <a id="BuckshotPlusPlus_Token_PreviousToken_" data-uid="BuckshotPlusPlus.Token.PreviousToken*"></a>
+  <h4 id="BuckshotPlusPlus_Token_PreviousToken" data-uid="BuckshotPlusPlus.Token.PreviousToken">PreviousToken</h4>
+  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Token PreviousToken { get; set; }</code></pre>
+  </div>
+  <h5 class="propertyValue">Property Value</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><a class="xref" href="BuckshotPlusPlus.Token.html">Token</a></td>
         <td></td>
       </tr>
     </tbody>

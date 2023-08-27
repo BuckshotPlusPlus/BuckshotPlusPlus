@@ -62,15 +62,17 @@ namespace BuckshotPlusPlus
                         }
 
                         // CHECK AND STORE CONTAINER TYPE (OBJECT, FUNCTION)
+                        
                         foreach (string ContainerType in SupportedContainerTypes)
                         {
                             if (MyArgs[0] == ContainerType)
                             {
-                                if(ContainerType == "if")
+                                if (ContainerType == "if" || ContainerType == "else")
                                 {
                                     this.ContainerType = "logic";
                                     MyToken.Type = this.ContainerType;
                                     ContainerMetaData = new TokenDataLogic(MyToken);
+                                    
                                 }
                                 else
                                 {

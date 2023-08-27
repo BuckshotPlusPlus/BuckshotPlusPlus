@@ -187,30 +187,29 @@ namespace BuckshotPlusPlus
                                     ContainerCount--;
                                     if (ContainerCount == 0)
                                     {
+                                        Token PreviousToken = null;
+                                        if (FileTokens.Count > 0)
+                                        {
+                                            PreviousToken = FileTokens.Last();
+                                        }
                                         Token NewContainerToken = new Token(
                                                 FileName,
                                                 String.Join('\n', ContainerData),
                                                 CurrentLineNumber,
-                                                this
+                                                this,
+                                                null,
+                                                PreviousToken
                                             );
+
+                                        
+
                                         TokenDataContainer NewContainerTokenData = (TokenDataContainer)NewContainerToken.Data;
                                         if (NewContainerTokenData.ContainerType == "logic")
                                         {
-                                            LogicTest TestToRun = ((TokenDataLogic)NewContainerTokenData.ContainerMetaData).TokenLogicTest;
-                                            if (TestToRun.RunLogicTest(FileTokens, NewContainerToken))
-                                            {
-                                                foreach(Token LocalToken in NewContainerTokenData.ContainerData)
-                                                {
-                                                    if(LocalToken.Type == "variable")
-                                                    {
-                                                        if (Formater.SafeSplit(((TokenDataVariable)LocalToken.Data).VariableName, '.').Count > 1)
-                                                        {
-                                                            TokenUtils.EditTokenData(FileTokens, LocalToken);
-                                                        }
-                                                    }
-                                                    
-                                                }
-                                            }
+                                            // RUN LOGIC TEST
+                                            TokenDataLogic MyLogic = (TokenDataLogic)NewContainerTokenData.ContainerMetaData;
+                                            MyLogic.RunLogicTest(FileTokens);
+                                            
                                         }
                                         if (((TokenDataContainer)NewContainerToken.Data).ContainerType == "page")
                                         {
@@ -250,7 +249,16 @@ namespace BuckshotPlusPlus
                                     CurrentLineNumber,
                                     this
                                 );
-                            if(((TokenDataContainer)NewContainerToken.Data).ContainerType == "page")
+
+                            TokenDataContainer NewContainerTokenData = (TokenDataContainer)NewContainerToken.Data;
+                            if (NewContainerTokenData.ContainerType == "logic")
+                            {
+                                // RUN LOGIC TEST
+                                TokenDataLogic MyLogic = (TokenDataLogic)NewContainerTokenData.ContainerMetaData;
+                                MyLogic.RunLogicTest(FileTokens);
+
+                            }
+                            if (((TokenDataContainer)NewContainerToken.Data).ContainerType == "page")
                             {
                                 PagesTokens.Add(NewContainerToken);
                             }

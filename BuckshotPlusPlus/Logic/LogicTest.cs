@@ -13,7 +13,6 @@ namespace BuckshotPlusPlus
         public string RightValueType { get; set; }
 
         public LogicTest(string LogicTestString, Token MyToken) {
-            Console.WriteLine("Test:" + LogicTestString);
             LogicTestType = FindLogicTestType(LogicTestString);
             if(LogicTestType == null)
             {
@@ -26,18 +25,15 @@ namespace BuckshotPlusPlus
             RightValue = Values[1];
             RightValueType = TokenDataVariable.FindVariableType(RightValue, MyToken);
 
-            Formater.DebugMessage("Found logic test of type:" + LogicTestType);
         }
 
         public bool RunLogicTest(List<Token> TokenList, Token MyToken)
         {
-            Console.WriteLine("Running logic test " + LeftValue + LogicTestType + RightValue);
             if(LeftValueType == "ref")
             {
                 Token FoundToken = TokenUtils.FindTokenByName(TokenList, LeftValue);
                 if(FoundToken != null)
                 {
-                    Console.WriteLine("Found token with name " + LeftValue);
                     TokenDataVariable FoundVar = (TokenDataVariable)FoundToken.Data;
                     LeftValue = FoundVar.VariableData;
                     LeftValueType = FoundVar.VariableType;
@@ -60,7 +56,6 @@ namespace BuckshotPlusPlus
 
             if(LeftValueType == RightValueType)
             {
-                Console.WriteLine(LeftValue + "=" + RightValue);
                 switch(LogicTestType)
                 {
                     case "==":
@@ -93,7 +88,6 @@ namespace BuckshotPlusPlus
             foreach (string LocalLogicTestType in LogicTestsTypes)
             {
                 List<string> TestSides = Formater.SafeSplit(LogicTestString, LocalLogicTestType[0]);
-                Console.WriteLine(LocalLogicTestType[0]);
 
                 if(TestSides.Count > 1)
                 {

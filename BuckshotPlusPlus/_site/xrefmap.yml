@@ -89,13 +89,13 @@ references:
   commentId: T:BuckshotPlusPlus.BaseDatabase
   fullName: BuckshotPlusPlus.BaseDatabase
   nameWithType: BaseDatabase
-- uid: BuckshotPlusPlus.BaseDatabase.#ctor(Dictionary{System.String,System.String},BuckshotPlusPlus.Tokenizer)
+- uid: BuckshotPlusPlus.BaseDatabase.#ctor(System.Collections.Generic.Dictionary{System.String,System.String},BuckshotPlusPlus.Tokenizer)
   name: BaseDatabase(Dictionary<String, String>, Tokenizer)
-  href: api/BuckshotPlusPlus.BaseDatabase.html#BuckshotPlusPlus_BaseDatabase__ctor_Dictionary_System_String_System_String__BuckshotPlusPlus_Tokenizer_
-  commentId: M:BuckshotPlusPlus.BaseDatabase.#ctor(Dictionary{System.String,System.String},BuckshotPlusPlus.Tokenizer)
+  href: api/BuckshotPlusPlus.BaseDatabase.html#BuckshotPlusPlus_BaseDatabase__ctor_System_Collections_Generic_Dictionary_System_String_System_String__BuckshotPlusPlus_Tokenizer_
+  commentId: M:BuckshotPlusPlus.BaseDatabase.#ctor(System.Collections.Generic.Dictionary{System.String,System.String},BuckshotPlusPlus.Tokenizer)
   name.vb: BaseDatabase(Dictionary(Of String, String), Tokenizer)
-  fullName: BuckshotPlusPlus.BaseDatabase.BaseDatabase(Dictionary<System.String, System.String>, BuckshotPlusPlus.Tokenizer)
-  fullName.vb: BuckshotPlusPlus.BaseDatabase.BaseDatabase(Dictionary(Of System.String, System.String), BuckshotPlusPlus.Tokenizer)
+  fullName: BuckshotPlusPlus.BaseDatabase.BaseDatabase(System.Collections.Generic.Dictionary<System.String, System.String>, BuckshotPlusPlus.Tokenizer)
+  fullName.vb: BuckshotPlusPlus.BaseDatabase.BaseDatabase(System.Collections.Generic.Dictionary(Of System.String, System.String), BuckshotPlusPlus.Tokenizer)
   nameWithType: BaseDatabase.BaseDatabase(Dictionary<String, String>, Tokenizer)
   nameWithType.vb: BaseDatabase.BaseDatabase(Dictionary(Of String, String), Tokenizer)
 - uid: BuckshotPlusPlus.BaseDatabase.#ctor*
@@ -156,13 +156,13 @@ references:
   commentId: T:BuckshotPlusPlus.Compiler.CSS.Properties
   fullName: BuckshotPlusPlus.Compiler.CSS.Properties
   nameWithType: Properties
-- uid: BuckshotPlusPlus.Compiler.CSS.Properties.GetCSSString(List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
+- uid: BuckshotPlusPlus.Compiler.CSS.Properties.GetCSSString(System.Collections.Generic.List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
   name: GetCSSString(List<Token>, Token)
-  href: api/BuckshotPlusPlus.Compiler.CSS.Properties.html#BuckshotPlusPlus_Compiler_CSS_Properties_GetCSSString_List_BuckshotPlusPlus_Token__BuckshotPlusPlus_Token_
-  commentId: M:BuckshotPlusPlus.Compiler.CSS.Properties.GetCSSString(List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
+  href: api/BuckshotPlusPlus.Compiler.CSS.Properties.html#BuckshotPlusPlus_Compiler_CSS_Properties_GetCSSString_System_Collections_Generic_List_BuckshotPlusPlus_Token__BuckshotPlusPlus_Token_
+  commentId: M:BuckshotPlusPlus.Compiler.CSS.Properties.GetCSSString(System.Collections.Generic.List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
   name.vb: GetCSSString(List(Of Token), Token)
-  fullName: BuckshotPlusPlus.Compiler.CSS.Properties.GetCSSString(List<BuckshotPlusPlus.Token>, BuckshotPlusPlus.Token)
-  fullName.vb: BuckshotPlusPlus.Compiler.CSS.Properties.GetCSSString(List(Of BuckshotPlusPlus.Token), BuckshotPlusPlus.Token)
+  fullName: BuckshotPlusPlus.Compiler.CSS.Properties.GetCSSString(System.Collections.Generic.List<BuckshotPlusPlus.Token>, BuckshotPlusPlus.Token)
+  fullName.vb: BuckshotPlusPlus.Compiler.CSS.Properties.GetCSSString(System.Collections.Generic.List(Of BuckshotPlusPlus.Token), BuckshotPlusPlus.Token)
   nameWithType: Properties.GetCSSString(List<Token>, Token)
   nameWithType.vb: Properties.GetCSSString(List(Of Token), Token)
 - uid: BuckshotPlusPlus.Compiler.CSS.Properties.GetCSSString*
@@ -210,13 +210,13 @@ references:
   commentId: T:BuckshotPlusPlus.Compiler.HTML.Attributes
   fullName: BuckshotPlusPlus.Compiler.HTML.Attributes
   nameWithType: Attributes
-- uid: BuckshotPlusPlus.Compiler.HTML.Attributes.GetHTMLAttributes(List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
+- uid: BuckshotPlusPlus.Compiler.HTML.Attributes.GetHTMLAttributes(System.Collections.Generic.List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
   name: GetHTMLAttributes(List<Token>, Token)
-  href: api/BuckshotPlusPlus.Compiler.HTML.Attributes.html#BuckshotPlusPlus_Compiler_HTML_Attributes_GetHTMLAttributes_List_BuckshotPlusPlus_Token__BuckshotPlusPlus_Token_
-  commentId: M:BuckshotPlusPlus.Compiler.HTML.Attributes.GetHTMLAttributes(List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
+  href: api/BuckshotPlusPlus.Compiler.HTML.Attributes.html#BuckshotPlusPlus_Compiler_HTML_Attributes_GetHTMLAttributes_System_Collections_Generic_List_BuckshotPlusPlus_Token__BuckshotPlusPlus_Token_
+  commentId: M:BuckshotPlusPlus.Compiler.HTML.Attributes.GetHTMLAttributes(System.Collections.Generic.List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
   name.vb: GetHTMLAttributes(List(Of Token), Token)
-  fullName: BuckshotPlusPlus.Compiler.HTML.Attributes.GetHTMLAttributes(List<BuckshotPlusPlus.Token>, BuckshotPlusPlus.Token)
-  fullName.vb: BuckshotPlusPlus.Compiler.HTML.Attributes.GetHTMLAttributes(List(Of BuckshotPlusPlus.Token), BuckshotPlusPlus.Token)
+  fullName: BuckshotPlusPlus.Compiler.HTML.Attributes.GetHTMLAttributes(System.Collections.Generic.List<BuckshotPlusPlus.Token>, BuckshotPlusPlus.Token)
+  fullName.vb: BuckshotPlusPlus.Compiler.HTML.Attributes.GetHTMLAttributes(System.Collections.Generic.List(Of BuckshotPlusPlus.Token), BuckshotPlusPlus.Token)
   nameWithType: Attributes.GetHTMLAttributes(List<Token>, Token)
   nameWithType.vb: Attributes.GetHTMLAttributes(List(Of Token), Token)
 - uid: BuckshotPlusPlus.Compiler.HTML.Attributes.GetHTMLAttributes*
@@ -232,13 +232,13 @@ references:
   commentId: T:BuckshotPlusPlus.Compiler.HTML.View
   fullName: BuckshotPlusPlus.Compiler.HTML.View
   nameWithType: View
-- uid: BuckshotPlusPlus.Compiler.HTML.View.CompileContent(List{BuckshotPlusPlus.Token},BuckshotPlusPlus.TokenDataVariable,BuckshotPlusPlus.TokenDataContainer)
+- uid: BuckshotPlusPlus.Compiler.HTML.View.CompileContent(System.Collections.Generic.List{BuckshotPlusPlus.Token},BuckshotPlusPlus.TokenDataVariable,BuckshotPlusPlus.TokenDataContainer)
   name: CompileContent(List<Token>, TokenDataVariable, TokenDataContainer)
-  href: api/BuckshotPlusPlus.Compiler.HTML.View.html#BuckshotPlusPlus_Compiler_HTML_View_CompileContent_List_BuckshotPlusPlus_Token__BuckshotPlusPlus_TokenDataVariable_BuckshotPlusPlus_TokenDataContainer_
-  commentId: M:BuckshotPlusPlus.Compiler.HTML.View.CompileContent(List{BuckshotPlusPlus.Token},BuckshotPlusPlus.TokenDataVariable,BuckshotPlusPlus.TokenDataContainer)
+  href: api/BuckshotPlusPlus.Compiler.HTML.View.html#BuckshotPlusPlus_Compiler_HTML_View_CompileContent_System_Collections_Generic_List_BuckshotPlusPlus_Token__BuckshotPlusPlus_TokenDataVariable_BuckshotPlusPlus_TokenDataContainer_
+  commentId: M:BuckshotPlusPlus.Compiler.HTML.View.CompileContent(System.Collections.Generic.List{BuckshotPlusPlus.Token},BuckshotPlusPlus.TokenDataVariable,BuckshotPlusPlus.TokenDataContainer)
   name.vb: CompileContent(List(Of Token), TokenDataVariable, TokenDataContainer)
-  fullName: BuckshotPlusPlus.Compiler.HTML.View.CompileContent(List<BuckshotPlusPlus.Token>, BuckshotPlusPlus.TokenDataVariable, BuckshotPlusPlus.TokenDataContainer)
-  fullName.vb: BuckshotPlusPlus.Compiler.HTML.View.CompileContent(List(Of BuckshotPlusPlus.Token), BuckshotPlusPlus.TokenDataVariable, BuckshotPlusPlus.TokenDataContainer)
+  fullName: BuckshotPlusPlus.Compiler.HTML.View.CompileContent(System.Collections.Generic.List<BuckshotPlusPlus.Token>, BuckshotPlusPlus.TokenDataVariable, BuckshotPlusPlus.TokenDataContainer)
+  fullName.vb: BuckshotPlusPlus.Compiler.HTML.View.CompileContent(System.Collections.Generic.List(Of BuckshotPlusPlus.Token), BuckshotPlusPlus.TokenDataVariable, BuckshotPlusPlus.TokenDataContainer)
   nameWithType: View.CompileContent(List<Token>, TokenDataVariable, TokenDataContainer)
   nameWithType.vb: View.CompileContent(List(Of Token), TokenDataVariable, TokenDataContainer)
 - uid: BuckshotPlusPlus.Compiler.HTML.View.CompileContent*
@@ -248,13 +248,13 @@ references:
   isSpec: "True"
   fullName: BuckshotPlusPlus.Compiler.HTML.View.CompileContent
   nameWithType: View.CompileContent
-- uid: BuckshotPlusPlus.Compiler.HTML.View.CompileView(List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
+- uid: BuckshotPlusPlus.Compiler.HTML.View.CompileView(System.Collections.Generic.List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
   name: CompileView(List<Token>, Token)
-  href: api/BuckshotPlusPlus.Compiler.HTML.View.html#BuckshotPlusPlus_Compiler_HTML_View_CompileView_List_BuckshotPlusPlus_Token__BuckshotPlusPlus_Token_
-  commentId: M:BuckshotPlusPlus.Compiler.HTML.View.CompileView(List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
+  href: api/BuckshotPlusPlus.Compiler.HTML.View.html#BuckshotPlusPlus_Compiler_HTML_View_CompileView_System_Collections_Generic_List_BuckshotPlusPlus_Token__BuckshotPlusPlus_Token_
+  commentId: M:BuckshotPlusPlus.Compiler.HTML.View.CompileView(System.Collections.Generic.List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
   name.vb: CompileView(List(Of Token), Token)
-  fullName: BuckshotPlusPlus.Compiler.HTML.View.CompileView(List<BuckshotPlusPlus.Token>, BuckshotPlusPlus.Token)
-  fullName.vb: BuckshotPlusPlus.Compiler.HTML.View.CompileView(List(Of BuckshotPlusPlus.Token), BuckshotPlusPlus.Token)
+  fullName: BuckshotPlusPlus.Compiler.HTML.View.CompileView(System.Collections.Generic.List<BuckshotPlusPlus.Token>, BuckshotPlusPlus.Token)
+  fullName.vb: BuckshotPlusPlus.Compiler.HTML.View.CompileView(System.Collections.Generic.List(Of BuckshotPlusPlus.Token), BuckshotPlusPlus.Token)
   nameWithType: View.CompileView(List<Token>, Token)
   nameWithType.vb: View.CompileView(List(Of Token), Token)
 - uid: BuckshotPlusPlus.Compiler.HTML.View.CompileView*
@@ -276,13 +276,13 @@ references:
   commentId: T:BuckshotPlusPlus.Compiler.JS.Variables
   fullName: BuckshotPlusPlus.Compiler.JS.Variables
   nameWithType: Variables
-- uid: BuckshotPlusPlus.Compiler.JS.Variables.GetVarString(List{BuckshotPlusPlus.Token},List{BuckshotPlusPlus.Token},System.Int32)
+- uid: BuckshotPlusPlus.Compiler.JS.Variables.GetVarString(System.Collections.Generic.List{BuckshotPlusPlus.Token},System.Collections.Generic.List{BuckshotPlusPlus.Token},System.Int32)
   name: GetVarString(List<Token>, List<Token>, Int32)
-  href: api/BuckshotPlusPlus.Compiler.JS.Variables.html#BuckshotPlusPlus_Compiler_JS_Variables_GetVarString_List_BuckshotPlusPlus_Token__List_BuckshotPlusPlus_Token__System_Int32_
-  commentId: M:BuckshotPlusPlus.Compiler.JS.Variables.GetVarString(List{BuckshotPlusPlus.Token},List{BuckshotPlusPlus.Token},System.Int32)
+  href: api/BuckshotPlusPlus.Compiler.JS.Variables.html#BuckshotPlusPlus_Compiler_JS_Variables_GetVarString_System_Collections_Generic_List_BuckshotPlusPlus_Token__System_Collections_Generic_List_BuckshotPlusPlus_Token__System_Int32_
+  commentId: M:BuckshotPlusPlus.Compiler.JS.Variables.GetVarString(System.Collections.Generic.List{BuckshotPlusPlus.Token},System.Collections.Generic.List{BuckshotPlusPlus.Token},System.Int32)
   name.vb: GetVarString(List(Of Token), List(Of Token), Int32)
-  fullName: BuckshotPlusPlus.Compiler.JS.Variables.GetVarString(List<BuckshotPlusPlus.Token>, List<BuckshotPlusPlus.Token>, System.Int32)
-  fullName.vb: BuckshotPlusPlus.Compiler.JS.Variables.GetVarString(List(Of BuckshotPlusPlus.Token), List(Of BuckshotPlusPlus.Token), System.Int32)
+  fullName: BuckshotPlusPlus.Compiler.JS.Variables.GetVarString(System.Collections.Generic.List<BuckshotPlusPlus.Token>, System.Collections.Generic.List<BuckshotPlusPlus.Token>, System.Int32)
+  fullName.vb: BuckshotPlusPlus.Compiler.JS.Variables.GetVarString(System.Collections.Generic.List(Of BuckshotPlusPlus.Token), System.Collections.Generic.List(Of BuckshotPlusPlus.Token), System.Int32)
   nameWithType: Variables.GetVarString(List<Token>, List<Token>, Int32)
   nameWithType.vb: Variables.GetVarString(List(Of Token), List(Of Token), Int32)
 - uid: BuckshotPlusPlus.Compiler.JS.Variables.GetVarString*
@@ -304,13 +304,13 @@ references:
   commentId: T:BuckshotPlusPlus.Databases.MySqlDatabase
   fullName: BuckshotPlusPlus.Databases.MySqlDatabase
   nameWithType: MySqlDatabase
-- uid: BuckshotPlusPlus.Databases.MySqlDatabase.#ctor(Dictionary{System.String,System.String},BuckshotPlusPlus.Tokenizer)
+- uid: BuckshotPlusPlus.Databases.MySqlDatabase.#ctor(System.Collections.Generic.Dictionary{System.String,System.String},BuckshotPlusPlus.Tokenizer)
   name: MySqlDatabase(Dictionary<String, String>, Tokenizer)
-  href: api/BuckshotPlusPlus.Databases.MySqlDatabase.html#BuckshotPlusPlus_Databases_MySqlDatabase__ctor_Dictionary_System_String_System_String__BuckshotPlusPlus_Tokenizer_
-  commentId: M:BuckshotPlusPlus.Databases.MySqlDatabase.#ctor(Dictionary{System.String,System.String},BuckshotPlusPlus.Tokenizer)
+  href: api/BuckshotPlusPlus.Databases.MySqlDatabase.html#BuckshotPlusPlus_Databases_MySqlDatabase__ctor_System_Collections_Generic_Dictionary_System_String_System_String__BuckshotPlusPlus_Tokenizer_
+  commentId: M:BuckshotPlusPlus.Databases.MySqlDatabase.#ctor(System.Collections.Generic.Dictionary{System.String,System.String},BuckshotPlusPlus.Tokenizer)
   name.vb: MySqlDatabase(Dictionary(Of String, String), Tokenizer)
-  fullName: BuckshotPlusPlus.Databases.MySqlDatabase.MySqlDatabase(Dictionary<System.String, System.String>, BuckshotPlusPlus.Tokenizer)
-  fullName.vb: BuckshotPlusPlus.Databases.MySqlDatabase.MySqlDatabase(Dictionary(Of System.String, System.String), BuckshotPlusPlus.Tokenizer)
+  fullName: BuckshotPlusPlus.Databases.MySqlDatabase.MySqlDatabase(System.Collections.Generic.Dictionary<System.String, System.String>, BuckshotPlusPlus.Tokenizer)
+  fullName.vb: BuckshotPlusPlus.Databases.MySqlDatabase.MySqlDatabase(System.Collections.Generic.Dictionary(Of System.String, System.String), BuckshotPlusPlus.Tokenizer)
   nameWithType: MySqlDatabase.MySqlDatabase(Dictionary<String, String>, Tokenizer)
   nameWithType.vb: MySqlDatabase.MySqlDatabase(Dictionary(Of String, String), Tokenizer)
 - uid: BuckshotPlusPlus.Databases.MySqlDatabase.#ctor*
@@ -657,13 +657,13 @@ references:
   isSpec: "True"
   fullName: BuckshotPlusPlus.LogicTest.RightValueType
   nameWithType: LogicTest.RightValueType
-- uid: BuckshotPlusPlus.LogicTest.RunLogicTest(List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
+- uid: BuckshotPlusPlus.LogicTest.RunLogicTest(System.Collections.Generic.List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
   name: RunLogicTest(List<Token>, Token)
-  href: api/BuckshotPlusPlus.LogicTest.html#BuckshotPlusPlus_LogicTest_RunLogicTest_List_BuckshotPlusPlus_Token__BuckshotPlusPlus_Token_
-  commentId: M:BuckshotPlusPlus.LogicTest.RunLogicTest(List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
+  href: api/BuckshotPlusPlus.LogicTest.html#BuckshotPlusPlus_LogicTest_RunLogicTest_System_Collections_Generic_List_BuckshotPlusPlus_Token__BuckshotPlusPlus_Token_
+  commentId: M:BuckshotPlusPlus.LogicTest.RunLogicTest(System.Collections.Generic.List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
   name.vb: RunLogicTest(List(Of Token), Token)
-  fullName: BuckshotPlusPlus.LogicTest.RunLogicTest(List<BuckshotPlusPlus.Token>, BuckshotPlusPlus.Token)
-  fullName.vb: BuckshotPlusPlus.LogicTest.RunLogicTest(List(Of BuckshotPlusPlus.Token), BuckshotPlusPlus.Token)
+  fullName: BuckshotPlusPlus.LogicTest.RunLogicTest(System.Collections.Generic.List<BuckshotPlusPlus.Token>, BuckshotPlusPlus.Token)
+  fullName.vb: BuckshotPlusPlus.LogicTest.RunLogicTest(System.Collections.Generic.List(Of BuckshotPlusPlus.Token), BuckshotPlusPlus.Token)
   nameWithType: LogicTest.RunLogicTest(List<Token>, Token)
   nameWithType.vb: LogicTest.RunLogicTest(List(Of Token), Token)
 - uid: BuckshotPlusPlus.LogicTest.RunLogicTest*
@@ -717,13 +717,13 @@ references:
   commentId: T:BuckshotPlusPlus.Security.UserSession
   fullName: BuckshotPlusPlus.Security.UserSession
   nameWithType: UserSession
-- uid: BuckshotPlusPlus.Security.UserSession.#ctor(Dictionary{System.String,System.String})
+- uid: BuckshotPlusPlus.Security.UserSession.#ctor(System.Collections.Generic.Dictionary{System.String,System.String})
   name: UserSession(Dictionary<String, String>)
-  href: api/BuckshotPlusPlus.Security.UserSession.html#BuckshotPlusPlus_Security_UserSession__ctor_Dictionary_System_String_System_String__
-  commentId: M:BuckshotPlusPlus.Security.UserSession.#ctor(Dictionary{System.String,System.String})
+  href: api/BuckshotPlusPlus.Security.UserSession.html#BuckshotPlusPlus_Security_UserSession__ctor_System_Collections_Generic_Dictionary_System_String_System_String__
+  commentId: M:BuckshotPlusPlus.Security.UserSession.#ctor(System.Collections.Generic.Dictionary{System.String,System.String})
   name.vb: UserSession(Dictionary(Of String, String))
-  fullName: BuckshotPlusPlus.Security.UserSession.UserSession(Dictionary<System.String, System.String>)
-  fullName.vb: BuckshotPlusPlus.Security.UserSession.UserSession(Dictionary(Of System.String, System.String))
+  fullName: BuckshotPlusPlus.Security.UserSession.UserSession(System.Collections.Generic.Dictionary<System.String, System.String>)
+  fullName.vb: BuckshotPlusPlus.Security.UserSession.UserSession(System.Collections.Generic.Dictionary(Of System.String, System.String))
   nameWithType: UserSession.UserSession(Dictionary<String, String>)
   nameWithType.vb: UserSession.UserSession(Dictionary(Of String, String))
 - uid: BuckshotPlusPlus.Security.UserSession.#ctor*
@@ -895,11 +895,11 @@ references:
   isSpec: "True"
   fullName: BuckshotPlusPlus.Security.UserSessionManager.ActiveUsers
   nameWithType: UserSessionManager.ActiveUsers
-- uid: BuckshotPlusPlus.Security.UserSessionManager.AddOrUpdateUserSession(HttpListenerRequest,HttpListenerResponse)
+- uid: BuckshotPlusPlus.Security.UserSessionManager.AddOrUpdateUserSession(System.Net.HttpListenerRequest,System.Net.HttpListenerResponse)
   name: AddOrUpdateUserSession(HttpListenerRequest, HttpListenerResponse)
-  href: api/BuckshotPlusPlus.Security.UserSessionManager.html#BuckshotPlusPlus_Security_UserSessionManager_AddOrUpdateUserSession_HttpListenerRequest_HttpListenerResponse_
-  commentId: M:BuckshotPlusPlus.Security.UserSessionManager.AddOrUpdateUserSession(HttpListenerRequest,HttpListenerResponse)
-  fullName: BuckshotPlusPlus.Security.UserSessionManager.AddOrUpdateUserSession(HttpListenerRequest, HttpListenerResponse)
+  href: api/BuckshotPlusPlus.Security.UserSessionManager.html#BuckshotPlusPlus_Security_UserSessionManager_AddOrUpdateUserSession_System_Net_HttpListenerRequest_System_Net_HttpListenerResponse_
+  commentId: M:BuckshotPlusPlus.Security.UserSessionManager.AddOrUpdateUserSession(System.Net.HttpListenerRequest,System.Net.HttpListenerResponse)
+  fullName: BuckshotPlusPlus.Security.UserSessionManager.AddOrUpdateUserSession(System.Net.HttpListenerRequest, System.Net.HttpListenerResponse)
   nameWithType: UserSessionManager.AddOrUpdateUserSession(HttpListenerRequest, HttpListenerResponse)
 - uid: BuckshotPlusPlus.Security.UserSessionManager.AddOrUpdateUserSession*
   name: AddOrUpdateUserSession
@@ -908,13 +908,13 @@ references:
   isSpec: "True"
   fullName: BuckshotPlusPlus.Security.UserSessionManager.AddOrUpdateUserSession
   nameWithType: UserSessionManager.AddOrUpdateUserSession
-- uid: BuckshotPlusPlus.Security.UserSessionManager.CreateNewUserSession(Dictionary{System.String,System.String},HttpListenerResponse)
+- uid: BuckshotPlusPlus.Security.UserSessionManager.CreateNewUserSession(System.Collections.Generic.Dictionary{System.String,System.String},System.Net.HttpListenerResponse)
   name: CreateNewUserSession(Dictionary<String, String>, HttpListenerResponse)
-  href: api/BuckshotPlusPlus.Security.UserSessionManager.html#BuckshotPlusPlus_Security_UserSessionManager_CreateNewUserSession_Dictionary_System_String_System_String__HttpListenerResponse_
-  commentId: M:BuckshotPlusPlus.Security.UserSessionManager.CreateNewUserSession(Dictionary{System.String,System.String},HttpListenerResponse)
+  href: api/BuckshotPlusPlus.Security.UserSessionManager.html#BuckshotPlusPlus_Security_UserSessionManager_CreateNewUserSession_System_Collections_Generic_Dictionary_System_String_System_String__System_Net_HttpListenerResponse_
+  commentId: M:BuckshotPlusPlus.Security.UserSessionManager.CreateNewUserSession(System.Collections.Generic.Dictionary{System.String,System.String},System.Net.HttpListenerResponse)
   name.vb: CreateNewUserSession(Dictionary(Of String, String), HttpListenerResponse)
-  fullName: BuckshotPlusPlus.Security.UserSessionManager.CreateNewUserSession(Dictionary<System.String, System.String>, HttpListenerResponse)
-  fullName.vb: BuckshotPlusPlus.Security.UserSessionManager.CreateNewUserSession(Dictionary(Of System.String, System.String), HttpListenerResponse)
+  fullName: BuckshotPlusPlus.Security.UserSessionManager.CreateNewUserSession(System.Collections.Generic.Dictionary<System.String, System.String>, System.Net.HttpListenerResponse)
+  fullName.vb: BuckshotPlusPlus.Security.UserSessionManager.CreateNewUserSession(System.Collections.Generic.Dictionary(Of System.String, System.String), System.Net.HttpListenerResponse)
   nameWithType: UserSessionManager.CreateNewUserSession(Dictionary<String, String>, HttpListenerResponse)
   nameWithType.vb: UserSessionManager.CreateNewUserSession(Dictionary(Of String, String), HttpListenerResponse)
 - uid: BuckshotPlusPlus.Security.UserSessionManager.CreateNewUserSession*
@@ -943,12 +943,12 @@ references:
   commentId: T:BuckshotPlusPlus.Token
   fullName: BuckshotPlusPlus.Token
   nameWithType: Token
-- uid: BuckshotPlusPlus.Token.#ctor(System.String,System.String,System.Int32,BuckshotPlusPlus.Tokenizer,BuckshotPlusPlus.TokenDataContainer)
-  name: Token(String, String, Int32, Tokenizer, TokenDataContainer)
-  href: api/BuckshotPlusPlus.Token.html#BuckshotPlusPlus_Token__ctor_System_String_System_String_System_Int32_BuckshotPlusPlus_Tokenizer_BuckshotPlusPlus_TokenDataContainer_
-  commentId: M:BuckshotPlusPlus.Token.#ctor(System.String,System.String,System.Int32,BuckshotPlusPlus.Tokenizer,BuckshotPlusPlus.TokenDataContainer)
-  fullName: BuckshotPlusPlus.Token.Token(System.String, System.String, System.Int32, BuckshotPlusPlus.Tokenizer, BuckshotPlusPlus.TokenDataContainer)
-  nameWithType: Token.Token(String, String, Int32, Tokenizer, TokenDataContainer)
+- uid: BuckshotPlusPlus.Token.#ctor(System.String,System.String,System.Int32,BuckshotPlusPlus.Tokenizer,BuckshotPlusPlus.TokenDataContainer,BuckshotPlusPlus.Token)
+  name: Token(String, String, Int32, Tokenizer, TokenDataContainer, Token)
+  href: api/BuckshotPlusPlus.Token.html#BuckshotPlusPlus_Token__ctor_System_String_System_String_System_Int32_BuckshotPlusPlus_Tokenizer_BuckshotPlusPlus_TokenDataContainer_BuckshotPlusPlus_Token_
+  commentId: M:BuckshotPlusPlus.Token.#ctor(System.String,System.String,System.Int32,BuckshotPlusPlus.Tokenizer,BuckshotPlusPlus.TokenDataContainer,BuckshotPlusPlus.Token)
+  fullName: BuckshotPlusPlus.Token.Token(System.String, System.String, System.Int32, BuckshotPlusPlus.Tokenizer, BuckshotPlusPlus.TokenDataContainer, BuckshotPlusPlus.Token)
+  nameWithType: Token.Token(String, String, Int32, Tokenizer, TokenDataContainer, Token)
 - uid: BuckshotPlusPlus.Token.#ctor*
   name: Token
   href: api/BuckshotPlusPlus.Token.html#BuckshotPlusPlus_Token__ctor_
@@ -1021,6 +1021,19 @@ references:
   isSpec: "True"
   fullName: BuckshotPlusPlus.Token.MyTokenizer
   nameWithType: Token.MyTokenizer
+- uid: BuckshotPlusPlus.Token.NextToken
+  name: NextToken
+  href: api/BuckshotPlusPlus.Token.html#BuckshotPlusPlus_Token_NextToken
+  commentId: P:BuckshotPlusPlus.Token.NextToken
+  fullName: BuckshotPlusPlus.Token.NextToken
+  nameWithType: Token.NextToken
+- uid: BuckshotPlusPlus.Token.NextToken*
+  name: NextToken
+  href: api/BuckshotPlusPlus.Token.html#BuckshotPlusPlus_Token_NextToken_
+  commentId: Overload:BuckshotPlusPlus.Token.NextToken
+  isSpec: "True"
+  fullName: BuckshotPlusPlus.Token.NextToken
+  nameWithType: Token.NextToken
 - uid: BuckshotPlusPlus.Token.Parent
   name: Parent
   href: api/BuckshotPlusPlus.Token.html#BuckshotPlusPlus_Token_Parent
@@ -1034,6 +1047,19 @@ references:
   isSpec: "True"
   fullName: BuckshotPlusPlus.Token.Parent
   nameWithType: Token.Parent
+- uid: BuckshotPlusPlus.Token.PreviousToken
+  name: PreviousToken
+  href: api/BuckshotPlusPlus.Token.html#BuckshotPlusPlus_Token_PreviousToken
+  commentId: P:BuckshotPlusPlus.Token.PreviousToken
+  fullName: BuckshotPlusPlus.Token.PreviousToken
+  nameWithType: Token.PreviousToken
+- uid: BuckshotPlusPlus.Token.PreviousToken*
+  name: PreviousToken
+  href: api/BuckshotPlusPlus.Token.html#BuckshotPlusPlus_Token_PreviousToken_
+  commentId: Overload:BuckshotPlusPlus.Token.PreviousToken
+  isSpec: "True"
+  fullName: BuckshotPlusPlus.Token.PreviousToken
+  nameWithType: Token.PreviousToken
 - uid: BuckshotPlusPlus.Token.Type
   name: Type
   href: api/BuckshotPlusPlus.Token.html#BuckshotPlusPlus_Token_Type
@@ -1072,13 +1098,13 @@ references:
   isSpec: "True"
   fullName: BuckshotPlusPlus.TokenDataContainer.TokenDataContainer
   nameWithType: TokenDataContainer.TokenDataContainer
-- uid: BuckshotPlusPlus.TokenDataContainer.AddChildToContainerData(List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
+- uid: BuckshotPlusPlus.TokenDataContainer.AddChildToContainerData(System.Collections.Generic.List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
   name: AddChildToContainerData(List<Token>, Token)
-  href: api/BuckshotPlusPlus.TokenDataContainer.html#BuckshotPlusPlus_TokenDataContainer_AddChildToContainerData_List_BuckshotPlusPlus_Token__BuckshotPlusPlus_Token_
-  commentId: M:BuckshotPlusPlus.TokenDataContainer.AddChildToContainerData(List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
+  href: api/BuckshotPlusPlus.TokenDataContainer.html#BuckshotPlusPlus_TokenDataContainer_AddChildToContainerData_System_Collections_Generic_List_BuckshotPlusPlus_Token__BuckshotPlusPlus_Token_
+  commentId: M:BuckshotPlusPlus.TokenDataContainer.AddChildToContainerData(System.Collections.Generic.List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
   name.vb: AddChildToContainerData(List(Of Token), Token)
-  fullName: BuckshotPlusPlus.TokenDataContainer.AddChildToContainerData(List<BuckshotPlusPlus.Token>, BuckshotPlusPlus.Token)
-  fullName.vb: BuckshotPlusPlus.TokenDataContainer.AddChildToContainerData(List(Of BuckshotPlusPlus.Token), BuckshotPlusPlus.Token)
+  fullName: BuckshotPlusPlus.TokenDataContainer.AddChildToContainerData(System.Collections.Generic.List<BuckshotPlusPlus.Token>, BuckshotPlusPlus.Token)
+  fullName.vb: BuckshotPlusPlus.TokenDataContainer.AddChildToContainerData(System.Collections.Generic.List(Of BuckshotPlusPlus.Token), BuckshotPlusPlus.Token)
   nameWithType: TokenDataContainer.AddChildToContainerData(List<Token>, Token)
   nameWithType.vb: TokenDataContainer.AddChildToContainerData(List(Of Token), Token)
 - uid: BuckshotPlusPlus.TokenDataContainer.AddChildToContainerData*
@@ -1230,6 +1256,19 @@ references:
   isSpec: "True"
   fullName: BuckshotPlusPlus.TokenDataLogic.IsTokenDataLogic
   nameWithType: TokenDataLogic.IsTokenDataLogic
+- uid: BuckshotPlusPlus.TokenDataLogic.LastLogicTestResult
+  name: LastLogicTestResult
+  href: api/BuckshotPlusPlus.TokenDataLogic.html#BuckshotPlusPlus_TokenDataLogic_LastLogicTestResult
+  commentId: P:BuckshotPlusPlus.TokenDataLogic.LastLogicTestResult
+  fullName: BuckshotPlusPlus.TokenDataLogic.LastLogicTestResult
+  nameWithType: TokenDataLogic.LastLogicTestResult
+- uid: BuckshotPlusPlus.TokenDataLogic.LastLogicTestResult*
+  name: LastLogicTestResult
+  href: api/BuckshotPlusPlus.TokenDataLogic.html#BuckshotPlusPlus_TokenDataLogic_LastLogicTestResult_
+  commentId: Overload:BuckshotPlusPlus.TokenDataLogic.LastLogicTestResult
+  isSpec: "True"
+  fullName: BuckshotPlusPlus.TokenDataLogic.LastLogicTestResult
+  nameWithType: TokenDataLogic.LastLogicTestResult
 - uid: BuckshotPlusPlus.TokenDataLogic.LogicTokens
   name: LogicTokens
   href: api/BuckshotPlusPlus.TokenDataLogic.html#BuckshotPlusPlus_TokenDataLogic_LogicTokens
@@ -1249,6 +1288,35 @@ references:
   isSpec: "True"
   fullName: BuckshotPlusPlus.TokenDataLogic.LogicType
   nameWithType: TokenDataLogic.LogicType
+- uid: BuckshotPlusPlus.TokenDataLogic.NextLogicToken
+  name: NextLogicToken
+  href: api/BuckshotPlusPlus.TokenDataLogic.html#BuckshotPlusPlus_TokenDataLogic_NextLogicToken
+  commentId: P:BuckshotPlusPlus.TokenDataLogic.NextLogicToken
+  fullName: BuckshotPlusPlus.TokenDataLogic.NextLogicToken
+  nameWithType: TokenDataLogic.NextLogicToken
+- uid: BuckshotPlusPlus.TokenDataLogic.NextLogicToken*
+  name: NextLogicToken
+  href: api/BuckshotPlusPlus.TokenDataLogic.html#BuckshotPlusPlus_TokenDataLogic_NextLogicToken_
+  commentId: Overload:BuckshotPlusPlus.TokenDataLogic.NextLogicToken
+  isSpec: "True"
+  fullName: BuckshotPlusPlus.TokenDataLogic.NextLogicToken
+  nameWithType: TokenDataLogic.NextLogicToken
+- uid: BuckshotPlusPlus.TokenDataLogic.RunLogicTest(System.Collections.Generic.List{BuckshotPlusPlus.Token})
+  name: RunLogicTest(List<Token>)
+  href: api/BuckshotPlusPlus.TokenDataLogic.html#BuckshotPlusPlus_TokenDataLogic_RunLogicTest_System_Collections_Generic_List_BuckshotPlusPlus_Token__
+  commentId: M:BuckshotPlusPlus.TokenDataLogic.RunLogicTest(System.Collections.Generic.List{BuckshotPlusPlus.Token})
+  name.vb: RunLogicTest(List(Of Token))
+  fullName: BuckshotPlusPlus.TokenDataLogic.RunLogicTest(System.Collections.Generic.List<BuckshotPlusPlus.Token>)
+  fullName.vb: BuckshotPlusPlus.TokenDataLogic.RunLogicTest(System.Collections.Generic.List(Of BuckshotPlusPlus.Token))
+  nameWithType: TokenDataLogic.RunLogicTest(List<Token>)
+  nameWithType.vb: TokenDataLogic.RunLogicTest(List(Of Token))
+- uid: BuckshotPlusPlus.TokenDataLogic.RunLogicTest*
+  name: RunLogicTest
+  href: api/BuckshotPlusPlus.TokenDataLogic.html#BuckshotPlusPlus_TokenDataLogic_RunLogicTest_
+  commentId: Overload:BuckshotPlusPlus.TokenDataLogic.RunLogicTest
+  isSpec: "True"
+  fullName: BuckshotPlusPlus.TokenDataLogic.RunLogicTest
+  nameWithType: TokenDataLogic.RunLogicTest
 - uid: BuckshotPlusPlus.TokenDataLogic.TokenLogicTest
   name: TokenLogicTest
   href: api/BuckshotPlusPlus.TokenDataLogic.html#BuckshotPlusPlus_TokenDataLogic_TokenLogicTest
@@ -1294,13 +1362,13 @@ references:
   isSpec: "True"
   fullName: BuckshotPlusPlus.TokenDataVariable.FindVariableType
   nameWithType: TokenDataVariable.FindVariableType
-- uid: BuckshotPlusPlus.TokenDataVariable.GetCompiledVariableData(List{BuckshotPlusPlus.Token},System.Boolean)
+- uid: BuckshotPlusPlus.TokenDataVariable.GetCompiledVariableData(System.Collections.Generic.List{BuckshotPlusPlus.Token},System.Boolean)
   name: GetCompiledVariableData(List<Token>, Boolean)
-  href: api/BuckshotPlusPlus.TokenDataVariable.html#BuckshotPlusPlus_TokenDataVariable_GetCompiledVariableData_List_BuckshotPlusPlus_Token__System_Boolean_
-  commentId: M:BuckshotPlusPlus.TokenDataVariable.GetCompiledVariableData(List{BuckshotPlusPlus.Token},System.Boolean)
+  href: api/BuckshotPlusPlus.TokenDataVariable.html#BuckshotPlusPlus_TokenDataVariable_GetCompiledVariableData_System_Collections_Generic_List_BuckshotPlusPlus_Token__System_Boolean_
+  commentId: M:BuckshotPlusPlus.TokenDataVariable.GetCompiledVariableData(System.Collections.Generic.List{BuckshotPlusPlus.Token},System.Boolean)
   name.vb: GetCompiledVariableData(List(Of Token), Boolean)
-  fullName: BuckshotPlusPlus.TokenDataVariable.GetCompiledVariableData(List<BuckshotPlusPlus.Token>, System.Boolean)
-  fullName.vb: BuckshotPlusPlus.TokenDataVariable.GetCompiledVariableData(List(Of BuckshotPlusPlus.Token), System.Boolean)
+  fullName: BuckshotPlusPlus.TokenDataVariable.GetCompiledVariableData(System.Collections.Generic.List<BuckshotPlusPlus.Token>, System.Boolean)
+  fullName.vb: BuckshotPlusPlus.TokenDataVariable.GetCompiledVariableData(System.Collections.Generic.List(Of BuckshotPlusPlus.Token), System.Boolean)
   nameWithType: TokenDataVariable.GetCompiledVariableData(List<Token>, Boolean)
   nameWithType.vb: TokenDataVariable.GetCompiledVariableData(List(Of Token), Boolean)
 - uid: BuckshotPlusPlus.TokenDataVariable.GetCompiledVariableData*
@@ -1504,13 +1572,13 @@ references:
   commentId: T:BuckshotPlusPlus.TokenUtils
   fullName: BuckshotPlusPlus.TokenUtils
   nameWithType: TokenUtils
-- uid: BuckshotPlusPlus.TokenUtils.EditAllTokensOfContainer(List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
+- uid: BuckshotPlusPlus.TokenUtils.EditAllTokensOfContainer(System.Collections.Generic.List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
   name: EditAllTokensOfContainer(List<Token>, Token)
-  href: api/BuckshotPlusPlus.TokenUtils.html#BuckshotPlusPlus_TokenUtils_EditAllTokensOfContainer_List_BuckshotPlusPlus_Token__BuckshotPlusPlus_Token_
-  commentId: M:BuckshotPlusPlus.TokenUtils.EditAllTokensOfContainer(List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
+  href: api/BuckshotPlusPlus.TokenUtils.html#BuckshotPlusPlus_TokenUtils_EditAllTokensOfContainer_System_Collections_Generic_List_BuckshotPlusPlus_Token__BuckshotPlusPlus_Token_
+  commentId: M:BuckshotPlusPlus.TokenUtils.EditAllTokensOfContainer(System.Collections.Generic.List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
   name.vb: EditAllTokensOfContainer(List(Of Token), Token)
-  fullName: BuckshotPlusPlus.TokenUtils.EditAllTokensOfContainer(List<BuckshotPlusPlus.Token>, BuckshotPlusPlus.Token)
-  fullName.vb: BuckshotPlusPlus.TokenUtils.EditAllTokensOfContainer(List(Of BuckshotPlusPlus.Token), BuckshotPlusPlus.Token)
+  fullName: BuckshotPlusPlus.TokenUtils.EditAllTokensOfContainer(System.Collections.Generic.List<BuckshotPlusPlus.Token>, BuckshotPlusPlus.Token)
+  fullName.vb: BuckshotPlusPlus.TokenUtils.EditAllTokensOfContainer(System.Collections.Generic.List(Of BuckshotPlusPlus.Token), BuckshotPlusPlus.Token)
   nameWithType: TokenUtils.EditAllTokensOfContainer(List<Token>, Token)
   nameWithType.vb: TokenUtils.EditAllTokensOfContainer(List(Of Token), Token)
 - uid: BuckshotPlusPlus.TokenUtils.EditAllTokensOfContainer*
@@ -1520,13 +1588,13 @@ references:
   isSpec: "True"
   fullName: BuckshotPlusPlus.TokenUtils.EditAllTokensOfContainer
   nameWithType: TokenUtils.EditAllTokensOfContainer
-- uid: BuckshotPlusPlus.TokenUtils.EditTokenData(List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
+- uid: BuckshotPlusPlus.TokenUtils.EditTokenData(System.Collections.Generic.List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
   name: EditTokenData(List<Token>, Token)
-  href: api/BuckshotPlusPlus.TokenUtils.html#BuckshotPlusPlus_TokenUtils_EditTokenData_List_BuckshotPlusPlus_Token__BuckshotPlusPlus_Token_
-  commentId: M:BuckshotPlusPlus.TokenUtils.EditTokenData(List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
+  href: api/BuckshotPlusPlus.TokenUtils.html#BuckshotPlusPlus_TokenUtils_EditTokenData_System_Collections_Generic_List_BuckshotPlusPlus_Token__BuckshotPlusPlus_Token_
+  commentId: M:BuckshotPlusPlus.TokenUtils.EditTokenData(System.Collections.Generic.List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
   name.vb: EditTokenData(List(Of Token), Token)
-  fullName: BuckshotPlusPlus.TokenUtils.EditTokenData(List<BuckshotPlusPlus.Token>, BuckshotPlusPlus.Token)
-  fullName.vb: BuckshotPlusPlus.TokenUtils.EditTokenData(List(Of BuckshotPlusPlus.Token), BuckshotPlusPlus.Token)
+  fullName: BuckshotPlusPlus.TokenUtils.EditTokenData(System.Collections.Generic.List<BuckshotPlusPlus.Token>, BuckshotPlusPlus.Token)
+  fullName.vb: BuckshotPlusPlus.TokenUtils.EditTokenData(System.Collections.Generic.List(Of BuckshotPlusPlus.Token), BuckshotPlusPlus.Token)
   nameWithType: TokenUtils.EditTokenData(List<Token>, Token)
   nameWithType.vb: TokenUtils.EditTokenData(List(Of Token), Token)
 - uid: BuckshotPlusPlus.TokenUtils.EditTokenData*
@@ -1536,13 +1604,13 @@ references:
   isSpec: "True"
   fullName: BuckshotPlusPlus.TokenUtils.EditTokenData
   nameWithType: TokenUtils.EditTokenData
-- uid: BuckshotPlusPlus.TokenUtils.FindTokenByName(List{BuckshotPlusPlus.Token},System.String,System.Boolean)
+- uid: BuckshotPlusPlus.TokenUtils.FindTokenByName(System.Collections.Generic.List{BuckshotPlusPlus.Token},System.String,System.Boolean)
   name: FindTokenByName(List<Token>, String, Boolean)
-  href: api/BuckshotPlusPlus.TokenUtils.html#BuckshotPlusPlus_TokenUtils_FindTokenByName_List_BuckshotPlusPlus_Token__System_String_System_Boolean_
-  commentId: M:BuckshotPlusPlus.TokenUtils.FindTokenByName(List{BuckshotPlusPlus.Token},System.String,System.Boolean)
+  href: api/BuckshotPlusPlus.TokenUtils.html#BuckshotPlusPlus_TokenUtils_FindTokenByName_System_Collections_Generic_List_BuckshotPlusPlus_Token__System_String_System_Boolean_
+  commentId: M:BuckshotPlusPlus.TokenUtils.FindTokenByName(System.Collections.Generic.List{BuckshotPlusPlus.Token},System.String,System.Boolean)
   name.vb: FindTokenByName(List(Of Token), String, Boolean)
-  fullName: BuckshotPlusPlus.TokenUtils.FindTokenByName(List<BuckshotPlusPlus.Token>, System.String, System.Boolean)
-  fullName.vb: BuckshotPlusPlus.TokenUtils.FindTokenByName(List(Of BuckshotPlusPlus.Token), System.String, System.Boolean)
+  fullName: BuckshotPlusPlus.TokenUtils.FindTokenByName(System.Collections.Generic.List<BuckshotPlusPlus.Token>, System.String, System.Boolean)
+  fullName.vb: BuckshotPlusPlus.TokenUtils.FindTokenByName(System.Collections.Generic.List(Of BuckshotPlusPlus.Token), System.String, System.Boolean)
   nameWithType: TokenUtils.FindTokenByName(List<Token>, String, Boolean)
   nameWithType.vb: TokenUtils.FindTokenByName(List(Of Token), String, Boolean)
 - uid: BuckshotPlusPlus.TokenUtils.FindTokenByName*
@@ -1552,13 +1620,13 @@ references:
   isSpec: "True"
   fullName: BuckshotPlusPlus.TokenUtils.FindTokenByName
   nameWithType: TokenUtils.FindTokenByName
-- uid: BuckshotPlusPlus.TokenUtils.FindTokenDataContainerByName(List{BuckshotPlusPlus.Token},System.String)
+- uid: BuckshotPlusPlus.TokenUtils.FindTokenDataContainerByName(System.Collections.Generic.List{BuckshotPlusPlus.Token},System.String)
   name: FindTokenDataContainerByName(List<Token>, String)
-  href: api/BuckshotPlusPlus.TokenUtils.html#BuckshotPlusPlus_TokenUtils_FindTokenDataContainerByName_List_BuckshotPlusPlus_Token__System_String_
-  commentId: M:BuckshotPlusPlus.TokenUtils.FindTokenDataContainerByName(List{BuckshotPlusPlus.Token},System.String)
+  href: api/BuckshotPlusPlus.TokenUtils.html#BuckshotPlusPlus_TokenUtils_FindTokenDataContainerByName_System_Collections_Generic_List_BuckshotPlusPlus_Token__System_String_
+  commentId: M:BuckshotPlusPlus.TokenUtils.FindTokenDataContainerByName(System.Collections.Generic.List{BuckshotPlusPlus.Token},System.String)
   name.vb: FindTokenDataContainerByName(List(Of Token), String)
-  fullName: BuckshotPlusPlus.TokenUtils.FindTokenDataContainerByName(List<BuckshotPlusPlus.Token>, System.String)
-  fullName.vb: BuckshotPlusPlus.TokenUtils.FindTokenDataContainerByName(List(Of BuckshotPlusPlus.Token), System.String)
+  fullName: BuckshotPlusPlus.TokenUtils.FindTokenDataContainerByName(System.Collections.Generic.List<BuckshotPlusPlus.Token>, System.String)
+  fullName.vb: BuckshotPlusPlus.TokenUtils.FindTokenDataContainerByName(System.Collections.Generic.List(Of BuckshotPlusPlus.Token), System.String)
   nameWithType: TokenUtils.FindTokenDataContainerByName(List<Token>, String)
   nameWithType.vb: TokenUtils.FindTokenDataContainerByName(List(Of Token), String)
 - uid: BuckshotPlusPlus.TokenUtils.FindTokenDataContainerByName*
@@ -1568,13 +1636,13 @@ references:
   isSpec: "True"
   fullName: BuckshotPlusPlus.TokenUtils.FindTokenDataContainerByName
   nameWithType: TokenUtils.FindTokenDataContainerByName
-- uid: BuckshotPlusPlus.TokenUtils.FindTokenDataVariableByName(List{BuckshotPlusPlus.Token},System.String)
+- uid: BuckshotPlusPlus.TokenUtils.FindTokenDataVariableByName(System.Collections.Generic.List{BuckshotPlusPlus.Token},System.String)
   name: FindTokenDataVariableByName(List<Token>, String)
-  href: api/BuckshotPlusPlus.TokenUtils.html#BuckshotPlusPlus_TokenUtils_FindTokenDataVariableByName_List_BuckshotPlusPlus_Token__System_String_
-  commentId: M:BuckshotPlusPlus.TokenUtils.FindTokenDataVariableByName(List{BuckshotPlusPlus.Token},System.String)
+  href: api/BuckshotPlusPlus.TokenUtils.html#BuckshotPlusPlus_TokenUtils_FindTokenDataVariableByName_System_Collections_Generic_List_BuckshotPlusPlus_Token__System_String_
+  commentId: M:BuckshotPlusPlus.TokenUtils.FindTokenDataVariableByName(System.Collections.Generic.List{BuckshotPlusPlus.Token},System.String)
   name.vb: FindTokenDataVariableByName(List(Of Token), String)
-  fullName: BuckshotPlusPlus.TokenUtils.FindTokenDataVariableByName(List<BuckshotPlusPlus.Token>, System.String)
-  fullName.vb: BuckshotPlusPlus.TokenUtils.FindTokenDataVariableByName(List(Of BuckshotPlusPlus.Token), System.String)
+  fullName: BuckshotPlusPlus.TokenUtils.FindTokenDataVariableByName(System.Collections.Generic.List<BuckshotPlusPlus.Token>, System.String)
+  fullName.vb: BuckshotPlusPlus.TokenUtils.FindTokenDataVariableByName(System.Collections.Generic.List(Of BuckshotPlusPlus.Token), System.String)
   nameWithType: TokenUtils.FindTokenDataVariableByName(List<Token>, String)
   nameWithType.vb: TokenUtils.FindTokenDataVariableByName(List(Of Token), String)
 - uid: BuckshotPlusPlus.TokenUtils.FindTokenDataVariableByName*
@@ -1597,13 +1665,13 @@ references:
   isSpec: "True"
   fullName: BuckshotPlusPlus.TokenUtils.GetTokenName
   nameWithType: TokenUtils.GetTokenName
-- uid: BuckshotPlusPlus.TokenUtils.SafeEditTokenData(System.String,List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
+- uid: BuckshotPlusPlus.TokenUtils.SafeEditTokenData(System.String,System.Collections.Generic.List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
   name: SafeEditTokenData(String, List<Token>, Token)
-  href: api/BuckshotPlusPlus.TokenUtils.html#BuckshotPlusPlus_TokenUtils_SafeEditTokenData_System_String_List_BuckshotPlusPlus_Token__BuckshotPlusPlus_Token_
-  commentId: M:BuckshotPlusPlus.TokenUtils.SafeEditTokenData(System.String,List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
+  href: api/BuckshotPlusPlus.TokenUtils.html#BuckshotPlusPlus_TokenUtils_SafeEditTokenData_System_String_System_Collections_Generic_List_BuckshotPlusPlus_Token__BuckshotPlusPlus_Token_
+  commentId: M:BuckshotPlusPlus.TokenUtils.SafeEditTokenData(System.String,System.Collections.Generic.List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
   name.vb: SafeEditTokenData(String, List(Of Token), Token)
-  fullName: BuckshotPlusPlus.TokenUtils.SafeEditTokenData(System.String, List<BuckshotPlusPlus.Token>, BuckshotPlusPlus.Token)
-  fullName.vb: BuckshotPlusPlus.TokenUtils.SafeEditTokenData(System.String, List(Of BuckshotPlusPlus.Token), BuckshotPlusPlus.Token)
+  fullName: BuckshotPlusPlus.TokenUtils.SafeEditTokenData(System.String, System.Collections.Generic.List<BuckshotPlusPlus.Token>, BuckshotPlusPlus.Token)
+  fullName.vb: BuckshotPlusPlus.TokenUtils.SafeEditTokenData(System.String, System.Collections.Generic.List(Of BuckshotPlusPlus.Token), BuckshotPlusPlus.Token)
   nameWithType: TokenUtils.SafeEditTokenData(String, List<Token>, Token)
   nameWithType.vb: TokenUtils.SafeEditTokenData(String, List(Of Token), Token)
 - uid: BuckshotPlusPlus.TokenUtils.SafeEditTokenData*
@@ -1613,13 +1681,13 @@ references:
   isSpec: "True"
   fullName: BuckshotPlusPlus.TokenUtils.SafeEditTokenData
   nameWithType: TokenUtils.SafeEditTokenData
-- uid: BuckshotPlusPlus.TokenUtils.TryFindTokenDataContainerValueByName(List{BuckshotPlusPlus.Token},List{BuckshotPlusPlus.Token},System.String,System.Boolean)
+- uid: BuckshotPlusPlus.TokenUtils.TryFindTokenDataContainerValueByName(System.Collections.Generic.List{BuckshotPlusPlus.Token},System.Collections.Generic.List{BuckshotPlusPlus.Token},System.String,System.Boolean)
   name: TryFindTokenDataContainerValueByName(List<Token>, List<Token>, String, Boolean)
-  href: api/BuckshotPlusPlus.TokenUtils.html#BuckshotPlusPlus_TokenUtils_TryFindTokenDataContainerValueByName_List_BuckshotPlusPlus_Token__List_BuckshotPlusPlus_Token__System_String_System_Boolean_
-  commentId: M:BuckshotPlusPlus.TokenUtils.TryFindTokenDataContainerValueByName(List{BuckshotPlusPlus.Token},List{BuckshotPlusPlus.Token},System.String,System.Boolean)
+  href: api/BuckshotPlusPlus.TokenUtils.html#BuckshotPlusPlus_TokenUtils_TryFindTokenDataContainerValueByName_System_Collections_Generic_List_BuckshotPlusPlus_Token__System_Collections_Generic_List_BuckshotPlusPlus_Token__System_String_System_Boolean_
+  commentId: M:BuckshotPlusPlus.TokenUtils.TryFindTokenDataContainerValueByName(System.Collections.Generic.List{BuckshotPlusPlus.Token},System.Collections.Generic.List{BuckshotPlusPlus.Token},System.String,System.Boolean)
   name.vb: TryFindTokenDataContainerValueByName(List(Of Token), List(Of Token), String, Boolean)
-  fullName: BuckshotPlusPlus.TokenUtils.TryFindTokenDataContainerValueByName(List<BuckshotPlusPlus.Token>, List<BuckshotPlusPlus.Token>, System.String, System.Boolean)
-  fullName.vb: BuckshotPlusPlus.TokenUtils.TryFindTokenDataContainerValueByName(List(Of BuckshotPlusPlus.Token), List(Of BuckshotPlusPlus.Token), System.String, System.Boolean)
+  fullName: BuckshotPlusPlus.TokenUtils.TryFindTokenDataContainerValueByName(System.Collections.Generic.List<BuckshotPlusPlus.Token>, System.Collections.Generic.List<BuckshotPlusPlus.Token>, System.String, System.Boolean)
+  fullName.vb: BuckshotPlusPlus.TokenUtils.TryFindTokenDataContainerValueByName(System.Collections.Generic.List(Of BuckshotPlusPlus.Token), System.Collections.Generic.List(Of BuckshotPlusPlus.Token), System.String, System.Boolean)
   nameWithType: TokenUtils.TryFindTokenDataContainerValueByName(List<Token>, List<Token>, String, Boolean)
   nameWithType.vb: TokenUtils.TryFindTokenDataContainerValueByName(List(Of Token), List(Of Token), String, Boolean)
 - uid: BuckshotPlusPlus.TokenUtils.TryFindTokenDataContainerValueByName*
@@ -1629,13 +1697,13 @@ references:
   isSpec: "True"
   fullName: BuckshotPlusPlus.TokenUtils.TryFindTokenDataContainerValueByName
   nameWithType: TokenUtils.TryFindTokenDataContainerValueByName
-- uid: BuckshotPlusPlus.TokenUtils.TryFindTokenDataVariableValueByName(List{BuckshotPlusPlus.Token},List{BuckshotPlusPlus.Token},System.String,System.Boolean)
+- uid: BuckshotPlusPlus.TokenUtils.TryFindTokenDataVariableValueByName(System.Collections.Generic.List{BuckshotPlusPlus.Token},System.Collections.Generic.List{BuckshotPlusPlus.Token},System.String,System.Boolean)
   name: TryFindTokenDataVariableValueByName(List<Token>, List<Token>, String, Boolean)
-  href: api/BuckshotPlusPlus.TokenUtils.html#BuckshotPlusPlus_TokenUtils_TryFindTokenDataVariableValueByName_List_BuckshotPlusPlus_Token__List_BuckshotPlusPlus_Token__System_String_System_Boolean_
-  commentId: M:BuckshotPlusPlus.TokenUtils.TryFindTokenDataVariableValueByName(List{BuckshotPlusPlus.Token},List{BuckshotPlusPlus.Token},System.String,System.Boolean)
+  href: api/BuckshotPlusPlus.TokenUtils.html#BuckshotPlusPlus_TokenUtils_TryFindTokenDataVariableValueByName_System_Collections_Generic_List_BuckshotPlusPlus_Token__System_Collections_Generic_List_BuckshotPlusPlus_Token__System_String_System_Boolean_
+  commentId: M:BuckshotPlusPlus.TokenUtils.TryFindTokenDataVariableValueByName(System.Collections.Generic.List{BuckshotPlusPlus.Token},System.Collections.Generic.List{BuckshotPlusPlus.Token},System.String,System.Boolean)
   name.vb: TryFindTokenDataVariableValueByName(List(Of Token), List(Of Token), String, Boolean)
-  fullName: BuckshotPlusPlus.TokenUtils.TryFindTokenDataVariableValueByName(List<BuckshotPlusPlus.Token>, List<BuckshotPlusPlus.Token>, System.String, System.Boolean)
-  fullName.vb: BuckshotPlusPlus.TokenUtils.TryFindTokenDataVariableValueByName(List(Of BuckshotPlusPlus.Token), List(Of BuckshotPlusPlus.Token), System.String, System.Boolean)
+  fullName: BuckshotPlusPlus.TokenUtils.TryFindTokenDataVariableValueByName(System.Collections.Generic.List<BuckshotPlusPlus.Token>, System.Collections.Generic.List<BuckshotPlusPlus.Token>, System.String, System.Boolean)
+  fullName.vb: BuckshotPlusPlus.TokenUtils.TryFindTokenDataVariableValueByName(System.Collections.Generic.List(Of BuckshotPlusPlus.Token), System.Collections.Generic.List(Of BuckshotPlusPlus.Token), System.String, System.Boolean)
   nameWithType: TokenUtils.TryFindTokenDataVariableValueByName(List<Token>, List<Token>, String, Boolean)
   nameWithType.vb: TokenUtils.TryFindTokenDataVariableValueByName(List(Of Token), List(Of Token), String, Boolean)
 - uid: BuckshotPlusPlus.TokenUtils.TryFindTokenDataVariableValueByName*
@@ -1645,13 +1713,13 @@ references:
   isSpec: "True"
   fullName: BuckshotPlusPlus.TokenUtils.TryFindTokenDataVariableValueByName
   nameWithType: TokenUtils.TryFindTokenDataVariableValueByName
-- uid: BuckshotPlusPlus.TokenUtils.TryFindTokenValueByName(List{BuckshotPlusPlus.Token},List{BuckshotPlusPlus.Token},System.String,System.Boolean)
+- uid: BuckshotPlusPlus.TokenUtils.TryFindTokenValueByName(System.Collections.Generic.List{BuckshotPlusPlus.Token},System.Collections.Generic.List{BuckshotPlusPlus.Token},System.String,System.Boolean)
   name: TryFindTokenValueByName(List<Token>, List<Token>, String, Boolean)
-  href: api/BuckshotPlusPlus.TokenUtils.html#BuckshotPlusPlus_TokenUtils_TryFindTokenValueByName_List_BuckshotPlusPlus_Token__List_BuckshotPlusPlus_Token__System_String_System_Boolean_
-  commentId: M:BuckshotPlusPlus.TokenUtils.TryFindTokenValueByName(List{BuckshotPlusPlus.Token},List{BuckshotPlusPlus.Token},System.String,System.Boolean)
+  href: api/BuckshotPlusPlus.TokenUtils.html#BuckshotPlusPlus_TokenUtils_TryFindTokenValueByName_System_Collections_Generic_List_BuckshotPlusPlus_Token__System_Collections_Generic_List_BuckshotPlusPlus_Token__System_String_System_Boolean_
+  commentId: M:BuckshotPlusPlus.TokenUtils.TryFindTokenValueByName(System.Collections.Generic.List{BuckshotPlusPlus.Token},System.Collections.Generic.List{BuckshotPlusPlus.Token},System.String,System.Boolean)
   name.vb: TryFindTokenValueByName(List(Of Token), List(Of Token), String, Boolean)
-  fullName: BuckshotPlusPlus.TokenUtils.TryFindTokenValueByName(List<BuckshotPlusPlus.Token>, List<BuckshotPlusPlus.Token>, System.String, System.Boolean)
-  fullName.vb: BuckshotPlusPlus.TokenUtils.TryFindTokenValueByName(List(Of BuckshotPlusPlus.Token), List(Of BuckshotPlusPlus.Token), System.String, System.Boolean)
+  fullName: BuckshotPlusPlus.TokenUtils.TryFindTokenValueByName(System.Collections.Generic.List<BuckshotPlusPlus.Token>, System.Collections.Generic.List<BuckshotPlusPlus.Token>, System.String, System.Boolean)
+  fullName.vb: BuckshotPlusPlus.TokenUtils.TryFindTokenValueByName(System.Collections.Generic.List(Of BuckshotPlusPlus.Token), System.Collections.Generic.List(Of BuckshotPlusPlus.Token), System.String, System.Boolean)
   nameWithType: TokenUtils.TryFindTokenValueByName(List<Token>, List<Token>, String, Boolean)
   nameWithType.vb: TokenUtils.TryFindTokenValueByName(List(Of Token), List(Of Token), String, Boolean)
 - uid: BuckshotPlusPlus.TokenUtils.TryFindTokenValueByName*

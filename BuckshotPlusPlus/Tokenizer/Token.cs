@@ -14,12 +14,16 @@ namespace BuckshotPlusPlus
         public int LineNumber { get; set; }
         public Tokenizer MyTokenizer { get; set; }
 
+        public Token NextToken { get; set; }
+        public Token PreviousToken { get; set; }
+
         public Token(
             string FileName,
             string LineData,
             int LineNumber,
             Tokenizer MyTokenizer,
-            TokenDataContainer Parent = null
+            TokenDataContainer Parent = null,
+            Token PreviousToken = null
         )
         {
             this.FileName = FileName;
@@ -27,6 +31,7 @@ namespace BuckshotPlusPlus
             this.LineNumber = LineNumber;
             this.MyTokenizer = MyTokenizer;
             this.Parent = Parent;
+            this.PreviousToken = PreviousToken;
 
             // If Line Contains "=" load data of a variable
             if (TokenDataContainer.IsTokenDataContainer(this))
@@ -35,14 +40,7 @@ namespace BuckshotPlusPlus
             }
             else if (TokenDataFunctionCall.IsTokenDataFunctionCall(this))
             {
-                if(TokenDataLogic.IsTokenDataLogic(this))
-                {
-                    Data = new TokenDataLogic(this);
-                }
-                else
-                {
-                    Data = new TokenDataFunctionCall(this);
-                }
+                Data = new TokenDataFunctionCall(this);
             }
             else if (TokenDataVariable.IsTokenDataVariable(this))
             {
