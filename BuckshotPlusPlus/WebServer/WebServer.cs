@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -70,7 +71,7 @@ namespace BuckshotPlusPlus.WebServer
                                 )
                                 {
 
-
+                                    Console.WriteLine("PAGE FOUND!!!!");
                                     page_found = true;
 
                                     var stopwatch = new Stopwatch();
@@ -84,11 +85,15 @@ namespace BuckshotPlusPlus.WebServer
 
                                     ServerSideTokenList.AddRange(MyTokenizer.FileTokens);
 
+                                    Console.WriteLine("Adding " + MyTokenizer.FileTokens.Count + " tokens");
+
                                     UserSession FoundUserSession = UserSessions.AddOrUpdateUserSession(req, resp);
 
                                     FoundUserSession.AddUrl(req.Url.AbsolutePath);
 
                                     ServerSideTokenList.Add(FoundUserSession.GetToken(MyTokenizer));
+
+                                    Console.WriteLine("Serverside tokens " + ServerSideTokenList.Count + " tokens");
 
                                     // Write the response info
                                     string disableSubmit = !runServer ? "disabled" : "";

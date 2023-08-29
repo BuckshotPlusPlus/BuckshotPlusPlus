@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using Spectre.Console;
 
 namespace BuckshotPlusPlus
@@ -255,16 +256,11 @@ namespace BuckshotPlusPlus
 
         public static void TokenCriticalError(string Error, Token MyToken)
         {
-            CriticalError(
-                Error
-                    + " in file : "
-                    + MyToken.FileName
-                    + " at line : "
-                    + MyToken.LineNumber
-                    + Environment.NewLine
-                    + "=> "
-                    + MyToken.LineData
-            );
+            Console.WriteLine(Error);
+            Console.WriteLine(MyToken.FileName);
+            Console.WriteLine(MyToken.LineNumber);
+            Console.WriteLine(MyToken.LineData);
+            CriticalError($"{Error.ToString()} in file {MyToken.FileName} at line : {MyToken.LineNumber.ToString()}\n=> {MyToken.LineData}");
         }
 
         public static void DebugMessage(string msg)

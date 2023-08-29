@@ -554,6 +554,42 @@ references:
   isSpec: "True"
   fullName: BuckshotPlusPlus.Formater.Warn
   nameWithType: Formater.Warn
+- uid: BuckshotPlusPlus.LineType
+  name: LineType
+  href: api/BuckshotPlusPlus.LineType.html
+  commentId: T:BuckshotPlusPlus.LineType
+  fullName: BuckshotPlusPlus.LineType
+  nameWithType: LineType
+- uid: BuckshotPlusPlus.LineType.COMMENT
+  name: COMMENT
+  href: api/BuckshotPlusPlus.LineType.html#BuckshotPlusPlus_LineType_COMMENT
+  commentId: F:BuckshotPlusPlus.LineType.COMMENT
+  fullName: BuckshotPlusPlus.LineType.COMMENT
+  nameWithType: LineType.COMMENT
+- uid: BuckshotPlusPlus.LineType.CONTAINER
+  name: CONTAINER
+  href: api/BuckshotPlusPlus.LineType.html#BuckshotPlusPlus_LineType_CONTAINER
+  commentId: F:BuckshotPlusPlus.LineType.CONTAINER
+  fullName: BuckshotPlusPlus.LineType.CONTAINER
+  nameWithType: LineType.CONTAINER
+- uid: BuckshotPlusPlus.LineType.EMPTY
+  name: EMPTY
+  href: api/BuckshotPlusPlus.LineType.html#BuckshotPlusPlus_LineType_EMPTY
+  commentId: F:BuckshotPlusPlus.LineType.EMPTY
+  fullName: BuckshotPlusPlus.LineType.EMPTY
+  nameWithType: LineType.EMPTY
+- uid: BuckshotPlusPlus.LineType.INCLUDE
+  name: INCLUDE
+  href: api/BuckshotPlusPlus.LineType.html#BuckshotPlusPlus_LineType_INCLUDE
+  commentId: F:BuckshotPlusPlus.LineType.INCLUDE
+  fullName: BuckshotPlusPlus.LineType.INCLUDE
+  nameWithType: LineType.INCLUDE
+- uid: BuckshotPlusPlus.LineType.VARIABLE
+  name: VARIABLE
+  href: api/BuckshotPlusPlus.LineType.html#BuckshotPlusPlus_LineType_VARIABLE
+  commentId: F:BuckshotPlusPlus.LineType.VARIABLE
+  fullName: BuckshotPlusPlus.LineType.VARIABLE
+  nameWithType: LineType.VARIABLE
 - uid: BuckshotPlusPlus.LogicTest
   name: LogicTest
   href: api/BuckshotPlusPlus.LogicTest.html
@@ -673,6 +709,52 @@ references:
   isSpec: "True"
   fullName: BuckshotPlusPlus.LogicTest.RunLogicTest
   nameWithType: LogicTest.RunLogicTest
+- uid: BuckshotPlusPlus.ProcessedLine
+  name: ProcessedLine
+  href: api/BuckshotPlusPlus.ProcessedLine.html
+  commentId: T:BuckshotPlusPlus.ProcessedLine
+  fullName: BuckshotPlusPlus.ProcessedLine
+  nameWithType: ProcessedLine
+- uid: BuckshotPlusPlus.ProcessedLine.#ctor(System.Int32,BuckshotPlusPlus.LineType,System.String,System.Collections.Generic.List{System.String})
+  name: ProcessedLine(Int32, LineType, String, List<String>)
+  href: api/BuckshotPlusPlus.ProcessedLine.html#BuckshotPlusPlus_ProcessedLine__ctor_System_Int32_BuckshotPlusPlus_LineType_System_String_System_Collections_Generic_List_System_String__
+  commentId: M:BuckshotPlusPlus.ProcessedLine.#ctor(System.Int32,BuckshotPlusPlus.LineType,System.String,System.Collections.Generic.List{System.String})
+  name.vb: ProcessedLine(Int32, LineType, String, List(Of String))
+  fullName: BuckshotPlusPlus.ProcessedLine.ProcessedLine(System.Int32, BuckshotPlusPlus.LineType, System.String, System.Collections.Generic.List<System.String>)
+  fullName.vb: BuckshotPlusPlus.ProcessedLine.ProcessedLine(System.Int32, BuckshotPlusPlus.LineType, System.String, System.Collections.Generic.List(Of System.String))
+  nameWithType: ProcessedLine.ProcessedLine(Int32, LineType, String, List<String>)
+  nameWithType.vb: ProcessedLine.ProcessedLine(Int32, LineType, String, List(Of String))
+- uid: BuckshotPlusPlus.ProcessedLine.#ctor*
+  name: ProcessedLine
+  href: api/BuckshotPlusPlus.ProcessedLine.html#BuckshotPlusPlus_ProcessedLine__ctor_
+  commentId: Overload:BuckshotPlusPlus.ProcessedLine.#ctor
+  isSpec: "True"
+  fullName: BuckshotPlusPlus.ProcessedLine.ProcessedLine
+  nameWithType: ProcessedLine.ProcessedLine
+- uid: BuckshotPlusPlus.ProcessedLine.ContainerData
+  name: ContainerData
+  href: api/BuckshotPlusPlus.ProcessedLine.html#BuckshotPlusPlus_ProcessedLine_ContainerData
+  commentId: F:BuckshotPlusPlus.ProcessedLine.ContainerData
+  fullName: BuckshotPlusPlus.ProcessedLine.ContainerData
+  nameWithType: ProcessedLine.ContainerData
+- uid: BuckshotPlusPlus.ProcessedLine.CurrentLine
+  name: CurrentLine
+  href: api/BuckshotPlusPlus.ProcessedLine.html#BuckshotPlusPlus_ProcessedLine_CurrentLine
+  commentId: F:BuckshotPlusPlus.ProcessedLine.CurrentLine
+  fullName: BuckshotPlusPlus.ProcessedLine.CurrentLine
+  nameWithType: ProcessedLine.CurrentLine
+- uid: BuckshotPlusPlus.ProcessedLine.LineData
+  name: LineData
+  href: api/BuckshotPlusPlus.ProcessedLine.html#BuckshotPlusPlus_ProcessedLine_LineData
+  commentId: F:BuckshotPlusPlus.ProcessedLine.LineData
+  fullName: BuckshotPlusPlus.ProcessedLine.LineData
+  nameWithType: ProcessedLine.LineData
+- uid: BuckshotPlusPlus.ProcessedLine.LineType
+  name: LineType
+  href: api/BuckshotPlusPlus.ProcessedLine.html#BuckshotPlusPlus_ProcessedLine_LineType
+  commentId: F:BuckshotPlusPlus.ProcessedLine.LineType
+  fullName: BuckshotPlusPlus.ProcessedLine.LineType
+  nameWithType: ProcessedLine.LineType
 - uid: BuckshotPlusPlus.Security
   name: BuckshotPlusPlus.Security
   href: api/BuckshotPlusPlus.Security.html
@@ -1488,6 +1570,22 @@ references:
   isSpec: "True"
   fullName: BuckshotPlusPlus.Tokenizer.Tokenizer
   nameWithType: Tokenizer.Tokenizer
+- uid: BuckshotPlusPlus.Tokenizer.AddContainerToken(System.String,System.Collections.Generic.List{System.String},System.Int32)
+  name: AddContainerToken(String, List<String>, Int32)
+  href: api/BuckshotPlusPlus.Tokenizer.html#BuckshotPlusPlus_Tokenizer_AddContainerToken_System_String_System_Collections_Generic_List_System_String__System_Int32_
+  commentId: M:BuckshotPlusPlus.Tokenizer.AddContainerToken(System.String,System.Collections.Generic.List{System.String},System.Int32)
+  name.vb: AddContainerToken(String, List(Of String), Int32)
+  fullName: BuckshotPlusPlus.Tokenizer.AddContainerToken(System.String, System.Collections.Generic.List<System.String>, System.Int32)
+  fullName.vb: BuckshotPlusPlus.Tokenizer.AddContainerToken(System.String, System.Collections.Generic.List(Of System.String), System.Int32)
+  nameWithType: Tokenizer.AddContainerToken(String, List<String>, Int32)
+  nameWithType.vb: Tokenizer.AddContainerToken(String, List(Of String), Int32)
+- uid: BuckshotPlusPlus.Tokenizer.AddContainerToken*
+  name: AddContainerToken
+  href: api/BuckshotPlusPlus.Tokenizer.html#BuckshotPlusPlus_Tokenizer_AddContainerToken_
+  commentId: Overload:BuckshotPlusPlus.Tokenizer.AddContainerToken
+  isSpec: "True"
+  fullName: BuckshotPlusPlus.Tokenizer.AddContainerToken
+  nameWithType: Tokenizer.AddContainerToken
 - uid: BuckshotPlusPlus.Tokenizer.AnalyzeFileData(System.String,System.String)
   name: AnalyzeFileData(String, String)
   href: api/BuckshotPlusPlus.Tokenizer.html#BuckshotPlusPlus_Tokenizer_AnalyzeFileData_System_String_System_String_
@@ -1566,6 +1664,19 @@ references:
   isSpec: "True"
   fullName: BuckshotPlusPlus.Tokenizer.PagesTokens
   nameWithType: Tokenizer.PagesTokens
+- uid: BuckshotPlusPlus.Tokenizer.ProcessLineData(BuckshotPlusPlus.UnprocessedLine)
+  name: ProcessLineData(UnprocessedLine)
+  href: api/BuckshotPlusPlus.Tokenizer.html#BuckshotPlusPlus_Tokenizer_ProcessLineData_BuckshotPlusPlus_UnprocessedLine_
+  commentId: M:BuckshotPlusPlus.Tokenizer.ProcessLineData(BuckshotPlusPlus.UnprocessedLine)
+  fullName: BuckshotPlusPlus.Tokenizer.ProcessLineData(BuckshotPlusPlus.UnprocessedLine)
+  nameWithType: Tokenizer.ProcessLineData(UnprocessedLine)
+- uid: BuckshotPlusPlus.Tokenizer.ProcessLineData*
+  name: ProcessLineData
+  href: api/BuckshotPlusPlus.Tokenizer.html#BuckshotPlusPlus_Tokenizer_ProcessLineData_
+  commentId: Overload:BuckshotPlusPlus.Tokenizer.ProcessLineData
+  isSpec: "True"
+  fullName: BuckshotPlusPlus.Tokenizer.ProcessLineData
+  nameWithType: Tokenizer.ProcessLineData
 - uid: BuckshotPlusPlus.TokenUtils
   name: TokenUtils
   href: api/BuckshotPlusPlus.TokenUtils.html
@@ -1729,6 +1840,40 @@ references:
   isSpec: "True"
   fullName: BuckshotPlusPlus.TokenUtils.TryFindTokenValueByName
   nameWithType: TokenUtils.TryFindTokenValueByName
+- uid: BuckshotPlusPlus.UnprocessedLine
+  name: UnprocessedLine
+  href: api/BuckshotPlusPlus.UnprocessedLine.html
+  commentId: T:BuckshotPlusPlus.UnprocessedLine
+  fullName: BuckshotPlusPlus.UnprocessedLine
+  nameWithType: UnprocessedLine
+- uid: BuckshotPlusPlus.UnprocessedLine.#ctor(System.Collections.Generic.List{System.String},System.Int32)
+  name: UnprocessedLine(List<String>, Int32)
+  href: api/BuckshotPlusPlus.UnprocessedLine.html#BuckshotPlusPlus_UnprocessedLine__ctor_System_Collections_Generic_List_System_String__System_Int32_
+  commentId: M:BuckshotPlusPlus.UnprocessedLine.#ctor(System.Collections.Generic.List{System.String},System.Int32)
+  name.vb: UnprocessedLine(List(Of String), Int32)
+  fullName: BuckshotPlusPlus.UnprocessedLine.UnprocessedLine(System.Collections.Generic.List<System.String>, System.Int32)
+  fullName.vb: BuckshotPlusPlus.UnprocessedLine.UnprocessedLine(System.Collections.Generic.List(Of System.String), System.Int32)
+  nameWithType: UnprocessedLine.UnprocessedLine(List<String>, Int32)
+  nameWithType.vb: UnprocessedLine.UnprocessedLine(List(Of String), Int32)
+- uid: BuckshotPlusPlus.UnprocessedLine.#ctor*
+  name: UnprocessedLine
+  href: api/BuckshotPlusPlus.UnprocessedLine.html#BuckshotPlusPlus_UnprocessedLine__ctor_
+  commentId: Overload:BuckshotPlusPlus.UnprocessedLine.#ctor
+  isSpec: "True"
+  fullName: BuckshotPlusPlus.UnprocessedLine.UnprocessedLine
+  nameWithType: UnprocessedLine.UnprocessedLine
+- uid: BuckshotPlusPlus.UnprocessedLine.CurrentLine
+  name: CurrentLine
+  href: api/BuckshotPlusPlus.UnprocessedLine.html#BuckshotPlusPlus_UnprocessedLine_CurrentLine
+  commentId: F:BuckshotPlusPlus.UnprocessedLine.CurrentLine
+  fullName: BuckshotPlusPlus.UnprocessedLine.CurrentLine
+  nameWithType: UnprocessedLine.CurrentLine
+- uid: BuckshotPlusPlus.UnprocessedLine.Lines
+  name: Lines
+  href: api/BuckshotPlusPlus.UnprocessedLine.html#BuckshotPlusPlus_UnprocessedLine_Lines
+  commentId: F:BuckshotPlusPlus.UnprocessedLine.Lines
+  fullName: BuckshotPlusPlus.UnprocessedLine.Lines
+  nameWithType: UnprocessedLine.Lines
 - uid: BuckshotPlusPlus.WebServer
   name: BuckshotPlusPlus.WebServer
   href: api/BuckshotPlusPlus.WebServer.html

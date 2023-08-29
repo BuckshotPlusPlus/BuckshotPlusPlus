@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace BuckshotPlusPlus
@@ -27,6 +28,7 @@ namespace BuckshotPlusPlus
             int Remain = SubTokenNames.Length;
             foreach (string LocalTokenName in SubTokenNames)
             {
+                Console.WriteLine("LOOKING FOR " + LocalTokenName);
                 Remain--;
                 foreach (Token MyToken in MyTokenList)
                 {
@@ -48,8 +50,13 @@ namespace BuckshotPlusPlus
                     else if (MyToken.Data.GetType() == typeof(TokenDataContainer))
                     {
                         TokenDataContainer MyContainer = (TokenDataContainer)MyToken.Data;
+                        Console.WriteLine(LocalTokenName.Length.ToString());
+                        Console.WriteLine("FOPUND CONTAINER :" + MyContainer.ContainerName + ":");
+                        Console.WriteLine(MyContainer.ContainerName + "==" + LocalTokenName + ":");
+                        Console.WriteLine(MyContainer.ContainerName == LocalTokenName);
                         if (MyContainer.ContainerName == LocalTokenName)
                         {
+                            Console.WriteLine("Found CONTAINER WITH THE NAME TOUT CA");
                             if (Remain > 0 && !ReturnParent)
                             {
                                 MyTokenList = MyContainer.ContainerData;
@@ -123,7 +130,9 @@ namespace BuckshotPlusPlus
                             Token ReferencedToken = FindTokenByName(FileTokens,VarToken.VariableData);
                             if (ReferencedToken == null)
                             {
-                                Formater.TokenCriticalError("Token not found " + VarToken.VariableData, ChildToken);
+                                Console.WriteLine("To found:" + VarToken.VariableData);
+                                Console.WriteLine(VarToken.VariableData);
+                                Formater.TokenCriticalError("Token not super found " + VarToken.VariableData, ChildToken);
                             }
                         }
                     }

@@ -11,6 +11,43 @@ namespace BuckshotPlusPlus
     public abstract class TokenData { 
     }
 
+    public enum LineType
+    {
+        CONTAINER,
+        COMMENT,
+        VARIABLE,
+        INCLUDE,
+        EMPTY
+    }
+
+    public struct UnprocessedLine
+    {
+        public List<string> Lines;
+        public int CurrentLine;
+
+        public UnprocessedLine(List<string> Lines, int LineNumber)
+        {
+            this.Lines = Lines;
+            this.CurrentLine = LineNumber;
+        }
+    }
+
+    public struct ProcessedLine
+    {
+        public int CurrentLine;
+        public LineType LineType;
+        public string LineData;
+        public List<string> ContainerData;
+
+        public ProcessedLine(int LineNumber, LineType Type, string Data, List<string> ContainerData = null)
+        {
+            this.LineData = Data;
+            this.LineType = Type;
+            this.CurrentLine = LineNumber;
+            this.ContainerData = ContainerData;
+        }
+    }
+
     public class Tokenizer
     {
         Dictionary<string, string> UnprocessedFileDataDictionary { get; set; }
@@ -86,191 +123,210 @@ namespace BuckshotPlusPlus
                 FileDataDictionary.Add(FileName, FileData);
 
                 int CurrentLineNumber = 0;
-                int ContainerCount = 0;
 
                 List<string> MyFileLines = FileData.Split('\n').OfType<string>().ToList();
-                List<string> ContainerData = new List<string>();
 
                 while (CurrentLineNumber < MyFileLines.Count)
                 {
-                    // Check if last char is a new line \n / char 13
-                    string LineData = MyFileLines[CurrentLineNumber];
-                    if (LineData.Length >= 2)
+                    ProcessedLine CurrentLine = ProcessLineData(new UnprocessedLine(MyFileLines, CurrentLineNumber));
+                    CurrentLineNumber = CurrentLine.CurrentLine;
+                    Console.WriteLine(CurrentLineNumber);
+                    Console.WriteLine(CurrentLine.LineType);
+
+                    switch (CurrentLine.LineType)
                     {
-                        
-                        if(LineData.Length > 3)
-                        {
-                            if (LineData[0] + "" + LineData[1] + LineData[2] == "###")
+                            case LineType.INCLUDE:
                             {
-                                while (CurrentLineNumber < MyFileLines.Count)
+                                string IncludePath = Formater.SafeSplit(CurrentLine.LineData, ' ')[1];
+                                IncludePath = GetIncludeValue(IncludePath);
+
+                                if (IsHTTP(IncludePath))
                                 {
-                                    CurrentLineNumber++;
-                                    string NextLine = MyFileLines[CurrentLineNumber];
-                                    if (NextLine.Length > 2)
-                                    {
-                                        if (NextLine[0] + "" + NextLine[1] + NextLine[2] == "###" || NextLine[^1] + "" + NextLine[^2] + NextLine[3] == "###")
-                                        {
-                                            CurrentLineNumber++;
-                                            break;
-                                        }
-                                    }
-
-                                }
-                                continue;
-                            }
-                        }
-
-                        if (LineData[0] + "" + LineData[1] == "##")
-                        {
-                            CurrentLineNumber++;
-                            continue;
-                        }
-                    }
-                    if (LineData.Length > 1)
-                    {
-                        
-                        if (LineData[^1] == 13)
-                        {
-                            LineData = LineData.Substring(0, LineData.Length - 1);
-                        }
-
-                        if (Formater.SafeSplit(LineData, ' ')[0] == "include")
-                        {
-                            string IncludePath = Formater.SafeSplit(LineData, ' ')[1];
-                            IncludePath = GetIncludeValue(IncludePath);
-                            
-                            if (IsHTTP(IncludePath))
-                            {
-                                IncludeFile(
-                                    IncludePath.Substring(
-                                        1,
-                                        IncludePath.Length - 2
-                                    )
-                                );
-                            }
-                            else
-                            {
-                                IncludeFile(
-                                    Path.Combine(
-                                        RelativePath,
+                                    IncludeFile(
                                         IncludePath.Substring(
                                             1,
                                             IncludePath.Length - 2
                                         )
-                                    )
-                                );
-                            }
-                        }
-                        else
-                        {
-                            if (Formater.SafeContains(LineData, '{'))
-                            {
-                                List<string> MyString = Formater.SafeSplit(LineData, ' ');
-
-                                foreach (
-                                    string ContainerType in TokenDataContainer.SupportedContainerTypes
-                                )
-                                {
-                                    if (MyString[0] == ContainerType)
-                                    {
-                                        ContainerCount++;
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if (ContainerCount > 0)
-                            {
-                                ContainerData.Add(LineData);
-                                if (Formater.SafeContains(LineData, '}'))
-                                {
-                                    ContainerCount--;
-                                    if (ContainerCount == 0)
-                                    {
-                                        Token PreviousToken = null;
-                                        if (FileTokens.Count > 0)
-                                        {
-                                            PreviousToken = FileTokens.Last();
-                                        }
-                                        Token NewContainerToken = new Token(
-                                                FileName,
-                                                String.Join('\n', ContainerData),
-                                                CurrentLineNumber,
-                                                this,
-                                                null,
-                                                PreviousToken
-                                            );
-
-                                        
-
-                                        TokenDataContainer NewContainerTokenData = (TokenDataContainer)NewContainerToken.Data;
-                                        if (NewContainerTokenData.ContainerType == "logic")
-                                        {
-                                            // RUN LOGIC TEST
-                                            TokenDataLogic MyLogic = (TokenDataLogic)NewContainerTokenData.ContainerMetaData;
-                                            MyLogic.RunLogicTest(FileTokens);
-                                            
-                                        }
-                                        if (((TokenDataContainer)NewContainerToken.Data).ContainerType == "page")
-                                        {
-                                            PagesTokens.Add(NewContainerToken);
-                                        }
-                                        FileTokens.Add(
-                                            NewContainerToken
-                                        );
-                                        ContainerData = new List<string>();
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                Token MyNewToken = new Token(FileName, LineData, CurrentLineNumber, this);
-                                
-                                if(TokenUtils.SafeEditTokenData(LineData, FileTokens, MyNewToken))
-                                {
-                                    
+                                    );
                                 }
                                 else
                                 {
+                                    IncludeFile(
+                                        Path.Combine(
+                                            RelativePath,
+                                            IncludePath.Substring(
+                                                1,
+                                                IncludePath.Length - 2
+                                            )
+                                        )
+                                    );
+                                }
+                                break;
+                            }
+                            case LineType.CONTAINER:
+                            {
+                                Console.WriteLine("Container detected!");
+                                Console.WriteLine(CurrentLine.ContainerData[0]);
+                                AddContainerToken(FileName, CurrentLine.ContainerData, CurrentLineNumber);
+                                break;
+                            }
+                            case LineType.VARIABLE:
+                            {
+                                Console.WriteLine(CurrentLine.LineData);
+                                Token MyNewToken = new Token(FileName, CurrentLine.LineData, CurrentLineNumber, this);
+
+                                if (!TokenUtils.SafeEditTokenData(CurrentLine.LineData, FileTokens, MyNewToken))
+                                {
                                     FileTokens.Add(MyNewToken);
                                 }
-                                
+                                break;
                             }
-                        }
+                        case LineType.EMPTY:
+                            break;
+                            case LineType.COMMENT: {
+                                break;
+                            }
                     }
-                    else if (Formater.SafeContains(LineData, '}'))
-                    {
-                        ContainerCount--;
-                        if (ContainerCount == 0)
-                        {
-                            Token NewContainerToken = new Token(
-                                    FileName,
-                                    String.Join('\n', ContainerData),
-                                    CurrentLineNumber,
-                                    this
-                                );
 
-                            TokenDataContainer NewContainerTokenData = (TokenDataContainer)NewContainerToken.Data;
-                            if (NewContainerTokenData.ContainerType == "logic")
-                            {
-                                // RUN LOGIC TEST
-                                TokenDataLogic MyLogic = (TokenDataLogic)NewContainerTokenData.ContainerMetaData;
-                                MyLogic.RunLogicTest(FileTokens);
-
-                            }
-                            if (((TokenDataContainer)NewContainerToken.Data).ContainerType == "page")
-                            {
-                                PagesTokens.Add(NewContainerToken);
-                            }
-                            FileTokens.Add(
-                                NewContainerToken
-                            );
-                            ContainerData = new List<string>();
-                        }
-                    }
-                    CurrentLineNumber++;
+                    Console.WriteLine("Tokens:" + FileTokens.Count.ToString());
                 }
             }
+        }
+
+        public void AddContainerToken(string FileName, List<string> ContainerData, int CurrentLineNumber)
+        {
+            Token PreviousToken = null;
+            if (FileTokens.Count > 0)
+            {
+                PreviousToken = FileTokens.Last();
+            }
+            Token NewContainerToken = new Token(
+                    FileName,
+                    String.Join('\n', ContainerData),
+                    CurrentLineNumber,
+                    this,
+                    null,
+                    PreviousToken
+                );
+
+            TokenDataContainer NewContainerTokenData = (TokenDataContainer)NewContainerToken.Data;
+            if (NewContainerTokenData.ContainerType == "logic")
+            {
+                // RUN LOGIC TEST
+                TokenDataLogic MyLogic = (TokenDataLogic)NewContainerTokenData.ContainerMetaData;
+                MyLogic.RunLogicTest(FileTokens);
+
+            }
+            if (((TokenDataContainer)NewContainerToken.Data).ContainerType == "page")
+            {
+                PagesTokens.Add(NewContainerToken);
+            }
+            FileTokens.Add(
+                NewContainerToken
+            );
+        }
+
+        public static ProcessedLine ProcessLineData(UnprocessedLine ULine)
+        {
+
+            string LineData = ULine.Lines[ULine.CurrentLine];
+            int CurrentLineNumber = ULine.CurrentLine;
+            if (LineData.Length >= 2)
+            {
+
+                if (LineData.Length > 3)
+                {
+                    if (LineData[0] + "" + LineData[1] + LineData[2] == "###")
+                    {
+                        while (CurrentLineNumber < ULine.Lines.Count)
+                        {
+                            CurrentLineNumber++;
+                            string NextLine = ULine.Lines[CurrentLineNumber];
+                            if (NextLine.Length > 2)
+                            {
+                                if (NextLine[0] + "" + NextLine[1] + NextLine[2] == "###" || NextLine[^1] + "" + NextLine[^2] + NextLine[3] == "###")
+                                {
+                                    CurrentLineNumber++;
+                                    break;
+                                }
+                            }
+
+                        }
+                        return new ProcessedLine(CurrentLineNumber + 1, LineType.COMMENT, LineData);
+                    }
+                }
+
+                if (LineData[0] + "" + LineData[1] == "##")
+                {
+                    CurrentLineNumber++;
+                    return new ProcessedLine(CurrentLineNumber + 1, LineType.COMMENT, LineData);
+                }
+            }
+            if (LineData.Length > 1)
+            {
+
+                if (LineData[^1] == 13)
+                {
+                    LineData = LineData.Substring(0, LineData.Length - 1);
+                }
+
+                if (Formater.SafeSplit(LineData, ' ')[0] == "include")
+                {
+                    return new ProcessedLine(CurrentLineNumber + 1, LineType.INCLUDE, LineData);
+                }
+                else
+                {
+                    if (Formater.SafeContains(LineData, '{'))
+                    {
+                        List<string> MyString = Formater.SafeSplit(LineData, ' ');
+
+                        foreach (
+                            string ContainerType in TokenDataContainer.SupportedContainerTypes
+                        )
+                        {
+                            if (MyString[0] == ContainerType)
+                            {
+                                int ContainerCount = 1;
+                                List<string> ContainerData = new List<string>();
+                                ContainerData.Add(LineData);
+
+                                while (ContainerCount > 0)
+                                {
+                                    CurrentLineNumber++;
+                                    LineData = ULine.Lines[CurrentLineNumber];
+
+                                    if (LineData[^1] == 13)
+                                    {
+                                        LineData = LineData.Substring(0, LineData.Length - 1);
+                                    }
+
+                                    ContainerData.Add(LineData);
+                                    if (Formater.SafeContains(LineData, '{'))
+                                    {
+                                        ContainerCount++;
+                                    }
+                                    else if (Formater.SafeContains(LineData, '}'))
+                                    {
+                                        ContainerCount--;
+                                        if (ContainerCount == 0)
+                                        {
+                                            // Add container token
+                                            return new ProcessedLine(CurrentLineNumber + 1, LineType.CONTAINER, LineData, ContainerData);
+                                        }
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        return new ProcessedLine(CurrentLineNumber + 1, LineType.VARIABLE, LineData);
+                    }
+                }
+            }
+
+            return new ProcessedLine(CurrentLineNumber + 1, LineType.EMPTY, LineData);
         }
 
         public void IncludeFile(string FilePath)
