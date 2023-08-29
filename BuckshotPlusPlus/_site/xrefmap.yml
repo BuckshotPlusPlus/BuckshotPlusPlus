@@ -333,6 +333,25 @@ references:
   isSpec: "True"
   fullName: BuckshotPlusPlus.Databases.MySqlDatabase.Query
   nameWithType: MySqlDatabase.Query
+- uid: BuckshotPlusPlus.DotEnv
+  name: DotEnv
+  href: api/BuckshotPlusPlus.DotEnv.html
+  commentId: T:BuckshotPlusPlus.DotEnv
+  fullName: BuckshotPlusPlus.DotEnv
+  nameWithType: DotEnv
+- uid: BuckshotPlusPlus.DotEnv.Load(System.String)
+  name: Load(String)
+  href: api/BuckshotPlusPlus.DotEnv.html#BuckshotPlusPlus_DotEnv_Load_System_String_
+  commentId: M:BuckshotPlusPlus.DotEnv.Load(System.String)
+  fullName: BuckshotPlusPlus.DotEnv.Load(System.String)
+  nameWithType: DotEnv.Load(String)
+- uid: BuckshotPlusPlus.DotEnv.Load*
+  name: Load
+  href: api/BuckshotPlusPlus.DotEnv.html#BuckshotPlusPlus_DotEnv_Load_
+  commentId: Overload:BuckshotPlusPlus.DotEnv.Load
+  isSpec: "True"
+  fullName: BuckshotPlusPlus.DotEnv.Load
+  nameWithType: DotEnv.Load
 - uid: BuckshotPlusPlus.Formater
   name: Formater
   href: api/BuckshotPlusPlus.Formater.html
