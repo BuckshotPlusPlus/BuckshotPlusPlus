@@ -145,10 +145,8 @@ namespace BuckshotPlusPlus.WebServer
         {
             // Create a Http server and start listening for incoming connections
 
-            string url = "http://127.0.0.1:8080/";
+            string url = "http://" + (Environment.GetEnvironmentVariable("BPP_HOST") is { Length: > 0 } v ? v : "localhost:8080") + "/";
             listener = new HttpListener();
-            listener.Prefixes.Add(url);
-            url = "http://localhost:8080/";
             listener.Prefixes.Add(url);
             listener.Start();
             Formater.SuccessMessage($"Listening for connections on {url}");

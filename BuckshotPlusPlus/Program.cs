@@ -100,6 +100,7 @@ namespace BuckshotPlusPlus
 
             WebServer.WebServer MyWebServer = new WebServer.WebServer { token = token };
             MyWebServer.Start(MyTokenizer);
+
             return MyWebServer;
         }
     }
@@ -193,6 +194,10 @@ namespace BuckshotPlusPlus
             }
             else
             {
+                var root = Directory.GetCurrentDirectory();
+                var dotenv = Path.Combine(root, ".env");
+                DotEnv.Load(dotenv);
+                
                 FileMonitor fileMonitor = new FileMonitor(FilePath);
                 Thread workerThread = new Thread(fileMonitor.FileMonitoring);
                 workerThread.Start();
