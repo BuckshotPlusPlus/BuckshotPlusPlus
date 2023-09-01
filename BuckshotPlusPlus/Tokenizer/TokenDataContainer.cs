@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace BuckshotPlusPlus
 {
@@ -7,6 +9,7 @@ namespace BuckshotPlusPlus
     {
         public string ContainerName { get; set; }
         public List<Token> ContainerData { get; set; }
+        public List<string> ContainerLines { get; set; }
         public string ContainerType { get; set; }
         public TokenData ContainerMetaData { get; set; }
         public Token ContainerToken { get; set; }
@@ -36,6 +39,7 @@ namespace BuckshotPlusPlus
             this.ContainerType = "";
             this.ContainerName = "";
             this.ContainerToken = MyToken;
+            this.ContainerLines = new List<string> { };
 
             int OpenCount = 0;
             List<string> ChildContainerLines = new List<string>();
@@ -132,25 +136,28 @@ namespace BuckshotPlusPlus
                 }
                 else if (OpenCount == 1 && !Formater.SafeContains(LineData, '}'))
                 {
-                    Token MyNewToken = new Token(
+                    /*Token MyNewToken = new Token(
                         MyToken.FileName,
                         LineData,
                         MyToken.LineNumber + LinesData.IndexOf(LineData) - 1,
                         MyToken.MyTokenizer,
                         this
                     );
-                    AddChildToContainerData(ContainerData, MyNewToken);
+                    AddChildToContainerData(ContainerData, MyNewToken);*/
+                    ContainerLines.Add(LineData);
                 }
 
                 if (OpenCount == 2)
                 {
-                    ChildContainerLines.Add(LineData);
+                    //ChildContainerLines.Add(LineData);
+                    ContainerLines.Add(LineData);
                 }
 
                 if (Formater.SafeContains(LineData, '}') && OpenCount == 2)
                 {
                     OpenCount--;
-                    Token MyNewToken = new Token(
+                    ContainerLines.Add(LineData);
+                    /*Token MyNewToken = new Token(
                         MyToken.FileName,
                         String.Join('\n', ChildContainerLines),
                         MyToken.LineNumber + LinesData.IndexOf(ChildContainerLines[0]) - 4,
@@ -158,11 +165,66 @@ namespace BuckshotPlusPlus
                         this
                     );
                     AddChildToContainerData(ContainerData, MyNewToken);
-                    ChildContainerLines = new List<string>();
+                    ChildContainerLines = new List<string>();*/
+
                 }
                 else if (Formater.SafeContains(LineData, '}'))
                 {
                     OpenCount--;
+                }
+            }
+
+            int CurrentLineNumber = 0;
+            while (CurrentLineNumber < ContainerLines.Count)
+            {
+                ProcessedLine CurrentLine = Tokenizer.ProcessLineData(new UnprocessedLine(ContainerLines, CurrentLineNumber));
+                CurrentLineNumber = CurrentLine.CurrentLine;
+
+                switch (CurrentLine.LineType)
+                {
+                    case LineType.INCLUDE:
+                        {
+                            // Manage includes inside of containers
+                            break;
+                        }
+                    case LineType.CONTAINER:
+                        {
+                            Token PreviousToken = null;
+                            if (ContainerData.Count > 0)
+                            {
+                                PreviousToken = ContainerData.Last();
+                            }
+                            Token NewContainerToken = new Token(
+                                    MyToken.FileName,
+                                    String.Join('\n', CurrentLine.ContainerData),
+                                    CurrentLineNumber,
+                                    MyToken.MyTokenizer,
+                                    null,
+                                    PreviousToken
+                                );
+
+                            
+                            AddChildToContainerData(ContainerData, NewContainerToken);
+                            break;
+                        }
+                    case LineType.VARIABLE:
+                        {
+                            Token MyNewToken = new Token(
+                                MyToken.FileName,
+                                CurrentLine.LineData,
+                                MyToken.LineNumber + LinesData.IndexOf(CurrentLine.LineData) - 1,
+                                MyToken.MyTokenizer,
+                                this
+                            );
+                            AddChildToContainerData(ContainerData, MyNewToken);
+                            break;
+                        }
+                    case LineType.EMPTY:
+                        break;
+                    case LineType.COMMENT:
+                        {
+                            break;
+                        }
                 }
             }
         }

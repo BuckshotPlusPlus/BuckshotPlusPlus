@@ -120,22 +120,37 @@ namespace BuckshotPlusPlus
             {
                 foreach(Token ChildToken in PageTokenDataContainer.ContainerData)
                 {
-                    TokenDataVariable VarToken = (TokenDataVariable)ChildToken.Data;
-                    if(VarToken != null)
+                    if(ChildToken.Data.GetType() == typeof(TokenDataVariable))
                     {
-                        SafeEditTokenData(VarToken.VariableName, FileTokens, ChildToken);
-
-                        if(VarToken.VariableType == "ref")
+                        TokenDataVariable VarToken = (TokenDataVariable)ChildToken.Data;
+                        if (VarToken != null)
                         {
-                            Token ReferencedToken = FindTokenByName(FileTokens,VarToken.VariableData);
-                            if (ReferencedToken == null)
+                            SafeEditTokenData(VarToken.VariableName, FileTokens, ChildToken);
+
+                            if (VarToken.VariableType == "ref")
                             {
-                                Console.WriteLine("To found:" + VarToken.VariableData);
-                                Console.WriteLine(VarToken.VariableData);
-                                Formater.TokenCriticalError("Token not super found " + VarToken.VariableData, ChildToken);
+                                Token ReferencedToken = FindTokenByName(FileTokens, VarToken.VariableData);
+                                if (ReferencedToken == null)
+                                {
+                                    Console.WriteLine("To found:" + VarToken.VariableData);
+                                    Console.WriteLine(VarToken.VariableData);
+                                    Formater.TokenCriticalError("Token not super found " + VarToken.VariableData, ChildToken);
+                                }
                             }
                         }
                     }
+                    else if(ChildToken.Data.GetType() == typeof(TokenDataContainer))
+                    {
+                        TokenDataContainer NewContainerTokenData = (TokenDataContainer)ChildToken.Data;
+                        if (NewContainerTokenData.ContainerType == "logic")
+                        {
+                            // RUN LOGIC TEST
+                            TokenDataLogic MyLogic = (TokenDataLogic)NewContainerTokenData.ContainerMetaData;
+                            MyLogic.RunLogicTest(FileTokens);
+
+                        }
+                    }
+                    
                 }
             }
         }

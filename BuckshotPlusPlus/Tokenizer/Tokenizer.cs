@@ -130,8 +130,6 @@ namespace BuckshotPlusPlus
                 {
                     ProcessedLine CurrentLine = ProcessLineData(new UnprocessedLine(MyFileLines, CurrentLineNumber));
                     CurrentLineNumber = CurrentLine.CurrentLine;
-                    Console.WriteLine(CurrentLineNumber);
-                    Console.WriteLine(CurrentLine.LineType);
 
                     switch (CurrentLine.LineType)
                     {
@@ -165,14 +163,11 @@ namespace BuckshotPlusPlus
                             }
                             case LineType.CONTAINER:
                             {
-                                Console.WriteLine("Container detected!");
-                                Console.WriteLine(CurrentLine.ContainerData[0]);
                                 AddContainerToken(FileName, CurrentLine.ContainerData, CurrentLineNumber);
                                 break;
                             }
                             case LineType.VARIABLE:
                             {
-                                Console.WriteLine(CurrentLine.LineData);
                                 Token MyNewToken = new Token(FileName, CurrentLine.LineData, CurrentLineNumber, this);
 
                                 if (!TokenUtils.SafeEditTokenData(CurrentLine.LineData, FileTokens, MyNewToken))

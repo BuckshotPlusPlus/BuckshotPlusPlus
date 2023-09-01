@@ -1228,6 +1228,19 @@ references:
   isSpec: "True"
   fullName: BuckshotPlusPlus.TokenDataContainer.ContainerData
   nameWithType: TokenDataContainer.ContainerData
+- uid: BuckshotPlusPlus.TokenDataContainer.ContainerLines
+  name: ContainerLines
+  href: api/BuckshotPlusPlus.TokenDataContainer.html#BuckshotPlusPlus_TokenDataContainer_ContainerLines
+  commentId: P:BuckshotPlusPlus.TokenDataContainer.ContainerLines
+  fullName: BuckshotPlusPlus.TokenDataContainer.ContainerLines
+  nameWithType: TokenDataContainer.ContainerLines
+- uid: BuckshotPlusPlus.TokenDataContainer.ContainerLines*
+  name: ContainerLines
+  href: api/BuckshotPlusPlus.TokenDataContainer.html#BuckshotPlusPlus_TokenDataContainer_ContainerLines_
+  commentId: Overload:BuckshotPlusPlus.TokenDataContainer.ContainerLines
+  isSpec: "True"
+  fullName: BuckshotPlusPlus.TokenDataContainer.ContainerLines
+  nameWithType: TokenDataContainer.ContainerLines
 - uid: BuckshotPlusPlus.TokenDataContainer.ContainerMetaData
   name: ContainerMetaData
   href: api/BuckshotPlusPlus.TokenDataContainer.html#BuckshotPlusPlus_TokenDataContainer_ContainerMetaData
