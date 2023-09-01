@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace BuckshotPlusPlus
@@ -28,7 +29,6 @@ namespace BuckshotPlusPlus
             int Remain = SubTokenNames.Length;
             foreach (string LocalTokenName in SubTokenNames)
             {
-                Console.WriteLine("LOOKING FOR " + LocalTokenName);
                 Remain--;
                 foreach (Token MyToken in MyTokenList)
                 {
@@ -50,13 +50,8 @@ namespace BuckshotPlusPlus
                     else if (MyToken.Data.GetType() == typeof(TokenDataContainer))
                     {
                         TokenDataContainer MyContainer = (TokenDataContainer)MyToken.Data;
-                        Console.WriteLine(LocalTokenName.Length.ToString());
-                        Console.WriteLine("FOPUND CONTAINER :" + MyContainer.ContainerName + ":");
-                        Console.WriteLine(MyContainer.ContainerName + "==" + LocalTokenName + ":");
-                        Console.WriteLine(MyContainer.ContainerName == LocalTokenName);
                         if (MyContainer.ContainerName == LocalTokenName)
                         {
-                            Console.WriteLine("Found CONTAINER WITH THE NAME TOUT CA");
                             if (Remain > 0 && !ReturnParent)
                             {
                                 MyTokenList = MyContainer.ContainerData;
@@ -110,10 +105,13 @@ namespace BuckshotPlusPlus
 
         public static void EditAllTokensOfContainer(List<Token> FileTokens,Token MyContainer)
         {
-            
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             TokenDataContainer PageTokenDataContainer = (TokenDataContainer)MyContainer.Data;
             if (PageTokenDataContainer == null)
             {
+                stopwatch.Stop();
                 Formater.TokenCriticalError("The provided token is not a container!", MyContainer);
             }
             else
@@ -132,8 +130,6 @@ namespace BuckshotPlusPlus
                                 Token ReferencedToken = FindTokenByName(FileTokens, VarToken.VariableData);
                                 if (ReferencedToken == null)
                                 {
-                                    Console.WriteLine("To found:" + VarToken.VariableData);
-                                    Console.WriteLine(VarToken.VariableData);
                                     Formater.TokenCriticalError("Token not super found " + VarToken.VariableData, ChildToken);
                                 }
                             }
@@ -153,6 +149,9 @@ namespace BuckshotPlusPlus
                     
                 }
             }
+
+            stopwatch.Stop();
+            //Formater.SuccessMessage($"It took {stopwatch.ElapsedMilliseconds} ms to run EditAllTokensOfContainer of container {PageTokenDataContainer.ContainerName}");
         }
 
         public static TokenDataVariable FindTokenDataVariableByName(

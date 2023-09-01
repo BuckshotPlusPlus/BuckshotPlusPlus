@@ -1,7 +1,8 @@
 {
   "profiles": {
     "BuckshotPlusPlus": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Users\\victo\\OneDrive\\Documents\\GitHub\\Hello-World\\test.bpp\""
     },
     "Docker": {
       "commandName": "Docker"

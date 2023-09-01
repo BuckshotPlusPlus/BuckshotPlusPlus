@@ -183,7 +183,6 @@ namespace BuckshotPlusPlus
                             }
                     }
 
-                    Console.WriteLine("Tokens:" + FileTokens.Count.ToString());
                 }
             }
         }

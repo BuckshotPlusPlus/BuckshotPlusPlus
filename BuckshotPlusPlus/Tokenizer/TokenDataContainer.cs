@@ -119,7 +119,6 @@ namespace BuckshotPlusPlus
                                             Token LocalTokenData in localTokenDataContainer.ContainerData
                                         )
                                         {
-                                            //Token LocalTokenCopy = new Token(LocalTokenData.FileName, LocalTokenData.LineData, LocalTokenData.LineNumber, LocalTokenData.MyTokenizer);
                                             ContainerData.Add(LocalTokenData);
                                         }
                                         ParentFound = true;
@@ -136,20 +135,11 @@ namespace BuckshotPlusPlus
                 }
                 else if (OpenCount == 1 && !Formater.SafeContains(LineData, '}'))
                 {
-                    /*Token MyNewToken = new Token(
-                        MyToken.FileName,
-                        LineData,
-                        MyToken.LineNumber + LinesData.IndexOf(LineData) - 1,
-                        MyToken.MyTokenizer,
-                        this
-                    );
-                    AddChildToContainerData(ContainerData, MyNewToken);*/
                     ContainerLines.Add(LineData);
                 }
 
                 if (OpenCount == 2)
                 {
-                    //ChildContainerLines.Add(LineData);
                     ContainerLines.Add(LineData);
                 }
 
@@ -157,15 +147,6 @@ namespace BuckshotPlusPlus
                 {
                     OpenCount--;
                     ContainerLines.Add(LineData);
-                    /*Token MyNewToken = new Token(
-                        MyToken.FileName,
-                        String.Join('\n', ChildContainerLines),
-                        MyToken.LineNumber + LinesData.IndexOf(ChildContainerLines[0]) - 4,
-                        MyToken.MyTokenizer,
-                        this
-                    );
-                    AddChildToContainerData(ContainerData, MyNewToken);
-                    ChildContainerLines = new List<string>();*/
 
                 }
                 else if (Formater.SafeContains(LineData, '}'))
