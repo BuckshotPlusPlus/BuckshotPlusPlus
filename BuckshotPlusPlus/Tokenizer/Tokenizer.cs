@@ -56,7 +56,7 @@ namespace BuckshotPlusPlus
         public List<Token> FileTokens { get; }
         public List <Token> PagesTokens { get; }
 
-        string RelativePath { get; }
+        public string RelativePath { get; }
 
         public Tokenizer(string filePath)
         {

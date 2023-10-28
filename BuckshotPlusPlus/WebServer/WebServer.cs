@@ -16,10 +16,13 @@ namespace BuckshotPlusPlus.WebServer
         public int RequestCount = 0;
         public bool RunServer = true;
         public CancellationToken Token;
+        
 
         public async Task HandleIncomingConnections(Tokenizer myTokenizer)
         {
             UserSessionManager userSessions = new UserSessionManager();
+            
+            SitemapGenerator.GenerateSitemapFromTokens(myTokenizer);
 
             // While a user hasn't visited the `shutdown` url, keep on handling requests
             while (RunServer)

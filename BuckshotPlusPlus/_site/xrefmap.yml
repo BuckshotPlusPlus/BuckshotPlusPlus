@@ -1709,6 +1709,19 @@ references:
   isSpec: "True"
   fullName: BuckshotPlusPlus.Tokenizer.ProcessLineData
   nameWithType: Tokenizer.ProcessLineData
+- uid: BuckshotPlusPlus.Tokenizer.RelativePath
+  name: RelativePath
+  href: api/BuckshotPlusPlus.Tokenizer.html#BuckshotPlusPlus_Tokenizer_RelativePath
+  commentId: P:BuckshotPlusPlus.Tokenizer.RelativePath
+  fullName: BuckshotPlusPlus.Tokenizer.RelativePath
+  nameWithType: Tokenizer.RelativePath
+- uid: BuckshotPlusPlus.Tokenizer.RelativePath*
+  name: RelativePath
+  href: api/BuckshotPlusPlus.Tokenizer.html#BuckshotPlusPlus_Tokenizer_RelativePath_
+  commentId: Overload:BuckshotPlusPlus.Tokenizer.RelativePath
+  isSpec: "True"
+  fullName: BuckshotPlusPlus.Tokenizer.RelativePath
+  nameWithType: Tokenizer.RelativePath
 - uid: BuckshotPlusPlus.TokenUtils
   name: TokenUtils
   href: api/BuckshotPlusPlus.TokenUtils.html
@@ -1930,6 +1943,57 @@ references:
   commentId: F:BuckshotPlusPlus.WebServer.MetaData.Type
   fullName: BuckshotPlusPlus.WebServer.MetaData.Type
   nameWithType: MetaData.Type
+- uid: BuckshotPlusPlus.WebServer.SitemapGenerator
+  name: SitemapGenerator
+  href: api/BuckshotPlusPlus.WebServer.SitemapGenerator.html
+  commentId: T:BuckshotPlusPlus.WebServer.SitemapGenerator
+  fullName: BuckshotPlusPlus.WebServer.SitemapGenerator
+  nameWithType: SitemapGenerator
+- uid: BuckshotPlusPlus.WebServer.SitemapGenerator.GenerateSitemap(BuckshotPlusPlus.Tokenizer,System.Collections.Generic.List{System.String})
+  name: GenerateSitemap(Tokenizer, List<String>)
+  href: api/BuckshotPlusPlus.WebServer.SitemapGenerator.html#BuckshotPlusPlus_WebServer_SitemapGenerator_GenerateSitemap_BuckshotPlusPlus_Tokenizer_System_Collections_Generic_List_System_String__
+  commentId: M:BuckshotPlusPlus.WebServer.SitemapGenerator.GenerateSitemap(BuckshotPlusPlus.Tokenizer,System.Collections.Generic.List{System.String})
+  name.vb: GenerateSitemap(Tokenizer, List(Of String))
+  fullName: BuckshotPlusPlus.WebServer.SitemapGenerator.GenerateSitemap(BuckshotPlusPlus.Tokenizer, System.Collections.Generic.List<System.String>)
+  fullName.vb: BuckshotPlusPlus.WebServer.SitemapGenerator.GenerateSitemap(BuckshotPlusPlus.Tokenizer, System.Collections.Generic.List(Of System.String))
+  nameWithType: SitemapGenerator.GenerateSitemap(Tokenizer, List<String>)
+  nameWithType.vb: SitemapGenerator.GenerateSitemap(Tokenizer, List(Of String))
+- uid: BuckshotPlusPlus.WebServer.SitemapGenerator.GenerateSitemap*
+  name: GenerateSitemap
+  href: api/BuckshotPlusPlus.WebServer.SitemapGenerator.html#BuckshotPlusPlus_WebServer_SitemapGenerator_GenerateSitemap_
+  commentId: Overload:BuckshotPlusPlus.WebServer.SitemapGenerator.GenerateSitemap
+  isSpec: "True"
+  fullName: BuckshotPlusPlus.WebServer.SitemapGenerator.GenerateSitemap
+  nameWithType: SitemapGenerator.GenerateSitemap
+- uid: BuckshotPlusPlus.WebServer.SitemapGenerator.GenerateSitemapFromTokens(BuckshotPlusPlus.Tokenizer)
+  name: GenerateSitemapFromTokens(Tokenizer)
+  href: api/BuckshotPlusPlus.WebServer.SitemapGenerator.html#BuckshotPlusPlus_WebServer_SitemapGenerator_GenerateSitemapFromTokens_BuckshotPlusPlus_Tokenizer_
+  commentId: M:BuckshotPlusPlus.WebServer.SitemapGenerator.GenerateSitemapFromTokens(BuckshotPlusPlus.Tokenizer)
+  fullName: BuckshotPlusPlus.WebServer.SitemapGenerator.GenerateSitemapFromTokens(BuckshotPlusPlus.Tokenizer)
+  nameWithType: SitemapGenerator.GenerateSitemapFromTokens(Tokenizer)
+- uid: BuckshotPlusPlus.WebServer.SitemapGenerator.GenerateSitemapFromTokens*
+  name: GenerateSitemapFromTokens
+  href: api/BuckshotPlusPlus.WebServer.SitemapGenerator.html#BuckshotPlusPlus_WebServer_SitemapGenerator_GenerateSitemapFromTokens_
+  commentId: Overload:BuckshotPlusPlus.WebServer.SitemapGenerator.GenerateSitemapFromTokens
+  isSpec: "True"
+  fullName: BuckshotPlusPlus.WebServer.SitemapGenerator.GenerateSitemapFromTokens
+  nameWithType: SitemapGenerator.GenerateSitemapFromTokens
+- uid: BuckshotPlusPlus.WebServer.SitemapGenerator.UpdateSitemap(BuckshotPlusPlus.Tokenizer,System.Collections.Generic.List{System.String})
+  name: UpdateSitemap(Tokenizer, List<String>)
+  href: api/BuckshotPlusPlus.WebServer.SitemapGenerator.html#BuckshotPlusPlus_WebServer_SitemapGenerator_UpdateSitemap_BuckshotPlusPlus_Tokenizer_System_Collections_Generic_List_System_String__
+  commentId: M:BuckshotPlusPlus.WebServer.SitemapGenerator.UpdateSitemap(BuckshotPlusPlus.Tokenizer,System.Collections.Generic.List{System.String})
+  name.vb: UpdateSitemap(Tokenizer, List(Of String))
+  fullName: BuckshotPlusPlus.WebServer.SitemapGenerator.UpdateSitemap(BuckshotPlusPlus.Tokenizer, System.Collections.Generic.List<System.String>)
+  fullName.vb: BuckshotPlusPlus.WebServer.SitemapGenerator.UpdateSitemap(BuckshotPlusPlus.Tokenizer, System.Collections.Generic.List(Of System.String))
+  nameWithType: SitemapGenerator.UpdateSitemap(Tokenizer, List<String>)
+  nameWithType.vb: SitemapGenerator.UpdateSitemap(Tokenizer, List(Of String))
+- uid: BuckshotPlusPlus.WebServer.SitemapGenerator.UpdateSitemap*
+  name: UpdateSitemap
+  href: api/BuckshotPlusPlus.WebServer.SitemapGenerator.html#BuckshotPlusPlus_WebServer_SitemapGenerator_UpdateSitemap_
+  commentId: Overload:BuckshotPlusPlus.WebServer.SitemapGenerator.UpdateSitemap
+  isSpec: "True"
+  fullName: BuckshotPlusPlus.WebServer.SitemapGenerator.UpdateSitemap
+  nameWithType: SitemapGenerator.UpdateSitemap
 - uid: BuckshotPlusPlus.WebServer.WebMetaDataType
   name: WebMetaDataType
   href: api/BuckshotPlusPlus.WebServer.WebMetaDataType.html

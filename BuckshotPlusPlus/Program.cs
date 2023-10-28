@@ -97,6 +97,9 @@ namespace BuckshotPlusPlus
         private static WebServer.WebServer StartWebServer(string filePath, CancellationToken token)
         {
             Tokenizer myTokenizer = Program.CompileMainFile(filePath);
+            
+            var dotenv = Path.Combine(myTokenizer.RelativePath, ".env");
+            DotEnv.Load(dotenv);
 
             WebServer.WebServer myWebServer = new WebServer.WebServer { Token = token };
             myWebServer.Start(myTokenizer);
@@ -195,8 +198,6 @@ namespace BuckshotPlusPlus
             else
             {
                 var root = Directory.GetCurrentDirectory();
-                var dotenv = Path.Combine(root, ".env");
-                DotEnv.Load(dotenv);
                 
                 FileMonitor fileMonitor = new FileMonitor(filePath);
                 Thread workerThread = new Thread(fileMonitor.FileMonitoring);

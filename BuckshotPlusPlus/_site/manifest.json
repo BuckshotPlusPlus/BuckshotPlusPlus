@@ -381,7 +381,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.Tokenizer.html",
-          "hash": "622LrYMg9MoCYMSQTvYclf3mzt1mc+nl1wIXUHlt7hI="
+          "hash": "/gxZtGij1/FhKy26UplS25MzxsDxjIOqVyjXrS0GuAA="
         }
       },
       "is_incremental": true,
@@ -413,6 +413,18 @@
     },
     {
       "type": "ManagedReference",
+      "source_relative_path": "api/BuckshotPlusPlus.WebServer.SitemapGenerator.yml",
+      "output": {
+        ".html": {
+          "relative_path": "api/BuckshotPlusPlus.WebServer.SitemapGenerator.html",
+          "hash": "ZP225vIvpY7snQ+V1iZepI75H+/oXHocVKcqGBBFF7w="
+        }
+      },
+      "is_incremental": true,
+      "version": ""
+    },
+    {
+      "type": "ManagedReference",
       "source_relative_path": "api/BuckshotPlusPlus.WebServer.WebMetaDataType.yml",
       "output": {
         ".html": {
@@ -429,7 +441,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.WebServer.html",
-          "hash": "X/06fi6M/lCcpDVQapJIwdUqa3Zylfv1P/hzK0sDEp8="
+          "hash": "bFnrPhLF8t4kGHNorYGccbZ8zm7cV6ydoN5IggrOhps="
         }
       },
       "is_incremental": true,
@@ -465,7 +477,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "H4L/DDfZKpwXPzY0kpRaOUkizgzZMoyLFWgApRGCWHE="
+          "hash": "x6OiwKOx5vjvrnKiq3borpY2IWwlqA23V8ykeBPSnB8="
         }
       },
       "is_incremental": false,
@@ -538,8 +550,8 @@
         "ManagedReferenceDocumentProcessor": {
           "can_incremental": true,
           "incrementalPhase": "build",
-          "total_file_count": 37,
-          "skipped_file_count": 37
+          "total_file_count": 38,
+          "skipped_file_count": 38
         },
         "TocDocumentProcessor": {
           "can_incremental": false,
