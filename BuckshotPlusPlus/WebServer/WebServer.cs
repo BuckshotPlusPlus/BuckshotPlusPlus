@@ -12,86 +12,86 @@ namespace BuckshotPlusPlus.WebServer
 {
     internal class WebServer
     {
-        public HttpListener listener;
-        public int requestCount = 0;
-        public bool runServer = true;
-        public CancellationToken token;
+        public HttpListener Listener;
+        public int RequestCount = 0;
+        public bool RunServer = true;
+        public CancellationToken Token;
 
-        public async Task HandleIncomingConnections(Tokenizer MyTokenizer)
+        public async Task HandleIncomingConnections(Tokenizer myTokenizer)
         {
-            UserSessionManager UserSessions = new UserSessionManager();
+            UserSessionManager userSessions = new UserSessionManager();
 
             // While a user hasn't visited the `shutdown` url, keep on handling requests
-            while (runServer)
+            while (RunServer)
             {
                 // Will wait here until we hear from a connection
-                HttpListenerContext ctx = await listener.GetContextAsync();
+                HttpListenerContext ctx = await Listener.GetContextAsync();
 
                 // Peel out the requests and response objects
                 HttpListenerRequest req = ctx.Request;
                 HttpListenerResponse resp = ctx.Response;
 
-                if (token.IsCancellationRequested)
+                if (Token.IsCancellationRequested)
                 {
-                    runServer = false;
+                    RunServer = false;
                 }
 
-                string AbsolutePath = req.Url!.AbsolutePath;
-                if (AbsolutePath.Contains(".ico"))
+                string absolutePath = req.Url!.AbsolutePath;
+                if (absolutePath.Contains(".ico"))
                 {
-                    string Path = "." + AbsolutePath;
-                    if (File.Exists(Path))
+                    string path = "." + absolutePath;
+                    if (File.Exists(path))
                     {
-                        var Data = File.ReadAllBytes("." + AbsolutePath);
+                        var data = File.ReadAllBytes("." + absolutePath);
                         resp.ContentType = "image/x-icon";
                         resp.ContentEncoding = Encoding.UTF8;
-                        resp.ContentLength64 = Data.LongLength;
+                        resp.ContentLength64 = data.LongLength;
 
-                        await resp.OutputStream.WriteAsync(Data, 0, Data.Length);
+                        await resp.OutputStream.WriteAsync(data, 0, data.Length);
 
                         resp.Close();
                     }
                 }
                 else
                 {
-                    bool page_found = false;
+                    bool pageFound = false;
 
-                    foreach (Token MyToken in MyTokenizer.FileTokens)
+                    foreach (Token myToken in myTokenizer.FileTokens)
                     {
-                        if (MyToken.Data.GetType() == typeof(TokenDataContainer))
+                        if (myToken.Data.GetType() == typeof(TokenDataContainer))
                         {
-                            TokenDataContainer MyTokenDataContainer = (TokenDataContainer)MyToken.Data;
-                            if (MyTokenDataContainer.ContainerType == "page")
+                            TokenDataContainer myTokenDataContainer = (TokenDataContainer)myToken.Data;
+                            if (myTokenDataContainer.ContainerType == "page")
                             {
-                                string PageName = MyTokenDataContainer.ContainerName;
+                                string pageName = myTokenDataContainer.ContainerName;
 
                                 if (
-                                    req.Url.AbsolutePath == "/" + PageName
-                                    || (req.Url.AbsolutePath == "/" && PageName == "index")
+                                    req.Url.AbsolutePath == "/" + pageName
+                                    || (req.Url.AbsolutePath == "/" && pageName == "index")
                                 )
                                 {
-                                    page_found = true;
+                                    pageFound = true;
 
                                     var stopwatch = new Stopwatch();
                                     stopwatch.Start();
 
-                                    UserSessions.RemoveInactiveUserSessions();
+                                    userSessions.RemoveInactiveUserSessions();
 
-                                    string clientIP = ctx.Request.RemoteEndPoint.ToString();
+                                    string clientIp = ctx.Request.RemoteEndPoint.ToString();
 
-                                    List<Token> ServerSideTokenList = new List<Token>();
+                                    List<Token> serverSideTokenList = new List<Token>();
 
-                                    ServerSideTokenList.AddRange(MyTokenizer.FileTokens);
+                                    serverSideTokenList.AddRange(myTokenizer.FileTokens);
 
-                                    UserSession FoundUserSession = UserSessions.AddOrUpdateUserSession(req, resp);
+                                    UserSession foundUserSession = userSessions.AddOrUpdateUserSession(req, resp);
 
-                                    FoundUserSession.AddUrl(req.Url.AbsolutePath);
+                                    foundUserSession.AddUrl(req.Url.AbsolutePath);
 
-                                    ServerSideTokenList.Add(FoundUserSession.GetToken(MyTokenizer));
+                                    serverSideTokenList.Add(foundUserSession.GetToken(myTokenizer));
 
                                     // Write the response info
-                                    string disableSubmit = !runServer ? "disabled" : "";
-                                    string pageData = Page.RenderWebPage(ServerSideTokenList, MyToken);
+                                    string disableSubmit = !RunServer ? "disabled" : "";
+                                    string pageData = Page.RenderWebPage(serverSideTokenList, myToken);
 
                                     byte[] data = Encoding.UTF8.GetBytes(
                                         pageData
@@ -109,15 +109,15 @@ namespace BuckshotPlusPlus.WebServer
                                     resp.Close();
 
                                     stopwatch.Stop();
-                                    Formater.SuccessMessage($"Successfully sent page {PageName} in {stopwatch.ElapsedMilliseconds} ms");
+                                    Formater.SuccessMessage($"Successfully sent page {pageName} in {stopwatch.ElapsedMilliseconds} ms");
                                 }
                             }
                         }
                     }
 
-                    if (!page_found)
+                    if (!pageFound)
                     {
-                        string disableSubmit = !runServer ? "disabled" : "";
+                        string disableSubmit = !RunServer ? "disabled" : "";
                         string pageData = "404 not found";
 
                         byte[] data = Encoding.UTF8.GetBytes(
@@ -135,22 +135,22 @@ namespace BuckshotPlusPlus.WebServer
             }
         }
 
-        public void Start(Tokenizer MyTokenizer)
+        public void Start(Tokenizer myTokenizer)
         {
             // Create a Http server and start listening for incoming connections
 
             string url = "http://" + (Environment.GetEnvironmentVariable("BPP_HOST") is { Length: > 0 } v ? v : "localhost:8080") + "/";
-            listener = new HttpListener();
-            listener.Prefixes.Add(url);
-            listener.Start();
+            Listener = new HttpListener();
+            Listener.Prefixes.Add(url);
+            Listener.Start();
             Formater.SuccessMessage($"Listening for connections on {url}");
 
             // Handle requests
-            Task listenTask = HandleIncomingConnections(MyTokenizer);
+            Task listenTask = HandleIncomingConnections(myTokenizer);
             listenTask.GetAwaiter().GetResult();
 
             // Close the listener
-            listener.Close();
+            Listener.Close();
         }
     }
 }

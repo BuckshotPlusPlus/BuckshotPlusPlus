@@ -15,11 +15,11 @@ namespace BuckshotPlusPlus.Security
 
         public UserSession AddOrUpdateUserSession(HttpListenerRequest req, HttpListenerResponse response)
         {
-            bool SessionCookieFound = false;
-            string UserSessionId = null;
+            bool sessionCookieFound = false;
+            string userSessionId = null;
 
-            Dictionary<string, string> RequestHeaders = new Dictionary<string, string>();
-            RequestHeaders.Add("ip", req.RemoteEndPoint.ToString());
+            Dictionary<string, string> requestHeaders = new Dictionary<string, string>();
+            requestHeaders.Add("ip", req.RemoteEndPoint.ToString());
 
             System.Collections.Specialized.NameValueCollection headers = req.Headers;
             // Get each header and display each value.
@@ -30,10 +30,10 @@ namespace BuckshotPlusPlus.Security
                 {
                     if(key == "sec-ch-ua-platform")
                     {
-                        RequestHeaders.Add("platform", values[0]);
+                        requestHeaders.Add("platform", values[0]);
                     }else if(key == "Accept-Language")
                     {
-                        RequestHeaders.Add("lang", values[0]);
+                        requestHeaders.Add("lang", values[0]);
                     }
                 }
             }
@@ -42,8 +42,8 @@ namespace BuckshotPlusPlus.Security
             {
                 if (cook.Name == "bpp_session_id")
                 {
-                    SessionCookieFound = true;
-                    UserSessionId = cook.Value;
+                    sessionCookieFound = true;
+                    userSessionId = cook.Value;
                 }
 
                 /*Console.WriteLine("Cookie:");
@@ -65,39 +65,39 @@ namespace BuckshotPlusPlus.Security
                 Console.WriteLine("String: {0}", cook.ToString());*/
             }
 
-            if (SessionCookieFound)
+            if (sessionCookieFound)
             {
-                UserSession Session;
-                if (ActiveUsers.TryGetValue(UserSessionId, out Session))
+                UserSession session;
+                if (ActiveUsers.TryGetValue(userSessionId, out session))
                 {
-                    return Session;
+                    return session;
                 }
 
-                return CreateNewUserSession(RequestHeaders, response);
+                return CreateNewUserSession(requestHeaders, response);
             }
 
-            return CreateNewUserSession(RequestHeaders, response);
+            return CreateNewUserSession(requestHeaders, response);
         }
 
-        public UserSession CreateNewUserSession(Dictionary<string, string> RequestHeaders, HttpListenerResponse response)
+        public UserSession CreateNewUserSession(Dictionary<string, string> requestHeaders, HttpListenerResponse response)
         {
-            UserSession NewUserSession = new UserSession(RequestHeaders);
-            ActiveUsers.Add(NewUserSession.SessionID, NewUserSession);
+            UserSession newUserSession = new UserSession(requestHeaders);
+            ActiveUsers.Add(newUserSession.SessionId, newUserSession);
 
-            Cookie SessionIdCookie = new Cookie("bpp_session_id", NewUserSession.SessionID);
-            response.SetCookie(SessionIdCookie);
+            Cookie sessionIdCookie = new Cookie("bpp_session_id", newUserSession.SessionId);
+            response.SetCookie(sessionIdCookie);
 
-            return NewUserSession;
+            return newUserSession;
         }
 
         public void RemoveInactiveUserSessions()
         {
-            DateTime Now = DateTime.Now;
-            foreach (KeyValuePair<string, UserSession> User in ActiveUsers)
+            DateTime now = DateTime.Now;
+            foreach (KeyValuePair<string, UserSession> user in ActiveUsers)
             {
-                if ((Now - User.Value.LastUserInteraction).TotalSeconds > 10)
+                if ((now - user.Value.LastUserInteraction).TotalSeconds > 10)
                 {
-                    ActiveUsers.Remove(User.Key);
+                    ActiveUsers.Remove(user.Key);
                 }
             }
         }

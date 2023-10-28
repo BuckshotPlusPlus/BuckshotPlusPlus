@@ -5,7 +5,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
 {
     class Events
     {
-        static List<String> Props = new()
+        static List<String> _props = new()
         {
             // Window Events
             "onafterprint",
@@ -96,34 +96,34 @@ namespace BuckshotPlusPlus.Compiler.HTML
             "ontoggle"
         };
 
-        public static string GetHTMLEvents(List<Token> ServerSideTokens, Token MyToken)
+        public static string GetHtmlEvents(List<Token> serverSideTokens, Token myToken)
         {
-            string CompiledEvents = " ";
+            string compiledEvents = " ";
 
-            TokenDataContainer ViewContainer = (TokenDataContainer)MyToken.Data;
-            foreach (String Name in Props)
+            TokenDataContainer viewContainer = (TokenDataContainer)myToken.Data;
+            foreach (String name in _props)
             {
-                TokenDataVariable MyJSEventVar = TokenUtils.FindTokenDataVariableByName(
-                    ViewContainer.ContainerData,
-                    Name
+                TokenDataVariable myJsEventVar = TokenUtils.FindTokenDataVariableByName(
+                    viewContainer.ContainerData,
+                    name
                 );
 
-                if (MyJSEventVar != null)
+                if (myJsEventVar != null)
                 {
-                    Token MyJSEvent = TokenUtils.FindTokenByName(
-                        MyToken.MyTokenizer.FileTokens,
-                        MyJSEventVar.GetCompiledVariableData(ServerSideTokens)
+                    Token myJsEvent = TokenUtils.FindTokenByName(
+                        myToken.MyTokenizer.FileTokens,
+                        myJsEventVar.GetCompiledVariableData(serverSideTokens)
                     );
 
-                    if (MyJSEvent != null)
+                    if (myJsEvent != null)
                     {
-                        CompiledEvents +=
-                            Name + "=\"" + JS.Event.GetEventString(ServerSideTokens,MyJSEvent) + "\" ";
+                        compiledEvents +=
+                            name + "=\"" + JS.Event.GetEventString(serverSideTokens,myJsEvent) + "\" ";
                     }
                 }
             }
 
-            return CompiledEvents;
+            return compiledEvents;
         }
     }
 }

@@ -5,7 +5,7 @@ namespace BuckshotPlusPlus.Compiler.CSS
 {
     public class Properties
     {
-        static List<String> Props = new()
+        static List<String> _props = new()
         {
             "align-content",
             "align-items",
@@ -205,52 +205,52 @@ namespace BuckshotPlusPlus.Compiler.CSS
             "z-index"
         };
 
-        public static string GetCSSString(List<Token> ServerSideTokens, Token MyToken)
+        public static string GetCssString(List<Token> serverSideTokens, Token myToken)
         {
-            string CompiledCSS = "";
-            TokenDataContainer ViewContainer = (TokenDataContainer)MyToken.Data;
+            string compiledCss = "";
+            TokenDataContainer viewContainer = (TokenDataContainer)myToken.Data;
             
-            foreach (String Name in Props)
+            foreach (String name in _props)
             {
-                TokenDataVariable MyCSSProp = TokenUtils.FindTokenDataVariableByName(
-                    ViewContainer.ContainerData,
-                    Name
+                TokenDataVariable myCssProp = TokenUtils.FindTokenDataVariableByName(
+                    viewContainer.ContainerData,
+                    name
                 );
-                if (MyCSSProp != null)
+                if (myCssProp != null)
                 {
-                    if (MyCSSProp.VariableType == "ref" && MyCSSProp.RefData != null)
+                    if (myCssProp.VariableType == "ref" && myCssProp.RefData != null)
                     {
-                        if (MyCSSProp.RefData.Data.GetType() == typeof(TokenDataVariable))
+                        if (myCssProp.RefData.Data.GetType() == typeof(TokenDataVariable))
                         {
-                            TokenDataVariable MyRefData = (TokenDataVariable)MyCSSProp.RefData.Data;
-                            CompiledCSS +=
-                                Name + ':' + MyRefData.GetCompiledVariableData(ServerSideTokens) + ";";
+                            TokenDataVariable myRefData = (TokenDataVariable)myCssProp.RefData.Data;
+                            compiledCss +=
+                                name + ':' + myRefData.GetCompiledVariableData(serverSideTokens) + ";";
                         }
                     }
                     else
                     {
-                        CompiledCSS +=
-                            Name + ':' + MyCSSProp.GetCompiledVariableData(ServerSideTokens) + ";";
+                        compiledCss +=
+                            name + ':' + myCssProp.GetCompiledVariableData(serverSideTokens) + ";";
                     }
                 }
             }
-            TokenDataVariable MyFloatProp = TokenUtils.FindTokenDataVariableByName(
-                ViewContainer.ContainerData,
+            TokenDataVariable myFloatProp = TokenUtils.FindTokenDataVariableByName(
+                viewContainer.ContainerData,
                 "float"
             );
-            if (MyFloatProp != null)
+            if (myFloatProp != null)
             {
-                CompiledCSS += "float:" + MyFloatProp.GetCompiledVariableData(ServerSideTokens) + ";";
+                compiledCss += "float:" + myFloatProp.GetCompiledVariableData(serverSideTokens) + ";";
             }
-            return CompiledCSS;
+            return compiledCss;
         }
 
-        public static bool isCSSProp(Token MyToken)
+        public static bool IsCssProp(Token myToken)
         {
-            TokenDataVariable MyVar = (TokenDataVariable)MyToken.Data;
-            foreach (String Prop in Props)
+            TokenDataVariable myVar = (TokenDataVariable)myToken.Data;
+            foreach (String prop in _props)
             {
-                if (MyVar.VariableName == Prop)
+                if (myVar.VariableName == prop)
                 {
                     return true;
                 }
@@ -258,9 +258,9 @@ namespace BuckshotPlusPlus.Compiler.CSS
             return false;
         }
 
-        public static string ToDOMProp(string Name)
+        public static string ToDomProp(string name)
         {
-            string[] result = Name.Split('-');
+            string[] result = name.Split('-');
             for (int i = 1; i < result.Length; i++)
             {
                 result[i] = char.ToUpper(result[i][0]) + result[i].Substring(1);

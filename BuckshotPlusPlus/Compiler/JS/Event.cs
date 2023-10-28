@@ -4,45 +4,45 @@ namespace BuckshotPlusPlus.Compiler.JS
 {
     class Event
     {
-        public static string GetEventString(List<Token> ServerSideTokens, Token MyJSEventToken)
+        public static string GetEventString(List<Token> serverSideTokens, Token myJsEventToken)
         {
-            TokenDataContainer MyJSEvent = (TokenDataContainer)MyJSEventToken.Data;
+            TokenDataContainer myJsEvent = (TokenDataContainer)myJsEventToken.Data;
 
-            string EventString = "";
+            string eventString = "";
 
-            int TokenId = 0;
-            foreach (Token ChildToken in MyJSEvent.ContainerData)
+            int tokenId = 0;
+            foreach (Token childToken in myJsEvent.ContainerData)
             {
-                if (ChildToken.Data.GetType() == typeof(TokenDataVariable))
+                if (childToken.Data.GetType() == typeof(TokenDataVariable))
                 {
-                    TokenDataVariable ChildVar = (TokenDataVariable)ChildToken.Data;
-                    if (CSS.Properties.isCSSProp(ChildToken))
+                    TokenDataVariable childVar = (TokenDataVariable)childToken.Data;
+                    if (CSS.Properties.IsCssProp(childToken))
                     {
-                        EventString +=
+                        eventString +=
                             "this.style."
-                            + CSS.Properties.ToDOMProp(ChildVar.VariableName)
+                            + CSS.Properties.ToDomProp(childVar.VariableName)
                             + " = '"
-                            + ChildVar.GetCompiledVariableData(ServerSideTokens)
+                            + childVar.GetCompiledVariableData(serverSideTokens)
                             + "';";
                     }
-                    else if (ChildVar.VariableName == "content")
+                    else if (childVar.VariableName == "content")
                     {
-                        EventString += "this.textContent = '" + ChildVar.GetCompiledVariableData(ServerSideTokens) + "';";
+                        eventString += "this.textContent = '" + childVar.GetCompiledVariableData(serverSideTokens) + "';";
                     }
                     else
                     {
-                        EventString += Variables.GetVarString(ServerSideTokens,MyJSEvent.ContainerData, TokenId) + ";";
+                        eventString += Variables.GetVarString(serverSideTokens,myJsEvent.ContainerData, tokenId) + ";";
                     }
                 }
                 else
                 {
-                    EventString += ChildToken.LineData.Replace("\"", "'") + ";";
+                    eventString += childToken.LineData.Replace("\"", "'") + ";";
                 }
                 
-                TokenId++;
+                tokenId++;
             }
 
-            return EventString;
+            return eventString;
         }
     }
 }

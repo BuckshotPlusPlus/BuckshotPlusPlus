@@ -12,31 +12,31 @@ namespace BuckshotPlusPlus
         public string RightValue { get; set; }
         public string RightValueType { get; set; }
 
-        public LogicTest(string LogicTestString, Token MyToken) {
-            LogicTestType = FindLogicTestType(LogicTestString);
+        public LogicTest(string logicTestString, Token myToken) {
+            LogicTestType = FindLogicTestType(logicTestString);
             if(LogicTestType == null)
             {
-                Formater.TokenCriticalError("Not valid test found for logic test : " + LogicTestString, MyToken);
+                Formater.TokenCriticalError("Not valid test found for logic test : " + logicTestString, myToken);
             }
-            string[] Values = LogicTestString.Split(LogicTestType);
-            LeftValue = Values[0];
-            LeftValueType = TokenDataVariable.FindVariableType(LeftValue, MyToken);
+            string[] values = logicTestString.Split(LogicTestType);
+            LeftValue = values[0];
+            LeftValueType = TokenDataVariable.FindVariableType(LeftValue, myToken);
             
-            RightValue = Values[1];
-            RightValueType = TokenDataVariable.FindVariableType(RightValue, MyToken);
+            RightValue = values[1];
+            RightValueType = TokenDataVariable.FindVariableType(RightValue, myToken);
 
         }
 
-        public bool RunLogicTest(List<Token> TokenList, Token MyToken)
+        public bool RunLogicTest(List<Token> tokenList, Token myToken)
         {
             if(LeftValueType == "ref")
             {
-                Token FoundToken = TokenUtils.FindTokenByName(TokenList, LeftValue);
-                if(FoundToken != null)
+                Token foundToken = TokenUtils.FindTokenByName(tokenList, LeftValue);
+                if(foundToken != null)
                 {
-                    TokenDataVariable FoundVar = (TokenDataVariable)FoundToken.Data;
-                    LeftValue = FoundVar.VariableData;
-                    LeftValueType = FoundVar.VariableType;
+                    TokenDataVariable foundVar = (TokenDataVariable)foundToken.Data;
+                    LeftValue = foundVar.VariableData;
+                    LeftValueType = foundVar.VariableType;
                     if(LeftValueType == "string")
                     {
                         LeftValue = '"' + LeftValue + "\"";
@@ -45,12 +45,12 @@ namespace BuckshotPlusPlus
             }
             if(RightValueType == "ref")
             {
-                Token FoundToken = TokenUtils.FindTokenByName(TokenList, RightValue);
-                if(FoundToken != null)
+                Token foundToken = TokenUtils.FindTokenByName(tokenList, RightValue);
+                if(foundToken != null)
                 {
-                    TokenDataVariable FoundVar = (TokenDataVariable)FoundToken.Data;
-                    RightValue = FoundVar.VariableData;
-                    RightValueType = FoundVar.VariableType;
+                    TokenDataVariable foundVar = (TokenDataVariable)foundToken.Data;
+                    RightValue = foundVar.VariableData;
+                    RightValueType = foundVar.VariableType;
                 }
             }
 
@@ -71,43 +71,43 @@ namespace BuckshotPlusPlus
                         }
                         return false;
                 }
-                Formater.TokenCriticalError("Test type '" + LogicTestType + "' not recognized.", MyToken);
+                Formater.TokenCriticalError("Test type '" + LogicTestType + "' not recognized.", myToken);
                 return false;
             }
             else
             {
-                Formater.TokenCriticalError("Data type mismatch for logical test", MyToken);
+                Formater.TokenCriticalError("Data type mismatch for logical test", myToken);
                 return false;
             }
         }
 
-        public static string FindLogicTestType(string LogicTestString) {
+        public static string FindLogicTestType(string logicTestString) {
 
             string result = null;
 
-            foreach (string LocalLogicTestType in LogicTestsTypes)
+            foreach (string localLogicTestType in LogicTestsTypes)
             {
-                List<string> TestSides = Formater.SafeSplit(LogicTestString, LocalLogicTestType[0]);
+                List<string> testSides = Formater.SafeSplit(logicTestString, localLogicTestType[0]);
 
-                if(TestSides.Count > 1)
+                if(testSides.Count > 1)
                 {
-                    if(TestSides.Count > 2 && LocalLogicTestType == "==")
+                    if(testSides.Count > 2 && localLogicTestType == "==")
                     {
                         return "==";
                     }
                     else
                     {
-                        if (LocalLogicTestType.Length > 1)
+                        if (localLogicTestType.Length > 1)
                         {
 
-                            if (TestSides[1][0] == LocalLogicTestType[1])
+                            if (testSides[1][0] == localLogicTestType[1])
                             {
-                                return LocalLogicTestType;
+                                return localLogicTestType;
                             }
                         }
                         else
                         {
-                            return LocalLogicTestType;
+                            return localLogicTestType;
                         }
                     }
                     

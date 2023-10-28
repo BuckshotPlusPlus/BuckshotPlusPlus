@@ -56,13 +56,13 @@
                           <img src="../logo.svg" alt="" class="logomark">
                           <span class="brand-title"></span>
                         </a>  </div>
-
+                    
                     
                       <div id="navbar">
                       </div>
                     
                     </div>
-
+                    
 
                     <div class="sidebar-item-separator"></div>
 
@@ -98,7 +98,8 @@
   
   <h1 id="BuckshotPlusPlus_Compiler_JS_Variables" data-uid="BuckshotPlusPlus.Compiler.JS.Variables" class="text-break">Class Variables
   </h1>
-  <div class="markdown level0 summary"></div>
+  <div class="markdown level0 summary"><p>Class for handling variables in BuckshotPlusPlus compiler.</p>
+</div>
   <div class="markdown level0 conceptual"></div>
   <div class="inheritance">
     <h5>Inheritance</h5>
@@ -133,7 +134,7 @@
   <h6><strong>Assembly</strong>: BuckshotPlusPlus.dll</h6>
   <h5 id="BuckshotPlusPlus_Compiler_JS_Variables_syntax">Syntax</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public class Variables</code></pre>
+    <pre><code class="lang-csharp hljs">public static class Variables</code></pre>
   </div>
   <h3 id="methods">Methods
   </h3>
@@ -142,15 +143,16 @@
     <a href="https://github.com/BuckshotPlusPlus/BuckshotPlusPlus/new/main/apiSpec/new?filename=BuckshotPlusPlus_Compiler_JS_Variables_GetVarString_System_Collections_Generic_List_BuckshotPlusPlus_Token__System_Collections_Generic_List_BuckshotPlusPlus_Token__System_Int32_.md&amp;value=---%0Auid%3A%20BuckshotPlusPlus.Compiler.JS.Variables.GetVarString(System.Collections.Generic.List%7BBuckshotPlusPlus.Token%7D%2CSystem.Collections.Generic.List%7BBuckshotPlusPlus.Token%7D%2CSystem.Int32)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
   </span>
   <span class="small pull-right mobile-hide">
-    <a href="https://github.com/BuckshotPlusPlus/BuckshotPlusPlus/blob/main/BuckshotPlusPlus/Compiler/JS/Variables.cs/#L7">View Source</a>
+    <a href="https://github.com/BuckshotPlusPlus/BuckshotPlusPlus/blob/main/BuckshotPlusPlus/Compiler/JS/Variables.cs/#L17">View Source</a>
   </span>
   <a id="BuckshotPlusPlus_Compiler_JS_Variables_GetVarString_" data-uid="BuckshotPlusPlus.Compiler.JS.Variables.GetVarString*"></a>
   <h4 id="BuckshotPlusPlus_Compiler_JS_Variables_GetVarString_System_Collections_Generic_List_BuckshotPlusPlus_Token__System_Collections_Generic_List_BuckshotPlusPlus_Token__System_Int32_" data-uid="BuckshotPlusPlus.Compiler.JS.Variables.GetVarString(System.Collections.Generic.List{BuckshotPlusPlus.Token},System.Collections.Generic.List{BuckshotPlusPlus.Token},System.Int32)">GetVarString(List&lt;Token&gt;, List&lt;Token&gt;, Int32)</h4>
-  <div class="markdown level1 summary"></div>
+  <div class="markdown level1 summary"><p>Gets a variable string for the given server-side and function tokens at a particular token index.</p>
+</div>
   <div class="markdown level1 conceptual"></div>
   <h5 class="decalaration">Declaration</h5>
   <div class="codewrapper">
-    <pre><code class="lang-csharp hljs">public static string GetVarString(List&lt;Token&gt; ServerSideTokens, List&lt;Token&gt; FunctionToken, int currentToken)</code></pre>
+    <pre><code class="lang-csharp hljs">public static string GetVarString(List&lt;Token&gt; serverSideTokens, List&lt;Token&gt; functionTokens, int currentTokenIndex)</code></pre>
   </div>
   <h5 class="parameters">Parameters</h5>
   <table class="table table-bordered table-striped table-condensed">
@@ -164,18 +166,21 @@
     <tbody>
       <tr>
         <td><span class="xref">System.Collections.Generic.List</span>&lt;<a class="xref" href="BuckshotPlusPlus.Token.html">Token</a>&gt;</td>
-        <td><span class="parametername">ServerSideTokens</span></td>
-        <td></td>
+        <td><span class="parametername">serverSideTokens</span></td>
+        <td><p>The list of server-side tokens.</p>
+</td>
       </tr>
       <tr>
         <td><span class="xref">System.Collections.Generic.List</span>&lt;<a class="xref" href="BuckshotPlusPlus.Token.html">Token</a>&gt;</td>
-        <td><span class="parametername">FunctionToken</span></td>
-        <td></td>
+        <td><span class="parametername">functionTokens</span></td>
+        <td><p>The list of function tokens.</p>
+</td>
       </tr>
       <tr>
         <td><span class="xref">System.Int32</span></td>
-        <td><span class="parametername">currentToken</span></td>
-        <td></td>
+        <td><span class="parametername">currentTokenIndex</span></td>
+        <td><p>The index of the current token.</p>
+</td>
       </tr>
     </tbody>
   </table>
@@ -190,7 +195,8 @@
     <tbody>
       <tr>
         <td><span class="xref">System.String</span></td>
-        <td></td>
+        <td><p>A string representing the variable, empty if conditions are not met.</p>
+</td>
       </tr>
     </tbody>
   </table>

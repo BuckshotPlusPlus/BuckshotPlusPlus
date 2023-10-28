@@ -5,7 +5,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
 {
     public class Attributes
     {
-        static List<(String, Boolean)> Props = new()
+        static List<(String, Boolean)> _props = new()
         {
             ("href", false),
             ("id", false),
@@ -14,37 +14,37 @@ namespace BuckshotPlusPlus.Compiler.HTML
             ("disabled", true)
         };
 
-        public static string GetHTMLAttributes(List<Token> ServerSideTokens,Token MyToken)
+        public static string GetHtmlAttributes(List<Token> serverSideTokens,Token myToken)
         {
-            string CompiledAtributes = "";
-            TokenDataContainer ViewContainer = (TokenDataContainer)MyToken.Data;
+            string compiledAtributes = "";
+            TokenDataContainer viewContainer = (TokenDataContainer)myToken.Data;
             
-            foreach ((String Name, bool WithoutValue) in Props)
+            foreach ((String name, bool withoutValue) in _props)
             {
-                TokenDataVariable MyHTMLAttribute = TokenUtils.TryFindTokenDataVariableValueByName(
-                    ServerSideTokens,
-                    ViewContainer.ContainerData,
-                    Name
+                TokenDataVariable myHtmlAttribute = TokenUtils.TryFindTokenDataVariableValueByName(
+                    serverSideTokens,
+                    viewContainer.ContainerData,
+                    name
                 );
                 
-                if (MyHTMLAttribute != null)
+                if (myHtmlAttribute != null)
                 {
-                    if ( WithoutValue )
+                    if ( withoutValue )
                     {
-                        CompiledAtributes += Name;
+                        compiledAtributes += name;
                     }
                     else
                     {
-                        CompiledAtributes +=
-                            Name
+                        compiledAtributes +=
+                            name
                             + "=\""
-                            + MyHTMLAttribute.GetCompiledVariableData(ServerSideTokens)
+                            + myHtmlAttribute.GetCompiledVariableData(serverSideTokens)
                             + "\"";
                     }
                 }
             }
             
-            return CompiledAtributes;
+            return compiledAtributes;
         }
     }
 }

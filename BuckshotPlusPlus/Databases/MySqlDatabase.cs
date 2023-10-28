@@ -6,23 +6,23 @@ namespace BuckshotPlusPlus.Databases
 {
     public class MySqlDatabase : BaseDatabase
     {
-        private MySqlConnection connection;
+        private MySqlConnection _connection;
 
-        public MySqlDatabase(Dictionary<string, string> Parameters , Tokenizer MyTokenizer) : base(Parameters, MyTokenizer)
+        public MySqlDatabase(Dictionary<string, string> parameters , Tokenizer myTokenizer) : base(parameters, myTokenizer)
         {
             string connectionString = $"Server={DatabaseParameters["Server"]};Database={DatabaseParameters["Database"]};User ID={DatabaseParameters["UserId"]};Password={DatabaseParameters["Password"]};";
-            connection = new MySqlConnection(connectionString);
+            _connection = new MySqlConnection(connectionString);
         }
 
         public override Token Query(string query)
         {
-            string TokenLineData = "data{\n";
+            string tokenLineData = "data{\n";
 
             // Open the connection
-            connection.Open();
+            _connection.Open();
 
             // Create a command object
-            MySqlCommand cmd = new MySqlCommand(query, connection);
+            MySqlCommand cmd = new MySqlCommand(query, _connection);
 
             // Execute the query and get the result set
             MySqlDataReader reader = cmd.ExecuteReader();
@@ -52,9 +52,9 @@ namespace BuckshotPlusPlus.Databases
 
             // Close the reader and the connection
             reader.Close();
-            connection.Close();
+            _connection.Close();
 
-            return new Token("mysql_auto_generated", TokenLineData, 0, this.MyTokenizer); ;
+            return new Token("mysql_auto_generated", tokenLineData, 0, this.MyTokenizer); ;
         }
     }
 }

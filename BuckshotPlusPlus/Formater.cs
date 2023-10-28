@@ -14,50 +14,50 @@ namespace BuckshotPlusPlus
             public bool CleanRight;
         }
 
-        public static string FormatFileData(string FileData)
+        public static string FormatFileData(string fileData)
         {
             int i = 0;
             int spaceCount = 0;
             bool isQuote = false;
 
-            List<SpecialCharacterToClean> CharactersToClean = new List<SpecialCharacterToClean>
+            List<SpecialCharacterToClean> charactersToClean = new List<SpecialCharacterToClean>
             {
                 new() { Character = '+', CleanLeft = true, CleanRight = true },
                 new() { Character = ',', CleanLeft = true, CleanRight = true }
             };
 
-            while (i < FileData.Length)
+            while (i < fileData.Length)
             {
-                if (FileData[i] == '"')
+                if (fileData[i] == '"')
                 {
                     isQuote = !isQuote;
                 }
-                if ((FileData[i] == ' ' || FileData[i] == '\t') && isQuote == false)
+                if ((fileData[i] == ' ' || fileData[i] == '\t') && isQuote == false)
                 {
-                    while (FileData[spaceCount + i] == ' ' || FileData[spaceCount + i] == '\t')
+                    while (fileData[spaceCount + i] == ' ' || fileData[spaceCount + i] == '\t')
                     {
                         spaceCount++;
                     }
 
                     if (i == 0)
                     {
-                        FileData = FileData.Remove(i, spaceCount);
+                        fileData = fileData.Remove(i, spaceCount);
                     }
-                    else if (FileData[i - 1] == '\n')
+                    else if (fileData[i - 1] == '\n')
                     {
-                        FileData = FileData.Remove(i, spaceCount);
+                        fileData = fileData.Remove(i, spaceCount);
                     }
                     else
                     {
-                        foreach(SpecialCharacterToClean CharToCLean in CharactersToClean)
+                        foreach(SpecialCharacterToClean charToCLean in charactersToClean)
                         {
-                            if (FileData[spaceCount + i] == CharToCLean.Character && CharToCLean.CleanLeft)
+                            if (fileData[spaceCount + i] == charToCLean.Character && charToCLean.CleanLeft)
                             {
-                                FileData = FileData.Remove(i, spaceCount);
+                                fileData = fileData.Remove(i, spaceCount);
                             }
-                            else if (FileData[i - 1] == CharToCLean.Character && CharToCLean.CleanRight)
+                            else if (fileData[i - 1] == charToCLean.Character && charToCLean.CleanRight)
                             {
-                                FileData = FileData.Remove(i, spaceCount);
+                                fileData = fileData.Remove(i, spaceCount);
                                 i--;
                             }
                         }
@@ -66,58 +66,58 @@ namespace BuckshotPlusPlus
                 }
                 i++;
             }
-            return FileData;
+            return fileData;
         }
 
-        public static string SafeRemoveSpacesFromString(string Content)
+        public static string SafeRemoveSpacesFromString(string content)
         {
             int i = 0;
             int spaceCount = 0;
             bool isQuote = false;
 
-            while (i < Content.Length)
+            while (i < content.Length)
             {
                 // Gérer les chaines de character
-                if (Content[i] == '"')
+                if (content[i] == '"')
                 {
                     isQuote = !isQuote;
                 }
-                if (Content[i] == ' ' || Content[i] == '\t' && isQuote == false)
+                if (content[i] == ' ' || content[i] == '\t' && isQuote == false)
                 {
-                    while (Content[spaceCount + i] == ' ' || Content[spaceCount + i] == '\t')
+                    while (content[spaceCount + i] == ' ' || content[spaceCount + i] == '\t')
                     {
                         spaceCount++;
                     }
 
                     if (i == 0)
                     {
-                        Content = Content.Remove(i, spaceCount);
+                        content = content.Remove(i, spaceCount);
                     }
                     else
                     {
                         if (spaceCount > 0)
                         {
-                            Content = Content.Remove(i, spaceCount);
+                            content = content.Remove(i, spaceCount);
                         }
                     }
                     spaceCount = 0;
                 }
                 i++;
             }
-            return Content;
+            return content;
         }
 
-        public static bool SafeContains(string Value, char c)
+        public static bool SafeContains(string value, char c)
         {
             bool isQuote = false;
 
-            for (int i = 0; i < Value.Length; i++)
+            for (int i = 0; i < value.Length; i++)
             {
-                if (Value[i] == '"')
+                if (value[i] == '"')
                 {
                     isQuote = !isQuote;
                 }
-                if (isQuote == false && Value[i] == c)
+                if (isQuote == false && value[i] == c)
                 {
                     return true;
                 }
@@ -132,93 +132,93 @@ namespace BuckshotPlusPlus
             public int UnsafeCharId { get; set; }
         }
 
-        public static UnsafeCharStruct IsUnsafeChar(string[] UnsafeCharsList, char c)
+        public static UnsafeCharStruct IsUnsafeChar(string[] unsafeCharsList, char c)
         {
-            UnsafeCharStruct UnsafeCharValue = new UnsafeCharStruct();
-            for (int i = 0; i < UnsafeCharsList.Length; i++)
+            UnsafeCharStruct unsafeCharValue = new UnsafeCharStruct();
+            for (int i = 0; i < unsafeCharsList.Length; i++)
             {
-                UnsafeCharValue.UnsafeCharId = i;
-                if (c == UnsafeCharsList[i][0])
+                unsafeCharValue.UnsafeCharId = i;
+                if (c == unsafeCharsList[i][0])
                 {
-                    UnsafeCharValue.IsFirstChar = true;
-                    UnsafeCharValue.IsUnsafeChar = true;
-                    return UnsafeCharValue;
+                    unsafeCharValue.IsFirstChar = true;
+                    unsafeCharValue.IsUnsafeChar = true;
+                    return unsafeCharValue;
                 }
-                else if (c == UnsafeCharsList[i][1])
+                else if (c == unsafeCharsList[i][1])
                 {
-                    UnsafeCharValue.IsFirstChar = false;
-                    UnsafeCharValue.IsUnsafeChar = true;
-                    return UnsafeCharValue;
+                    unsafeCharValue.IsFirstChar = false;
+                    unsafeCharValue.IsUnsafeChar = true;
+                    return unsafeCharValue;
                 }
             }
-            UnsafeCharValue.IsUnsafeChar = false;
-            return UnsafeCharValue;
+            unsafeCharValue.IsUnsafeChar = false;
+            return unsafeCharValue;
         }
 
-        public static List<string> SafeSplit(string Value, char c, bool only_strings = false)
+        public static List<string> SafeSplit(string value, char c, bool onlyStrings = false)
         {
-            List<string> SplitedString = new List<string>();
+            List<string> splitedString = new List<string>();
 
-            string[] UnsafeChars = { "\"\"", "()" };
+            string[] unsafeChars = { "\"\"", "()" };
 
-            if (only_strings)
+            if (onlyStrings)
             {
-                UnsafeChars[1] = "\"\"";
+                unsafeChars[1] = "\"\"";
             }
 
-            UnsafeCharStruct LastUnsafeChar = new UnsafeCharStruct();
-            LastUnsafeChar.IsUnsafeChar = false;
+            UnsafeCharStruct lastUnsafeChar = new UnsafeCharStruct();
+            lastUnsafeChar.IsUnsafeChar = false;
 
-            int Count = 0;
-            int LastPos = 0;
+            int count = 0;
+            int lastPos = 0;
 
-            for (int i = 0; i < Value.Length; i++)
+            for (int i = 0; i < value.Length; i++)
             {
-                Count++;
-                if (LastUnsafeChar.IsUnsafeChar)
+                count++;
+                if (lastUnsafeChar.IsUnsafeChar)
                 {
-                    UnsafeCharStruct CurrentUnsafeChar = IsUnsafeChar(
-                        UnsafeChars,
-                        Value[i]
+                    UnsafeCharStruct currentUnsafeChar = IsUnsafeChar(
+                        unsafeChars,
+                        value[i]
                     );
-                    if (CurrentUnsafeChar.IsUnsafeChar)
+                    if (currentUnsafeChar.IsUnsafeChar)
                     {
                         if (
                             (
-                                CurrentUnsafeChar.IsFirstChar == false
-                                || CurrentUnsafeChar.UnsafeCharId == 0
+                                currentUnsafeChar.IsFirstChar == false
+                                || currentUnsafeChar.UnsafeCharId == 0
                             )
-                            && CurrentUnsafeChar.UnsafeCharId == LastUnsafeChar.UnsafeCharId
+                            && currentUnsafeChar.UnsafeCharId == lastUnsafeChar.UnsafeCharId
                         )
                         {
-                            LastUnsafeChar.IsUnsafeChar = false;
+                            lastUnsafeChar.IsUnsafeChar = false;
                         }
                     }
                 }
                 else
                 {
-                    UnsafeCharStruct CurrentUnsafeChar = IsUnsafeChar(
-                        UnsafeChars,
-                        Value[i]
+                    UnsafeCharStruct currentUnsafeChar = IsUnsafeChar(
+                        unsafeChars,
+                        value[i]
                     );
-                    if (CurrentUnsafeChar.IsUnsafeChar)
+                    if (currentUnsafeChar.IsUnsafeChar)
                     {
-                        LastUnsafeChar = CurrentUnsafeChar;
+                        lastUnsafeChar = currentUnsafeChar;
                     }
                     else
                     {
-                        if (Value[i] == c)
+                        if (value[i] == c)
                         {
-                            SplitedString.Add(Value.Substring(i + 1 - Count, Count - 1));
-                            LastPos = i + 1;
-                            Count = 0;
+                            splitedString.Add(value.Substring(i + 1 - count, count - 1));
+                            lastPos = i + 1;
+                            count = 0;
                         }
                     }
                 }
             }
-            SplitedString.Add(Value.Substring(LastPos, Value.Length - LastPos));
+            splitedString.Add(value.Substring(lastPos, value.Length - lastPos));
 
-            return SplitedString;
+            return splitedString;
         }
 
         public static void CriticalError(string error)
@@ -228,9 +228,9 @@ namespace BuckshotPlusPlus
             Environment.Exit(-1);
         }
 
-        public static void RuntimeError(string error, Token MyToken)
+        public static void RuntimeError(string error, Token myToken)
         {
-            if(MyToken == null)
+            if(myToken == null)
             {
                 AnsiConsole.Markup($"[maroon on default]Runtime error : {error}[/]");
             }
@@ -239,12 +239,12 @@ namespace BuckshotPlusPlus
                 AnsiConsole.Markup("[maroon on default]Runtime error : " +
                 error +
                 " in file : "
-                    + MyToken.FileName
+                    + myToken.FileName
                     + " at line : "
-                    + MyToken.LineNumber
+                    + myToken.LineNumber
                     + Environment.NewLine
                     + "=> "
-                    + MyToken.LineData + "[/]\n");
+                    + myToken.LineData + "[/]\n");
             }
         }
 
@@ -254,13 +254,13 @@ namespace BuckshotPlusPlus
             AnsiConsole.Write("\n");
         }
 
-        public static void TokenCriticalError(string Error, Token MyToken)
+        public static void TokenCriticalError(string error, Token myToken)
         {
-            Console.WriteLine(Error);
-            Console.WriteLine(MyToken.FileName);
-            Console.WriteLine(MyToken.LineNumber);
-            Console.WriteLine(MyToken.LineData);
-            CriticalError($"{Error.ToString()} in file {MyToken.FileName} at line : {MyToken.LineNumber.ToString()}\n=> {MyToken.LineData}");
+            Console.WriteLine(error);
+            Console.WriteLine(myToken.FileName);
+            Console.WriteLine(myToken.LineNumber);
+            Console.WriteLine(myToken.LineData);
+            CriticalError($"{error.ToString()} in file {myToken.FileName} at line : {myToken.LineNumber.ToString()}\n=> {myToken.LineData}");
         }
 
         public static void DebugMessage(string msg)

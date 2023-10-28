@@ -8,12 +8,12 @@ namespace BuckshotPlusPlus
         public string FuncName { get; set; }
         public List<Token> FuncArgs { get; set; }
 
-        public TokenDataFunctionCall(Token MyToken)
+        public TokenDataFunctionCall(Token myToken)
         {
-            MyToken.Type = "function_call";
+            myToken.Type = "function_call";
 
-            this.FuncName = GetFunctionCallName(MyToken.LineData, MyToken);
-            this.FuncArgs = GetFunctionArgs(MyToken.LineData, MyToken);
+            this.FuncName = GetFunctionCallName(myToken.LineData, myToken);
+            this.FuncArgs = GetFunctionArgs(myToken.LineData, myToken);
 
             Console.WriteLine(
                 "I found a function call of name : "
@@ -25,81 +25,81 @@ namespace BuckshotPlusPlus
         }
         
 
-        public static bool IsTokenDataFunctionCall(Token MyToken)
+        public static bool IsTokenDataFunctionCall(Token myToken)
         {
-            return Formater.SafeContains(MyToken.LineData, '(');
+            return Formater.SafeContains(myToken.LineData, '(');
         }
 
-        public static string GetFunctionCallName(string Value, Token MyToken)
+        public static string GetFunctionCallName(string value, Token myToken)
         {
-            string FunName = "";
-            foreach (char c in Value)
+            string funName = "";
+            foreach (char c in value)
             {
                 if (c != '(')
                 {
-                    FunName += c;
+                    funName += c;
                 }
                 else
                 {
-                    return FunName;
+                    return funName;
                 }
             }
-            Formater.TokenCriticalError("Invalid function name", MyToken);
+            Formater.TokenCriticalError("Invalid function name", myToken);
             return "";
         }
 
-        public static List<Token> GetFunctionArgs(string Value, Token MyToken)
+        public static List<Token> GetFunctionArgs(string value, Token myToken)
         {
-            List<Token> FunctionArgs = new List<Token>();
-            string CurrentVar = "";
+            List<Token> functionArgs = new List<Token>();
+            string currentVar = "";
             bool isArgs = false;
-            int SubPar = 0;
+            int subPar = 0;
 
-            foreach (char c in Value)
+            foreach (char c in value)
             {
                 if (c == '(')
                 {
                     isArgs = true;
-                    SubPar++;
+                    subPar++;
                 }
                 else if (c == ')')
                 {
-                    SubPar--;
-                    if (SubPar == 0)
+                    subPar--;
+                    if (subPar == 0)
                     {
-                        Token MyNewToken = new Token(
-                            MyToken.FileName,
-                            CurrentVar,
-                            MyToken.LineNumber,
-                            MyToken.MyTokenizer
+                        Token myNewToken = new Token(
+                            myToken.FileName,
+                            currentVar,
+                            myToken.LineNumber,
+                            myToken.MyTokenizer
                         );
-                        new TokenDataVariable(MyNewToken);
-                        FunctionArgs.Add(MyNewToken);
-                        return FunctionArgs;
+                        new TokenDataVariable(myNewToken);
+                        functionArgs.Add(myNewToken);
+                        return functionArgs;
                     }
                 }
                 else
                 {
                     if (isArgs && c == ',')
                     {
-                        Token MyNewToken = new Token(
-                            MyToken.FileName,
-                            CurrentVar,
-                            MyToken.LineNumber,
-                            MyToken.MyTokenizer
+                        Token myNewToken = new Token(
+                            myToken.FileName,
+                            currentVar,
+                            myToken.LineNumber,
+                            myToken.MyTokenizer
                         );
-                        new TokenDataVariable(MyNewToken);
-                        FunctionArgs.Add(MyNewToken);
-                        CurrentVar = "";
+                        new TokenDataVariable(myNewToken);
+                        functionArgs.Add(myNewToken);
+                        currentVar = "";
                     }
                     else if (isArgs)
                     {
-                        CurrentVar += c;
+                        currentVar += c;
                     }
                 }
             }
-            Formater.TokenCriticalError("Invalid function args", MyToken);
-            return FunctionArgs;
+            Formater.TokenCriticalError("Invalid function args", myToken);
+            return functionArgs;
         }
     }
 }

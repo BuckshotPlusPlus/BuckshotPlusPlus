@@ -156,48 +156,48 @@ references:
   commentId: T:BuckshotPlusPlus.Compiler.CSS.Properties
   fullName: BuckshotPlusPlus.Compiler.CSS.Properties
   nameWithType: Properties
-- uid: BuckshotPlusPlus.Compiler.CSS.Properties.GetCSSString(System.Collections.Generic.List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
-  name: GetCSSString(List<Token>, Token)
-  href: api/BuckshotPlusPlus.Compiler.CSS.Properties.html#BuckshotPlusPlus_Compiler_CSS_Properties_GetCSSString_System_Collections_Generic_List_BuckshotPlusPlus_Token__BuckshotPlusPlus_Token_
-  commentId: M:BuckshotPlusPlus.Compiler.CSS.Properties.GetCSSString(System.Collections.Generic.List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
-  name.vb: GetCSSString(List(Of Token), Token)
-  fullName: BuckshotPlusPlus.Compiler.CSS.Properties.GetCSSString(System.Collections.Generic.List<BuckshotPlusPlus.Token>, BuckshotPlusPlus.Token)
-  fullName.vb: BuckshotPlusPlus.Compiler.CSS.Properties.GetCSSString(System.Collections.Generic.List(Of BuckshotPlusPlus.Token), BuckshotPlusPlus.Token)
-  nameWithType: Properties.GetCSSString(List<Token>, Token)
-  nameWithType.vb: Properties.GetCSSString(List(Of Token), Token)
-- uid: BuckshotPlusPlus.Compiler.CSS.Properties.GetCSSString*
-  name: GetCSSString
-  href: api/BuckshotPlusPlus.Compiler.CSS.Properties.html#BuckshotPlusPlus_Compiler_CSS_Properties_GetCSSString_
-  commentId: Overload:BuckshotPlusPlus.Compiler.CSS.Properties.GetCSSString
+- uid: BuckshotPlusPlus.Compiler.CSS.Properties.GetCssString(System.Collections.Generic.List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
+  name: GetCssString(List<Token>, Token)
+  href: api/BuckshotPlusPlus.Compiler.CSS.Properties.html#BuckshotPlusPlus_Compiler_CSS_Properties_GetCssString_System_Collections_Generic_List_BuckshotPlusPlus_Token__BuckshotPlusPlus_Token_
+  commentId: M:BuckshotPlusPlus.Compiler.CSS.Properties.GetCssString(System.Collections.Generic.List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
+  name.vb: GetCssString(List(Of Token), Token)
+  fullName: BuckshotPlusPlus.Compiler.CSS.Properties.GetCssString(System.Collections.Generic.List<BuckshotPlusPlus.Token>, BuckshotPlusPlus.Token)
+  fullName.vb: BuckshotPlusPlus.Compiler.CSS.Properties.GetCssString(System.Collections.Generic.List(Of BuckshotPlusPlus.Token), BuckshotPlusPlus.Token)
+  nameWithType: Properties.GetCssString(List<Token>, Token)
+  nameWithType.vb: Properties.GetCssString(List(Of Token), Token)
+- uid: BuckshotPlusPlus.Compiler.CSS.Properties.GetCssString*
+  name: GetCssString
+  href: api/BuckshotPlusPlus.Compiler.CSS.Properties.html#BuckshotPlusPlus_Compiler_CSS_Properties_GetCssString_
+  commentId: Overload:BuckshotPlusPlus.Compiler.CSS.Properties.GetCssString
   isSpec: "True"
-  fullName: BuckshotPlusPlus.Compiler.CSS.Properties.GetCSSString
-  nameWithType: Properties.GetCSSString
-- uid: BuckshotPlusPlus.Compiler.CSS.Properties.isCSSProp(BuckshotPlusPlus.Token)
-  name: isCSSProp(Token)
-  href: api/BuckshotPlusPlus.Compiler.CSS.Properties.html#BuckshotPlusPlus_Compiler_CSS_Properties_isCSSProp_BuckshotPlusPlus_Token_
-  commentId: M:BuckshotPlusPlus.Compiler.CSS.Properties.isCSSProp(BuckshotPlusPlus.Token)
-  fullName: BuckshotPlusPlus.Compiler.CSS.Properties.isCSSProp(BuckshotPlusPlus.Token)
-  nameWithType: Properties.isCSSProp(Token)
-- uid: BuckshotPlusPlus.Compiler.CSS.Properties.isCSSProp*
-  name: isCSSProp
-  href: api/BuckshotPlusPlus.Compiler.CSS.Properties.html#BuckshotPlusPlus_Compiler_CSS_Properties_isCSSProp_
-  commentId: Overload:BuckshotPlusPlus.Compiler.CSS.Properties.isCSSProp
+  fullName: BuckshotPlusPlus.Compiler.CSS.Properties.GetCssString
+  nameWithType: Properties.GetCssString
+- uid: BuckshotPlusPlus.Compiler.CSS.Properties.IsCssProp(BuckshotPlusPlus.Token)
+  name: IsCssProp(Token)
+  href: api/BuckshotPlusPlus.Compiler.CSS.Properties.html#BuckshotPlusPlus_Compiler_CSS_Properties_IsCssProp_BuckshotPlusPlus_Token_
+  commentId: M:BuckshotPlusPlus.Compiler.CSS.Properties.IsCssProp(BuckshotPlusPlus.Token)
+  fullName: BuckshotPlusPlus.Compiler.CSS.Properties.IsCssProp(BuckshotPlusPlus.Token)
+  nameWithType: Properties.IsCssProp(Token)
+- uid: BuckshotPlusPlus.Compiler.CSS.Properties.IsCssProp*
+  name: IsCssProp
+  href: api/BuckshotPlusPlus.Compiler.CSS.Properties.html#BuckshotPlusPlus_Compiler_CSS_Properties_IsCssProp_
+  commentId: Overload:BuckshotPlusPlus.Compiler.CSS.Properties.IsCssProp
   isSpec: "True"
-  fullName: BuckshotPlusPlus.Compiler.CSS.Properties.isCSSProp
-  nameWithType: Properties.isCSSProp
-- uid: BuckshotPlusPlus.Compiler.CSS.Properties.ToDOMProp(System.String)
-  name: ToDOMProp(String)
-  href: api/BuckshotPlusPlus.Compiler.CSS.Properties.html#BuckshotPlusPlus_Compiler_CSS_Properties_ToDOMProp_System_String_
-  commentId: M:BuckshotPlusPlus.Compiler.CSS.Properties.ToDOMProp(System.String)
-  fullName: BuckshotPlusPlus.Compiler.CSS.Properties.ToDOMProp(System.String)
-  nameWithType: Properties.ToDOMProp(String)
-- uid: BuckshotPlusPlus.Compiler.CSS.Properties.ToDOMProp*
-  name: ToDOMProp
-  href: api/BuckshotPlusPlus.Compiler.CSS.Properties.html#BuckshotPlusPlus_Compiler_CSS_Properties_ToDOMProp_
-  commentId: Overload:BuckshotPlusPlus.Compiler.CSS.Properties.ToDOMProp
+  fullName: BuckshotPlusPlus.Compiler.CSS.Properties.IsCssProp
+  nameWithType: Properties.IsCssProp
+- uid: BuckshotPlusPlus.Compiler.CSS.Properties.ToDomProp(System.String)
+  name: ToDomProp(String)
+  href: api/BuckshotPlusPlus.Compiler.CSS.Properties.html#BuckshotPlusPlus_Compiler_CSS_Properties_ToDomProp_System_String_
+  commentId: M:BuckshotPlusPlus.Compiler.CSS.Properties.ToDomProp(System.String)
+  fullName: BuckshotPlusPlus.Compiler.CSS.Properties.ToDomProp(System.String)
+  nameWithType: Properties.ToDomProp(String)
+- uid: BuckshotPlusPlus.Compiler.CSS.Properties.ToDomProp*
+  name: ToDomProp
+  href: api/BuckshotPlusPlus.Compiler.CSS.Properties.html#BuckshotPlusPlus_Compiler_CSS_Properties_ToDomProp_
+  commentId: Overload:BuckshotPlusPlus.Compiler.CSS.Properties.ToDomProp
   isSpec: "True"
-  fullName: BuckshotPlusPlus.Compiler.CSS.Properties.ToDOMProp
-  nameWithType: Properties.ToDOMProp
+  fullName: BuckshotPlusPlus.Compiler.CSS.Properties.ToDomProp
+  nameWithType: Properties.ToDomProp
 - uid: BuckshotPlusPlus.Compiler.HTML
   name: BuckshotPlusPlus.Compiler.HTML
   href: api/BuckshotPlusPlus.Compiler.HTML.html
@@ -210,22 +210,22 @@ references:
   commentId: T:BuckshotPlusPlus.Compiler.HTML.Attributes
   fullName: BuckshotPlusPlus.Compiler.HTML.Attributes
   nameWithType: Attributes
-- uid: BuckshotPlusPlus.Compiler.HTML.Attributes.GetHTMLAttributes(System.Collections.Generic.List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
-  name: GetHTMLAttributes(List<Token>, Token)
-  href: api/BuckshotPlusPlus.Compiler.HTML.Attributes.html#BuckshotPlusPlus_Compiler_HTML_Attributes_GetHTMLAttributes_System_Collections_Generic_List_BuckshotPlusPlus_Token__BuckshotPlusPlus_Token_
-  commentId: M:BuckshotPlusPlus.Compiler.HTML.Attributes.GetHTMLAttributes(System.Collections.Generic.List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
-  name.vb: GetHTMLAttributes(List(Of Token), Token)
-  fullName: BuckshotPlusPlus.Compiler.HTML.Attributes.GetHTMLAttributes(System.Collections.Generic.List<BuckshotPlusPlus.Token>, BuckshotPlusPlus.Token)
-  fullName.vb: BuckshotPlusPlus.Compiler.HTML.Attributes.GetHTMLAttributes(System.Collections.Generic.List(Of BuckshotPlusPlus.Token), BuckshotPlusPlus.Token)
-  nameWithType: Attributes.GetHTMLAttributes(List<Token>, Token)
-  nameWithType.vb: Attributes.GetHTMLAttributes(List(Of Token), Token)
-- uid: BuckshotPlusPlus.Compiler.HTML.Attributes.GetHTMLAttributes*
-  name: GetHTMLAttributes
-  href: api/BuckshotPlusPlus.Compiler.HTML.Attributes.html#BuckshotPlusPlus_Compiler_HTML_Attributes_GetHTMLAttributes_
-  commentId: Overload:BuckshotPlusPlus.Compiler.HTML.Attributes.GetHTMLAttributes
+- uid: BuckshotPlusPlus.Compiler.HTML.Attributes.GetHtmlAttributes(System.Collections.Generic.List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
+  name: GetHtmlAttributes(List<Token>, Token)
+  href: api/BuckshotPlusPlus.Compiler.HTML.Attributes.html#BuckshotPlusPlus_Compiler_HTML_Attributes_GetHtmlAttributes_System_Collections_Generic_List_BuckshotPlusPlus_Token__BuckshotPlusPlus_Token_
+  commentId: M:BuckshotPlusPlus.Compiler.HTML.Attributes.GetHtmlAttributes(System.Collections.Generic.List{BuckshotPlusPlus.Token},BuckshotPlusPlus.Token)
+  name.vb: GetHtmlAttributes(List(Of Token), Token)
+  fullName: BuckshotPlusPlus.Compiler.HTML.Attributes.GetHtmlAttributes(System.Collections.Generic.List<BuckshotPlusPlus.Token>, BuckshotPlusPlus.Token)
+  fullName.vb: BuckshotPlusPlus.Compiler.HTML.Attributes.GetHtmlAttributes(System.Collections.Generic.List(Of BuckshotPlusPlus.Token), BuckshotPlusPlus.Token)
+  nameWithType: Attributes.GetHtmlAttributes(List<Token>, Token)
+  nameWithType.vb: Attributes.GetHtmlAttributes(List(Of Token), Token)
+- uid: BuckshotPlusPlus.Compiler.HTML.Attributes.GetHtmlAttributes*
+  name: GetHtmlAttributes
+  href: api/BuckshotPlusPlus.Compiler.HTML.Attributes.html#BuckshotPlusPlus_Compiler_HTML_Attributes_GetHtmlAttributes_
+  commentId: Overload:BuckshotPlusPlus.Compiler.HTML.Attributes.GetHtmlAttributes
   isSpec: "True"
-  fullName: BuckshotPlusPlus.Compiler.HTML.Attributes.GetHTMLAttributes
-  nameWithType: Attributes.GetHTMLAttributes
+  fullName: BuckshotPlusPlus.Compiler.HTML.Attributes.GetHtmlAttributes
+  nameWithType: Attributes.GetHtmlAttributes
 - uid: BuckshotPlusPlus.Compiler.HTML.View
   name: View
   href: api/BuckshotPlusPlus.Compiler.HTML.View.html
@@ -579,36 +579,36 @@ references:
   commentId: T:BuckshotPlusPlus.LineType
   fullName: BuckshotPlusPlus.LineType
   nameWithType: LineType
-- uid: BuckshotPlusPlus.LineType.COMMENT
-  name: COMMENT
-  href: api/BuckshotPlusPlus.LineType.html#BuckshotPlusPlus_LineType_COMMENT
-  commentId: F:BuckshotPlusPlus.LineType.COMMENT
-  fullName: BuckshotPlusPlus.LineType.COMMENT
-  nameWithType: LineType.COMMENT
-- uid: BuckshotPlusPlus.LineType.CONTAINER
-  name: CONTAINER
-  href: api/BuckshotPlusPlus.LineType.html#BuckshotPlusPlus_LineType_CONTAINER
-  commentId: F:BuckshotPlusPlus.LineType.CONTAINER
-  fullName: BuckshotPlusPlus.LineType.CONTAINER
-  nameWithType: LineType.CONTAINER
-- uid: BuckshotPlusPlus.LineType.EMPTY
-  name: EMPTY
-  href: api/BuckshotPlusPlus.LineType.html#BuckshotPlusPlus_LineType_EMPTY
-  commentId: F:BuckshotPlusPlus.LineType.EMPTY
-  fullName: BuckshotPlusPlus.LineType.EMPTY
-  nameWithType: LineType.EMPTY
-- uid: BuckshotPlusPlus.LineType.INCLUDE
-  name: INCLUDE
-  href: api/BuckshotPlusPlus.LineType.html#BuckshotPlusPlus_LineType_INCLUDE
-  commentId: F:BuckshotPlusPlus.LineType.INCLUDE
-  fullName: BuckshotPlusPlus.LineType.INCLUDE
-  nameWithType: LineType.INCLUDE
-- uid: BuckshotPlusPlus.LineType.VARIABLE
-  name: VARIABLE
-  href: api/BuckshotPlusPlus.LineType.html#BuckshotPlusPlus_LineType_VARIABLE
-  commentId: F:BuckshotPlusPlus.LineType.VARIABLE
-  fullName: BuckshotPlusPlus.LineType.VARIABLE
-  nameWithType: LineType.VARIABLE
+- uid: BuckshotPlusPlus.LineType.Comment
+  name: Comment
+  href: api/BuckshotPlusPlus.LineType.html#BuckshotPlusPlus_LineType_Comment
+  commentId: F:BuckshotPlusPlus.LineType.Comment
+  fullName: BuckshotPlusPlus.LineType.Comment
+  nameWithType: LineType.Comment
+- uid: BuckshotPlusPlus.LineType.Container
+  name: Container
+  href: api/BuckshotPlusPlus.LineType.html#BuckshotPlusPlus_LineType_Container
+  commentId: F:BuckshotPlusPlus.LineType.Container
+  fullName: BuckshotPlusPlus.LineType.Container
+  nameWithType: LineType.Container
+- uid: BuckshotPlusPlus.LineType.Empty
+  name: Empty
+  href: api/BuckshotPlusPlus.LineType.html#BuckshotPlusPlus_LineType_Empty
+  commentId: F:BuckshotPlusPlus.LineType.Empty
+  fullName: BuckshotPlusPlus.LineType.Empty
+  nameWithType: LineType.Empty
+- uid: BuckshotPlusPlus.LineType.Include
+  name: Include
+  href: api/BuckshotPlusPlus.LineType.html#BuckshotPlusPlus_LineType_Include
+  commentId: F:BuckshotPlusPlus.LineType.Include
+  fullName: BuckshotPlusPlus.LineType.Include
+  nameWithType: LineType.Include
+- uid: BuckshotPlusPlus.LineType.Variable
+  name: Variable
+  href: api/BuckshotPlusPlus.LineType.html#BuckshotPlusPlus_LineType_Variable
+  commentId: F:BuckshotPlusPlus.LineType.Variable
+  fullName: BuckshotPlusPlus.LineType.Variable
+  nameWithType: LineType.Variable
 - uid: BuckshotPlusPlus.LogicTest
   name: LogicTest
   href: api/BuckshotPlusPlus.LogicTest.html
@@ -886,32 +886,32 @@ references:
   isSpec: "True"
   fullName: BuckshotPlusPlus.Security.UserSession.LastUserInteraction
   nameWithType: UserSession.LastUserInteraction
-- uid: BuckshotPlusPlus.Security.UserSession.SessionID
-  name: SessionID
-  href: api/BuckshotPlusPlus.Security.UserSession.html#BuckshotPlusPlus_Security_UserSession_SessionID
-  commentId: P:BuckshotPlusPlus.Security.UserSession.SessionID
-  fullName: BuckshotPlusPlus.Security.UserSession.SessionID
-  nameWithType: UserSession.SessionID
-- uid: BuckshotPlusPlus.Security.UserSession.SessionID*
-  name: SessionID
-  href: api/BuckshotPlusPlus.Security.UserSession.html#BuckshotPlusPlus_Security_UserSession_SessionID_
-  commentId: Overload:BuckshotPlusPlus.Security.UserSession.SessionID
+- uid: BuckshotPlusPlus.Security.UserSession.SessionId
+  name: SessionId
+  href: api/BuckshotPlusPlus.Security.UserSession.html#BuckshotPlusPlus_Security_UserSession_SessionId
+  commentId: P:BuckshotPlusPlus.Security.UserSession.SessionId
+  fullName: BuckshotPlusPlus.Security.UserSession.SessionId
+  nameWithType: UserSession.SessionId
+- uid: BuckshotPlusPlus.Security.UserSession.SessionId*
+  name: SessionId
+  href: api/BuckshotPlusPlus.Security.UserSession.html#BuckshotPlusPlus_Security_UserSession_SessionId_
+  commentId: Overload:BuckshotPlusPlus.Security.UserSession.SessionId
   isSpec: "True"
-  fullName: BuckshotPlusPlus.Security.UserSession.SessionID
-  nameWithType: UserSession.SessionID
-- uid: BuckshotPlusPlus.Security.UserSession.SessionIP
-  name: SessionIP
-  href: api/BuckshotPlusPlus.Security.UserSession.html#BuckshotPlusPlus_Security_UserSession_SessionIP
-  commentId: P:BuckshotPlusPlus.Security.UserSession.SessionIP
-  fullName: BuckshotPlusPlus.Security.UserSession.SessionIP
-  nameWithType: UserSession.SessionIP
-- uid: BuckshotPlusPlus.Security.UserSession.SessionIP*
-  name: SessionIP
-  href: api/BuckshotPlusPlus.Security.UserSession.html#BuckshotPlusPlus_Security_UserSession_SessionIP_
-  commentId: Overload:BuckshotPlusPlus.Security.UserSession.SessionIP
+  fullName: BuckshotPlusPlus.Security.UserSession.SessionId
+  nameWithType: UserSession.SessionId
+- uid: BuckshotPlusPlus.Security.UserSession.SessionIp
+  name: SessionIp
+  href: api/BuckshotPlusPlus.Security.UserSession.html#BuckshotPlusPlus_Security_UserSession_SessionIp
+  commentId: P:BuckshotPlusPlus.Security.UserSession.SessionIp
+  fullName: BuckshotPlusPlus.Security.UserSession.SessionIp
+  nameWithType: UserSession.SessionIp
+- uid: BuckshotPlusPlus.Security.UserSession.SessionIp*
+  name: SessionIp
+  href: api/BuckshotPlusPlus.Security.UserSession.html#BuckshotPlusPlus_Security_UserSession_SessionIp_
+  commentId: Overload:BuckshotPlusPlus.Security.UserSession.SessionIp
   isSpec: "True"
-  fullName: BuckshotPlusPlus.Security.UserSession.SessionIP
-  nameWithType: UserSession.SessionIP
+  fullName: BuckshotPlusPlus.Security.UserSession.SessionIp
+  nameWithType: UserSession.SessionIp
 - uid: BuckshotPlusPlus.Security.UserSession.SessionLang
   name: SessionLang
   href: api/BuckshotPlusPlus.Security.UserSession.html#BuckshotPlusPlus_Security_UserSession_SessionLang
@@ -1670,19 +1670,19 @@ references:
   isSpec: "True"
   fullName: BuckshotPlusPlus.Tokenizer.IncludeFile
   nameWithType: Tokenizer.IncludeFile
-- uid: BuckshotPlusPlus.Tokenizer.IsHTTP(System.String)
-  name: IsHTTP(String)
-  href: api/BuckshotPlusPlus.Tokenizer.html#BuckshotPlusPlus_Tokenizer_IsHTTP_System_String_
-  commentId: M:BuckshotPlusPlus.Tokenizer.IsHTTP(System.String)
-  fullName: BuckshotPlusPlus.Tokenizer.IsHTTP(System.String)
-  nameWithType: Tokenizer.IsHTTP(String)
-- uid: BuckshotPlusPlus.Tokenizer.IsHTTP*
-  name: IsHTTP
-  href: api/BuckshotPlusPlus.Tokenizer.html#BuckshotPlusPlus_Tokenizer_IsHTTP_
-  commentId: Overload:BuckshotPlusPlus.Tokenizer.IsHTTP
+- uid: BuckshotPlusPlus.Tokenizer.IsHttp(System.String)
+  name: IsHttp(String)
+  href: api/BuckshotPlusPlus.Tokenizer.html#BuckshotPlusPlus_Tokenizer_IsHttp_System_String_
+  commentId: M:BuckshotPlusPlus.Tokenizer.IsHttp(System.String)
+  fullName: BuckshotPlusPlus.Tokenizer.IsHttp(System.String)
+  nameWithType: Tokenizer.IsHttp(String)
+- uid: BuckshotPlusPlus.Tokenizer.IsHttp*
+  name: IsHttp
+  href: api/BuckshotPlusPlus.Tokenizer.html#BuckshotPlusPlus_Tokenizer_IsHttp_
+  commentId: Overload:BuckshotPlusPlus.Tokenizer.IsHttp
   isSpec: "True"
-  fullName: BuckshotPlusPlus.Tokenizer.IsHTTP
-  nameWithType: Tokenizer.IsHTTP
+  fullName: BuckshotPlusPlus.Tokenizer.IsHttp
+  nameWithType: Tokenizer.IsHttp
 - uid: BuckshotPlusPlus.Tokenizer.PagesTokens
   name: PagesTokens
   href: api/BuckshotPlusPlus.Tokenizer.html#BuckshotPlusPlus_Tokenizer_PagesTokens
@@ -1918,18 +1918,18 @@ references:
   commentId: T:BuckshotPlusPlus.WebServer.MetaData
   fullName: BuckshotPlusPlus.WebServer.MetaData
   nameWithType: MetaData
-- uid: BuckshotPlusPlus.WebServer.MetaData.data
-  name: data
-  href: api/BuckshotPlusPlus.WebServer.MetaData.html#BuckshotPlusPlus_WebServer_MetaData_data
-  commentId: F:BuckshotPlusPlus.WebServer.MetaData.data
-  fullName: BuckshotPlusPlus.WebServer.MetaData.data
-  nameWithType: MetaData.data
-- uid: BuckshotPlusPlus.WebServer.MetaData.type
-  name: type
-  href: api/BuckshotPlusPlus.WebServer.MetaData.html#BuckshotPlusPlus_WebServer_MetaData_type
-  commentId: F:BuckshotPlusPlus.WebServer.MetaData.type
-  fullName: BuckshotPlusPlus.WebServer.MetaData.type
-  nameWithType: MetaData.type
+- uid: BuckshotPlusPlus.WebServer.MetaData.Data
+  name: Data
+  href: api/BuckshotPlusPlus.WebServer.MetaData.html#BuckshotPlusPlus_WebServer_MetaData_Data
+  commentId: F:BuckshotPlusPlus.WebServer.MetaData.Data
+  fullName: BuckshotPlusPlus.WebServer.MetaData.Data
+  nameWithType: MetaData.Data
+- uid: BuckshotPlusPlus.WebServer.MetaData.Type
+  name: Type
+  href: api/BuckshotPlusPlus.WebServer.MetaData.html#BuckshotPlusPlus_WebServer_MetaData_Type
+  commentId: F:BuckshotPlusPlus.WebServer.MetaData.Type
+  fullName: BuckshotPlusPlus.WebServer.MetaData.Type
+  nameWithType: MetaData.Type
 - uid: BuckshotPlusPlus.WebServer.WebMetaDataType
   name: WebMetaDataType
   href: api/BuckshotPlusPlus.WebServer.WebMetaDataType.html

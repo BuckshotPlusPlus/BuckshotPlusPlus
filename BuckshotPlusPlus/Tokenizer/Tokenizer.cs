@@ -13,11 +13,11 @@ namespace BuckshotPlusPlus
 
     public enum LineType
     {
-        CONTAINER,
-        COMMENT,
-        VARIABLE,
-        INCLUDE,
-        EMPTY
+        Container,
+        Comment,
+        Variable,
+        Include,
+        Empty
     }
 
     public struct UnprocessedLine
@@ -25,10 +25,10 @@ namespace BuckshotPlusPlus
         public List<string> Lines;
         public int CurrentLine;
 
-        public UnprocessedLine(List<string> Lines, int LineNumber)
+        public UnprocessedLine(List<string> lines, int lineNumber)
         {
-            this.Lines = Lines;
-            this.CurrentLine = LineNumber;
+            this.Lines = lines;
+            this.CurrentLine = lineNumber;
         }
     }
 
@@ -39,12 +39,12 @@ namespace BuckshotPlusPlus
         public string LineData;
         public List<string> ContainerData;
 
-        public ProcessedLine(int LineNumber, LineType Type, string Data, List<string> ContainerData = null)
+        public ProcessedLine(int lineNumber, LineType type, string data, List<string> containerData = null)
         {
-            this.LineData = Data;
-            this.LineType = Type;
-            this.CurrentLine = LineNumber;
-            this.ContainerData = ContainerData;
+            this.LineData = data;
+            this.LineType = type;
+            this.CurrentLine = lineNumber;
+            this.ContainerData = containerData;
         }
     }
 
@@ -58,92 +58,92 @@ namespace BuckshotPlusPlus
 
         string RelativePath { get; }
 
-        public Tokenizer(string FilePath)
+        public Tokenizer(string filePath)
         {
             PagesTokens = new List<Token>();
             FileTokens = new List<Token>();
             UnprocessedFileDataDictionary = new Dictionary<string, string>();
             FileDataDictionary = new Dictionary<string, string>();
-            RelativePath = Path.GetDirectoryName(FilePath);
+            RelativePath = Path.GetDirectoryName(filePath);
 
-            IncludeFile(FilePath);
+            IncludeFile(filePath);
         }
 
-        public bool IsHTTP(string FilePath)
+        public bool IsHttp(string filePath)
         {
-            return FilePath.Contains("http");
+            return filePath.Contains("http");
         }
 
-        public string GetIncludeValue(string FilePath)
+        public string GetIncludeValue(string filePath)
         {
-            if (Formater.SafeContains(FilePath, '+'))
+            if (Formater.SafeContains(filePath, '+'))
             {
-                List<string> Variables = Formater.SafeSplit(FilePath, '+');
+                List<string> variables = Formater.SafeSplit(filePath, '+');
 
-                string Result = "";
+                string result = "";
 
-                foreach (string Variable in Variables)
+                foreach (string variable in variables)
                 {
-                    string SafeVariableType = TokenDataVariable.FindVariableType(Variable, null);
+                    string safeVariableType = TokenDataVariable.FindVariableType(variable, null);
 
-                    if (SafeVariableType == "string")
+                    if (safeVariableType == "string")
                     {
-                        Result += TokenDataVariable.GetValueFromString(Variable, null);
+                        result += TokenDataVariable.GetValueFromString(variable, null);
                     }
-                    else if (SafeVariableType == "ref")
+                    else if (safeVariableType == "ref")
                     {
-                        TokenDataVariable FoundToken = TokenUtils.FindTokenDataVariableByName(FileTokens, Variable);
-                        if (FoundToken != null)
+                        TokenDataVariable foundToken = TokenUtils.FindTokenDataVariableByName(FileTokens, variable);
+                        if (foundToken != null)
                         {
-                            Result += FoundToken.VariableData;
+                            result += foundToken.VariableData;
                         }
                         else
                         {
-                            Formater.CriticalError("Token not found for include: " + FilePath);
+                            Formater.CriticalError("Token not found for include: " + filePath);
                         }
 
                     }
                 }
 
-                return '"' + Result + '"';
+                return '"' + result + '"';
             }
 
-            return FilePath;
+            return filePath;
         }
 
-        public void AnalyzeFileData(string FileName, string FileData)
+        public void AnalyzeFileData(string fileName, string fileData)
         {
-            if (UnprocessedFileDataDictionary.ContainsKey(FileName))
+            if (UnprocessedFileDataDictionary.ContainsKey(fileName))
             {
-                Formater.CriticalError("Circular dependency detected of " + FileName);
+                Formater.CriticalError("Circular dependency detected of " + fileName);
             }
             else
             {
-                UnprocessedFileDataDictionary.Add(FileName, FileData);
-                FileDataDictionary.Add(FileName, FileData);
+                UnprocessedFileDataDictionary.Add(fileName, fileData);
+                FileDataDictionary.Add(fileName, fileData);
 
-                int CurrentLineNumber = 0;
+                int currentLineNumber = 0;
 
-                List<string> MyFileLines = FileData.Split('\n').OfType<string>().ToList();
+                List<string> myFileLines = fileData.Split('\n').OfType<string>().ToList();
 
-                while (CurrentLineNumber < MyFileLines.Count)
+                while (currentLineNumber < myFileLines.Count)
                 {
-                    ProcessedLine CurrentLine = ProcessLineData(new UnprocessedLine(MyFileLines, CurrentLineNumber));
-                    CurrentLineNumber = CurrentLine.CurrentLine;
+                    ProcessedLine currentLine = ProcessLineData(new UnprocessedLine(myFileLines, currentLineNumber));
+                    currentLineNumber = currentLine.CurrentLine;
 
-                    switch (CurrentLine.LineType)
+                    switch (currentLine.LineType)
                     {
-                            case LineType.INCLUDE:
+                            case LineType.Include:
                             {
-                                string IncludePath = Formater.SafeSplit(CurrentLine.LineData, ' ')[1];
-                                IncludePath = GetIncludeValue(IncludePath);
+                                string includePath = Formater.SafeSplit(currentLine.LineData, ' ')[1];
+                                includePath = GetIncludeValue(includePath);
 
-                                if (IsHTTP(IncludePath))
+                                if (IsHttp(includePath))
                                 {
                                     IncludeFile(
-                                        IncludePath.Substring(
+                                        includePath.Substring(
                                             1,
-                                            IncludePath.Length - 2
+                                            includePath.Length - 2
                                         )
                                     );
                                 }
@@ -152,33 +152,33 @@ namespace BuckshotPlusPlus
                                     IncludeFile(
                                         Path.Combine(
                                             RelativePath,
-                                            IncludePath.Substring(
+                                            includePath.Substring(
                                                 1,
-                                                IncludePath.Length - 2
+                                                includePath.Length - 2
                                             )
                                         )
                                     );
                                 }
                                 break;
                             }
-                            case LineType.CONTAINER:
+                            case LineType.Container:
                             {
-                                AddContainerToken(FileName, CurrentLine.ContainerData, CurrentLineNumber);
+                                AddContainerToken(fileName, currentLine.ContainerData, currentLineNumber);
                                 break;
                             }
-                            case LineType.VARIABLE:
+                            case LineType.Variable:
                             {
-                                Token MyNewToken = new Token(FileName, CurrentLine.LineData, CurrentLineNumber, this);
+                                Token myNewToken = new Token(fileName, currentLine.LineData, currentLineNumber, this);
 
-                                if (!TokenUtils.SafeEditTokenData(CurrentLine.LineData, FileTokens, MyNewToken))
+                                if (!TokenUtils.SafeEditTokenData(currentLine.LineData, FileTokens, myNewToken))
                                 {
-                                    FileTokens.Add(MyNewToken);
+                                    FileTokens.Add(myNewToken);
                                 }
                                 break;
                             }
-                        case LineType.EMPTY:
+                        case LineType.Empty:
                             break;
-                            case LineType.COMMENT: {
+                            case LineType.Comment: {
                                 break;
                             }
                     }
@@ -187,125 +187,125 @@ namespace BuckshotPlusPlus
             }
         }
 
-        public void AddContainerToken(string FileName, List<string> ContainerData, int CurrentLineNumber)
+        public void AddContainerToken(string fileName, List<string> containerData, int currentLineNumber)
         {
-            Token PreviousToken = null;
+            Token previousToken = null;
             if (FileTokens.Count > 0)
             {
-                PreviousToken = FileTokens.Last();
+                previousToken = FileTokens.Last();
             }
-            Token NewContainerToken = new Token(
-                    FileName,
-                    String.Join('\n', ContainerData),
-                    CurrentLineNumber,
+            Token newContainerToken = new Token(
+                    fileName,
+                    String.Join('\n', containerData),
+                    currentLineNumber,
                     this,
                     null,
-                    PreviousToken
+                    previousToken
                 );
 
-            TokenDataContainer NewContainerTokenData = (TokenDataContainer)NewContainerToken.Data;
-            if (NewContainerTokenData.ContainerType == "logic")
+            TokenDataContainer newContainerTokenData = (TokenDataContainer)newContainerToken.Data;
+            if (newContainerTokenData.ContainerType == "logic")
             {
                 // RUN LOGIC TEST
-                TokenDataLogic MyLogic = (TokenDataLogic)NewContainerTokenData.ContainerMetaData;
-                MyLogic.RunLogicTest(FileTokens);
+                TokenDataLogic myLogic = (TokenDataLogic)newContainerTokenData.ContainerMetaData;
+                myLogic.RunLogicTest(FileTokens);
 
             }
-            if (((TokenDataContainer)NewContainerToken.Data).ContainerType == "page")
+            if (((TokenDataContainer)newContainerToken.Data).ContainerType == "page")
             {
-                PagesTokens.Add(NewContainerToken);
+                PagesTokens.Add(newContainerToken);
             }
             FileTokens.Add(
-                NewContainerToken
+                newContainerToken
             );
         }
 
-        public static ProcessedLine ProcessLineData(UnprocessedLine ULine)
+        public static ProcessedLine ProcessLineData(UnprocessedLine uLine)
         {
 
-            string LineData = ULine.Lines[ULine.CurrentLine];
-            int CurrentLineNumber = ULine.CurrentLine;
-            if (LineData.Length >= 2)
+            string lineData = uLine.Lines[uLine.CurrentLine];
+            int currentLineNumber = uLine.CurrentLine;
+            if (lineData.Length >= 2)
             {
 
-                if (LineData.Length > 3)
+                if (lineData.Length > 3)
                 {
-                    if (LineData[0] + "" + LineData[1] + LineData[2] == "###")
+                    if (lineData[0] + "" + lineData[1] + lineData[2] == "###")
                     {
-                        while (CurrentLineNumber < ULine.Lines.Count)
+                        while (currentLineNumber < uLine.Lines.Count)
                         {
-                            CurrentLineNumber++;
-                            string NextLine = ULine.Lines[CurrentLineNumber];
-                            if (NextLine.Length > 2)
+                            currentLineNumber++;
+                            string nextLine = uLine.Lines[currentLineNumber];
+                            if (nextLine.Length > 2)
                             {
-                                if (NextLine[0] + "" + NextLine[1] + NextLine[2] == "###" || NextLine[^1] + "" + NextLine[^2] + NextLine[3] == "###")
+                                if (nextLine[0] + "" + nextLine[1] + nextLine[2] == "###" || nextLine[^1] + "" + nextLine[^2] + nextLine[3] == "###")
                                 {
-                                    CurrentLineNumber++;
+                                    currentLineNumber++;
                                     break;
                                 }
                             }
 
                         }
-                        return new ProcessedLine(CurrentLineNumber + 1, LineType.COMMENT, LineData);
+                        return new ProcessedLine(currentLineNumber + 1, LineType.Comment, lineData);
                     }
                 }
 
-                if (LineData[0] + "" + LineData[1] == "##")
+                if (lineData[0] + "" + lineData[1] == "##")
                 {
-                    CurrentLineNumber++;
-                    return new ProcessedLine(CurrentLineNumber + 1, LineType.COMMENT, LineData);
+                    currentLineNumber++;
+                    return new ProcessedLine(currentLineNumber + 1, LineType.Comment, lineData);
                 }
             }
-            if (LineData.Length > 1)
+            if (lineData.Length > 1)
             {
 
-                if (LineData[^1] == 13)
+                if (lineData[^1] == 13)
                 {
-                    LineData = LineData.Substring(0, LineData.Length - 1);
+                    lineData = lineData.Substring(0, lineData.Length - 1);
                 }
 
-                if (Formater.SafeSplit(LineData, ' ')[0] == "include")
+                if (Formater.SafeSplit(lineData, ' ')[0] == "include")
                 {
-                    return new ProcessedLine(CurrentLineNumber + 1, LineType.INCLUDE, LineData);
+                    return new ProcessedLine(currentLineNumber + 1, LineType.Include, lineData);
                 }
                 else
                 {
-                    if (Formater.SafeContains(LineData, '{'))
+                    if (Formater.SafeContains(lineData, '{'))
                     {
-                        List<string> MyString = Formater.SafeSplit(LineData, ' ');
+                        List<string> myString = Formater.SafeSplit(lineData, ' ');
 
                         foreach (
-                            string ContainerType in TokenDataContainer.SupportedContainerTypes
+                            string containerType in TokenDataContainer.SupportedContainerTypes
                         )
                         {
-                            if (MyString[0] == ContainerType)
+                            if (myString[0] == containerType)
                             {
-                                int ContainerCount = 1;
-                                List<string> ContainerData = new List<string>();
-                                ContainerData.Add(LineData);
+                                int containerCount = 1;
+                                List<string> containerData = new List<string>();
+                                containerData.Add(lineData);
 
-                                while (ContainerCount > 0)
+                                while (containerCount > 0)
                                 {
-                                    CurrentLineNumber++;
-                                    LineData = ULine.Lines[CurrentLineNumber];
+                                    currentLineNumber++;
+                                    lineData = uLine.Lines[currentLineNumber];
 
-                                    if (LineData[^1] == 13)
+                                    if (lineData[^1] == 13)
                                     {
-                                        LineData = LineData.Substring(0, LineData.Length - 1);
+                                        lineData = lineData.Substring(0, lineData.Length - 1);
                                     }
 
-                                    ContainerData.Add(LineData);
-                                    if (Formater.SafeContains(LineData, '{'))
+                                    containerData.Add(lineData);
+                                    if (Formater.SafeContains(lineData, '{'))
                                     {
-                                        ContainerCount++;
+                                        containerCount++;
                                     }
-                                    else if (Formater.SafeContains(LineData, '}'))
+                                    else if (Formater.SafeContains(lineData, '}'))
                                     {
-                                        ContainerCount--;
-                                        if (ContainerCount == 0)
+                                        containerCount--;
+                                        if (containerCount == 0)
                                         {
                                             // Add container token
-                                            return new ProcessedLine(CurrentLineNumber + 1, LineType.CONTAINER, LineData, ContainerData);
+                                            return new ProcessedLine(currentLineNumber + 1, LineType.Container, lineData, containerData);
                                         }
                                     }
                                 }
@@ -315,43 +315,43 @@ namespace BuckshotPlusPlus
                     }
                     else
                     {
-                        return new ProcessedLine(CurrentLineNumber + 1, LineType.VARIABLE, LineData);
+                        return new ProcessedLine(currentLineNumber + 1, LineType.Variable, lineData);
                     }
                 }
             }
 
-            return new ProcessedLine(CurrentLineNumber + 1, LineType.EMPTY, LineData);
+            return new ProcessedLine(currentLineNumber + 1, LineType.Empty, lineData);
         }
 
-        public void IncludeFile(string FilePath)
+        public void IncludeFile(string filePath)
         {
-            string Content = "";
-            if (IsHTTP(FilePath))
+            string content = "";
+            if (IsHttp(filePath))
             {
                 using var webClient = new HttpClient();
-                Content = webClient.GetStringAsync(FilePath).Result;
+                content = webClient.GetStringAsync(filePath).Result;
             }
             else
             {
-                if (File.Exists(FilePath))
+                if (File.Exists(filePath))
                 {
-                    Content = File.ReadAllText(FilePath, System.Text.Encoding.UTF8);
+                    content = File.ReadAllText(filePath, System.Text.Encoding.UTF8);
                 } else {
-                    Formater.CriticalError($"File {FilePath} not found");
+                    Formater.CriticalError($"File {filePath} not found");
                 }
             }
 
-            if (Content.Length == 0)
+            if (content.Length == 0)
             {
-                Formater.DebugMessage($"File {FilePath} has no contents");
+                Formater.DebugMessage($"File {filePath} has no contents");
                 return;
             }
 
-            Formater.DebugMessage($"File {FilePath} Found!");
+            Formater.DebugMessage($"File {filePath} Found!");
 
-            AnalyzeFileData(FilePath, Formater.FormatFileData(Content));
+            AnalyzeFileData(filePath, Formater.FormatFileData(content));
 
-            Formater.DebugMessage($"Compilation of {FilePath} done");
+            Formater.DebugMessage($"Compilation of {filePath} done");
         }
     }
 }

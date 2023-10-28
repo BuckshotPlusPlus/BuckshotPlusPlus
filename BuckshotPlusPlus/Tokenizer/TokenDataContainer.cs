@@ -32,78 +32,78 @@ namespace BuckshotPlusPlus
             "elseif"
         };
 
-        public TokenDataContainer(Token MyToken)
+        public TokenDataContainer(Token myToken)
         {
-            List<string> LinesData = Formater.SafeSplit(MyToken.LineData, '\n');
+            List<string> linesData = Formater.SafeSplit(myToken.LineData, '\n');
             this.ContainerData = new List<Token>();
             this.ContainerType = "";
             this.ContainerName = "";
-            this.ContainerToken = MyToken;
+            this.ContainerToken = myToken;
             this.ContainerLines = new List<string> { };
 
-            int OpenCount = 0;
-            List<string> ChildContainerLines = new List<string>();
+            int openCount = 0;
+            List<string> childContainerLines = new List<string>();
 
-            foreach (string LineData in LinesData)
+            foreach (string lineData in linesData)
             {
-                if (Formater.SafeContains(LineData, '{'))
+                if (Formater.SafeContains(lineData, '{'))
                 {
-                    OpenCount++;
+                    openCount++;
 
-                    if (OpenCount == 1)
+                    if (openCount == 1)
                     {
                         // SPLIT FIRST LINE INTO AN ARRAY
-                        List<string> MyArgs = Formater.SafeSplit(LineData, ' ');
+                        List<string> myArgs = Formater.SafeSplit(lineData, ' ');
 
                         // STORE CONTAINER NAME
-                        if (MyArgs[1][^1] == '{')
+                        if (myArgs[1][^1] == '{')
                         {
-                            this.ContainerName = MyArgs[1].Substring(0, MyArgs[1].Length - 1);
+                            this.ContainerName = myArgs[1].Substring(0, myArgs[1].Length - 1);
                         }
                         else
                         {
-                            this.ContainerName = MyArgs[1];
+                            this.ContainerName = myArgs[1];
                         }
 
                         // CHECK AND STORE CONTAINER TYPE (OBJECT, FUNCTION)
                         
-                        foreach (string ContainerType in SupportedContainerTypes)
+                        foreach (string containerType in SupportedContainerTypes)
                         {
-                            if (MyArgs[0] == ContainerType)
+                            if (myArgs[0] == containerType)
                             {
-                                if (ContainerType == "if" || ContainerType == "else")
+                                if (containerType == "if" || containerType == "else")
                                 {
                                     this.ContainerType = "logic";
-                                    MyToken.Type = this.ContainerType;
-                                    ContainerMetaData = new TokenDataLogic(MyToken);
+                                    myToken.Type = this.ContainerType;
+                                    ContainerMetaData = new TokenDataLogic(myToken);
                                     
                                 }
                                 else
                                 {
-                                    this.ContainerType = ContainerType;
-                                    MyToken.Type = this.ContainerType;
+                                    this.ContainerType = containerType;
+                                    myToken.Type = this.ContainerType;
                                 }
                                 
                             }
                         }
                         if (this.ContainerType == "")
                         {
-                            Formater.TokenCriticalError("Invalid container type", MyToken);
+                            Formater.TokenCriticalError("Invalid container type", myToken);
                         }
 
                         if (this.ContainerName.Contains(':'))
                         {
-                            string[] SplitedName = this.ContainerName.Split(':');
-                            this.ContainerName = SplitedName[0];
+                            string[] splitedName = this.ContainerName.Split(':');
+                            this.ContainerName = splitedName[0];
 
-                            string ParentName = SplitedName[1];
-                            bool ParentFound = false;
+                            string parentName = splitedName[1];
+                            bool parentFound = false;
 
-                            foreach (Token LocalToken in MyToken.MyTokenizer.FileTokens)
+                            foreach (Token localToken in myToken.MyTokenizer.FileTokens)
                             {
-                                if (LocalToken.Data is TokenDataContainer localTokenDataContainer)
+                                if (localToken.Data is TokenDataContainer localTokenDataContainer)
                                 {
-                                    if (localTokenDataContainer.ContainerName == ParentName)
+                                    if (localTokenDataContainer.ContainerName == parentName)
                                     {
                                         if (
                                             localTokenDataContainer.ContainerType
@@ -112,97 +112,97 @@ namespace BuckshotPlusPlus
                                         {
                                             Formater.TokenCriticalError(
                                                 "Invalid parent container type",
-                                                MyToken
+                                                myToken
                                             );
                                         }
                                         foreach (
-                                            Token LocalTokenData in localTokenDataContainer.ContainerData
+                                            Token localTokenData in localTokenDataContainer.ContainerData
                                         )
                                         {
-                                            ContainerData.Add(LocalTokenData);
+                                            ContainerData.Add(localTokenData);
                                         }
-                                        ParentFound = true;
+                                        parentFound = true;
                                     }
                                 }
                             }
 
-                            if (!ParentFound)
+                            if (!parentFound)
                             {
-                                Formater.CriticalError("View " + ParentName + " not found!");
+                                Formater.CriticalError("View " + parentName + " not found!");
                             }
                         }
                     }
                 }
-                else if (OpenCount == 1 && !Formater.SafeContains(LineData, '}'))
+                else if (openCount == 1 && !Formater.SafeContains(lineData, '}'))
                 {
-                    ContainerLines.Add(LineData);
+                    ContainerLines.Add(lineData);
                 }
 
-                if (OpenCount == 2)
+                if (openCount == 2)
                 {
-                    ContainerLines.Add(LineData);
+                    ContainerLines.Add(lineData);
                 }
 
-                if (Formater.SafeContains(LineData, '}') && OpenCount == 2)
+                if (Formater.SafeContains(lineData, '}') && openCount == 2)
                 {
-                    OpenCount--;
-                    ContainerLines.Add(LineData);
+                    openCount--;
+                    ContainerLines.Add(lineData);
 
                 }
-                else if (Formater.SafeContains(LineData, '}'))
+                else if (Formater.SafeContains(lineData, '}'))
                 {
-                    OpenCount--;
+                    openCount--;
                 }
             }
 
-            int CurrentLineNumber = 0;
-            while (CurrentLineNumber < ContainerLines.Count)
+            int currentLineNumber = 0;
+            while (currentLineNumber < ContainerLines.Count)
             {
-                ProcessedLine CurrentLine = Tokenizer.ProcessLineData(new UnprocessedLine(ContainerLines, CurrentLineNumber));
-                CurrentLineNumber = CurrentLine.CurrentLine;
+                ProcessedLine currentLine = Tokenizer.ProcessLineData(new UnprocessedLine(ContainerLines, currentLineNumber));
+                currentLineNumber = currentLine.CurrentLine;
 
-                switch (CurrentLine.LineType)
+                switch (currentLine.LineType)
                 {
-                    case LineType.INCLUDE:
+                    case LineType.Include:
                         {
                             // Manage includes inside of containers
                             break;
                         }
-                    case LineType.CONTAINER:
+                    case LineType.Container:
                         {
-                            Token PreviousToken = null;
+                            Token previousToken = null;
                             if (ContainerData.Count > 0)
                             {
-                                PreviousToken = ContainerData.Last();
+                                previousToken = ContainerData.Last();
                             }
-                            Token NewContainerToken = new Token(
-                                    MyToken.FileName,
-                                    String.Join('\n', CurrentLine.ContainerData),
-                                    CurrentLineNumber,
-                                    MyToken.MyTokenizer,
+                            Token newContainerToken = new Token(
+                                    myToken.FileName,
+                                    String.Join('\n', currentLine.ContainerData),
+                                    currentLineNumber,
+                                    myToken.MyTokenizer,
                                     null,
-                                    PreviousToken
+                                    previousToken
                                 );
 
                             
-                            AddChildToContainerData(ContainerData, NewContainerToken);
+                            AddChildToContainerData(ContainerData, newContainerToken);
                             break;
                         }
-                    case LineType.VARIABLE:
+                    case LineType.Variable:
                         {
-                            Token MyNewToken = new Token(
-                                MyToken.FileName,
-                                CurrentLine.LineData,
-                                MyToken.LineNumber + LinesData.IndexOf(CurrentLine.LineData) - 1,
-                                MyToken.MyTokenizer,
+                            Token myNewToken = new Token(
+                                myToken.FileName,
+                                currentLine.LineData,
+                                myToken.LineNumber + linesData.IndexOf(currentLine.LineData) - 1,
+                                myToken.MyTokenizer,
                                 this
                             );
-                            AddChildToContainerData(ContainerData, MyNewToken);
+                            AddChildToContainerData(ContainerData, myNewToken);
                             break;
                         }
-                    case LineType.EMPTY:
+                    case LineType.Empty:
                         break;
-                    case LineType.COMMENT:
+                    case LineType.Comment:
                         {
                             break;
                         }
@@ -210,34 +210,34 @@ namespace BuckshotPlusPlus
             }
         }
 
-        public static void AddChildToContainerData(List<Token> ContainerData, Token NewChild)
+        public static void AddChildToContainerData(List<Token> containerData, Token newChild)
         {
-            if(!Formater.SafeContains(TokenUtils.GetTokenName(NewChild), '.'))
+            if(!Formater.SafeContains(TokenUtils.GetTokenName(newChild), '.'))
             {
-                Token FoundToken = TokenUtils.FindTokenByName(
-                    ContainerData,
-                    TokenUtils.GetTokenName(NewChild)
+                Token foundToken = TokenUtils.FindTokenByName(
+                    containerData,
+                    TokenUtils.GetTokenName(newChild)
                 );
                 
-                if (FoundToken != null)
+                if (foundToken != null)
                 {
-                    ContainerData.Remove(FoundToken);
+                    containerData.Remove(foundToken);
                 }
             }
 
-            ContainerData.Add(NewChild);
+            containerData.Add(newChild);
         }
 
-        public static bool IsTokenDataContainer(Token MyToken)
+        public static bool IsTokenDataContainer(Token myToken)
         {
-            string LocalType = Formater.SafeSplit(MyToken.LineData, ' ')[0];
+            string localType = Formater.SafeSplit(myToken.LineData, ' ')[0];
             
-            foreach (string Type in SupportedContainerTypes)
+            foreach (string type in SupportedContainerTypes)
             {
-                if (LocalType == Type)
+                if (localType == type)
                 {
-                    bool ContainsContainerSymbol = Formater.SafeContains(MyToken.LineData, '{');
-                    if (ContainsContainerSymbol)
+                    bool containsContainerSymbol = Formater.SafeContains(myToken.LineData, '{');
+                    if (containsContainerSymbol)
                     {
                         return true;
                     }

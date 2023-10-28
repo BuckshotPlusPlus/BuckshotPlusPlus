@@ -5,136 +5,136 @@ namespace BuckshotPlusPlus.WebServer
 {
     internal class Page
     {
-        static string BasicPage = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF - 8\"> <meta http-equiv=\"X - UA - Compatible\" content =\"IE = edge\" > <meta name=\"viewport\" content =\"width=device-width, height=device-height, initial-scale=1.0, user-scalable=yes\" ><title>";
+        static string _basicPage = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF - 8\"> <meta http-equiv=\"X - UA - Compatible\" content =\"IE = edge\" > <meta name=\"viewport\" content =\"width=device-width, height=device-height, initial-scale=1.0, user-scalable=yes\" ><title>";
 
-        public static string RenderWebPage(List<Token> ServerSideTokens, Token MyPage)
+        public static string RenderWebPage(List<Token> serverSideTokens, Token myPage)
         {
-            TokenUtils.EditAllTokensOfContainer(ServerSideTokens, MyPage);
+            TokenUtils.EditAllTokensOfContainer(serverSideTokens, myPage);
 
-            TokenDataContainer MyPageContainer = (TokenDataContainer)MyPage.Data;
-            TokenDataVariable MyPageTitle = TokenUtils.TryFindTokenDataVariableValueByName(
-                ServerSideTokens,
-                MyPageContainer.ContainerData,
+            TokenDataContainer myPageContainer = (TokenDataContainer)myPage.Data;
+            TokenDataVariable myPageTitle = TokenUtils.TryFindTokenDataVariableValueByName(
+                serverSideTokens,
+                myPageContainer.ContainerData,
                 "title"
             );
 
-            TokenDataVariable CustomHead = TokenUtils.TryFindTokenDataVariableValueByName(
-                ServerSideTokens,
-                MyPageContainer.ContainerData,
+            TokenDataVariable customHead = TokenUtils.TryFindTokenDataVariableValueByName(
+                serverSideTokens,
+                myPageContainer.ContainerData,
                 "head"
             );
 
-            TokenDataVariable MyPageBody = TokenUtils.TryFindTokenDataVariableValueByName(
-                ServerSideTokens,
-                MyPageContainer.ContainerData,
+            TokenDataVariable myPageBody = TokenUtils.TryFindTokenDataVariableValueByName(
+                serverSideTokens,
+                myPageContainer.ContainerData,
                 "body",
                 false
             );
 
-            string Page = (String)BasicPage.Clone();
-            if (MyPageTitle != null)
+            string page = (String)_basicPage.Clone();
+            if (myPageTitle != null)
             {
-                Page += MyPageTitle.GetCompiledVariableData(ServerSideTokens);
+                page += myPageTitle.GetCompiledVariableData(serverSideTokens);
             }
             else
             {
-                Page += MyPageContainer.ContainerName;
+                page += myPageContainer.ContainerName;
             }
 
-            Page += "</title>";
+            page += "</title>";
 
-            Token MyPageMeta = TokenUtils.FindTokenByName(MyPageContainer.ContainerData, "meta");
-            if (MyPageMeta != null)
+            Token myPageMeta = TokenUtils.FindTokenByName(myPageContainer.ContainerData, "meta");
+            if (myPageMeta != null)
             {
-                foreach (Token ArrayValue in Analyzer.Array.GetArrayValues(MyPageMeta))
+                foreach (Token arrayValue in Analyzer.Array.GetArrayValues(myPageMeta))
                 {
-                    TokenDataVariable ArrayVar = (TokenDataVariable)ArrayValue.Data;
-                    if(ArrayVar.VariableType == "ref")
+                    TokenDataVariable arrayVar = (TokenDataVariable)arrayValue.Data;
+                    if(arrayVar.VariableType == "ref")
                     {
-                        TokenDataContainer Meta = TokenUtils.TryFindTokenDataContainerValueByName(
-                            ServerSideTokens,
-                            ServerSideTokens,
-                            ArrayVar.VariableData
+                        TokenDataContainer meta = TokenUtils.TryFindTokenDataContainerValueByName(
+                            serverSideTokens,
+                            serverSideTokens,
+                            arrayVar.VariableData
                         );
 
-                        string meta_args = "";
+                        string metaArgs = "";
 
-                        foreach(Token MetaVarToken in Meta.ContainerData)
+                        foreach(Token metaVarToken in meta.ContainerData)
                         {
-                            TokenDataVariable LocalMetaVar = (TokenDataVariable)MetaVarToken.Data;
-                            meta_args += " " + LocalMetaVar.VariableName + "=" + '"';
-                            meta_args += LocalMetaVar.GetCompiledVariableData(ServerSideTokens, true);
-                            meta_args += '"';
+                            TokenDataVariable localMetaVar = (TokenDataVariable)metaVarToken.Data;
+                            metaArgs += " " + localMetaVar.VariableName + "=" + '"';
+                            metaArgs += localMetaVar.GetCompiledVariableData(serverSideTokens, true);
+                            metaArgs += '"';
                         }
 
-                        Page += "<meta " + meta_args + ">";
+                        page += "<meta " + metaArgs + ">";
                     }
                     //Page += $"<script src=\"{ArrayVar.VariableData}\">";
                 }
             }
 
-            Token MyPageIcon = TokenUtils.FindTokenByName(MyPageContainer.ContainerData, "icon");
-            if (MyPageIcon != null)
+            Token myPageIcon = TokenUtils.FindTokenByName(myPageContainer.ContainerData, "icon");
+            if (myPageIcon != null)
             {
-                TokenDataVariable Var = (TokenDataVariable)MyPageIcon.Data;
-                Page += "<link rel=\"icon\" type=\"image/x-icon\" href=\"" + Var.VariableData + "\">";
+                TokenDataVariable var = (TokenDataVariable)myPageIcon.Data;
+                page += "<link rel=\"icon\" type=\"image/x-icon\" href=\"" + var.VariableData + "\">";
             }
 
-            Token MyPageFonts = TokenUtils.FindTokenByName(MyPageContainer.ContainerData, "fonts");
-            if (MyPageFonts != null)
+            Token myPageFonts = TokenUtils.FindTokenByName(myPageContainer.ContainerData, "fonts");
+            if (myPageFonts != null)
             {
-                Page += "<style>";
-                foreach (Token ArrayValue in Analyzer.Array.GetArrayValues(MyPageFonts))
+                page += "<style>";
+                foreach (Token arrayValue in Analyzer.Array.GetArrayValues(myPageFonts))
                 {
-                    TokenDataVariable ArrayVar = (TokenDataVariable)ArrayValue.Data;
-                    Page += "@import url('" + ArrayVar.VariableData + "');";
+                    TokenDataVariable arrayVar = (TokenDataVariable)arrayValue.Data;
+                    page += "@import url('" + arrayVar.VariableData + "');";
                 }
-                Page += "</style>";
+                page += "</style>";
             }
 
-            Token MyPageCSS = TokenUtils.FindTokenByName(MyPageContainer.ContainerData, "css");
-            if (MyPageCSS != null)
+            Token myPageCss = TokenUtils.FindTokenByName(myPageContainer.ContainerData, "css");
+            if (myPageCss != null)
             {
-                foreach (Token ArrayValue in Analyzer.Array.GetArrayValues(MyPageCSS))
+                foreach (Token arrayValue in Analyzer.Array.GetArrayValues(myPageCss))
                 {
-                    TokenDataVariable ArrayVar = (TokenDataVariable)ArrayValue.Data;
-                    Page += $"<link rel=\"stylesheet\" href=\"{ArrayVar.VariableData}\">";
+                    TokenDataVariable arrayVar = (TokenDataVariable)arrayValue.Data;
+                    page += $"<link rel=\"stylesheet\" href=\"{arrayVar.VariableData}\">";
                 }
             }
 
-            Token MyPageScript = TokenUtils.FindTokenByName(
-                MyPageContainer.ContainerData,
+            Token myPageScript = TokenUtils.FindTokenByName(
+                myPageContainer.ContainerData,
                 "scripts"
             );
 
-            if (MyPageScript != null)
+            if (myPageScript != null)
             {
-                foreach (Token ArrayValue in Analyzer.Array.GetArrayValues(MyPageScript))
+                foreach (Token arrayValue in Analyzer.Array.GetArrayValues(myPageScript))
                 {
-                    TokenDataVariable ArrayVar = (TokenDataVariable)ArrayValue.Data;
-                    Page += $"<script src=\"{ArrayVar.VariableData}\"></script>";
+                    TokenDataVariable arrayVar = (TokenDataVariable)arrayValue.Data;
+                    page += $"<script src=\"{arrayVar.VariableData}\"></script>";
                 }
             }
 
-            if (CustomHead is { VariableType: "string" })
+            if (customHead is { VariableType: "string" })
             {
-                Page += CustomHead.VariableData;
+                page += customHead.VariableData;
             }
 
             
 
-            Page += "</head>";
+            page += "</head>";
 
-            if (MyPageBody != null)
+            if (myPageBody != null)
             {
-                Page += Compiler.HTML.View.CompileContent(ServerSideTokens, MyPageBody, MyPageContainer);
+                page += Compiler.HTML.View.CompileContent(serverSideTokens, myPageBody, myPageContainer);
             }
             else
             {
-                Page += "<body><h1>" + MyPageContainer.ContainerName + "</h1></body>";
+                page += "<body><h1>" + myPageContainer.ContainerName + "</h1></body>";
             }
 
-            return Page + "</html>";
+            return page + "</html>";
         }
     }
 }

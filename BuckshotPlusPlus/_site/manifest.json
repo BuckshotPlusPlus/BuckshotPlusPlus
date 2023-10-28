@@ -1,6 +1,6 @@
 {
   "homepages": [],
-  "source_base_path": "C:/Users/victo/OneDrive/Documents/GitHub/BuckshotPlusPlus/BuckshotPlusPlus",
+  "source_base_path": "C:/Users/Victor/RiderProjects/BuckshotPlusPlus/BuckshotPlusPlus",
   "xrefmap": "xrefmap.yml",
   "files": [
     {
@@ -9,7 +9,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.Analytics.AnalyticTimedEvent.html",
-          "hash": "YHvfSGqh4USEkz5Zn1vpXLqBbEiLmHVlu684Ie3n+CQ="
+          "hash": "NuYdI8VdRPWkjfv3hZHT+eOD43Ifei7BxAAzHlNR/Kg="
         }
       },
       "is_incremental": true,
@@ -21,7 +21,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.Analytics.html",
-          "hash": "Q2cPpSnTZ7L0dEtKTmCzJvJfqodlU8oc5vONWMi1qv4="
+          "hash": "3CVIh+bWcLZsIquHf658GAnv4GxFJjnQKOKz2FDstik="
         }
       },
       "is_incremental": true,
@@ -33,7 +33,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.Analyzer.Array.html",
-          "hash": "cm7xboqrA3gLacy/JfCFKzZLxhbaMIX/eRsZH4DMLRs="
+          "hash": "L8ZcD+yEXUjDsOaPMBWpfN5NvFM/vYsUHaeqGmUjQx4="
         }
       },
       "is_incremental": true,
@@ -45,7 +45,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.Analyzer.html",
-          "hash": "Ce5vkdWXX1RJYrnwJFGUMYPHlJg0lsrXSSufSoQx63o="
+          "hash": "IA9QRx4k0BmDedYtg3zQRh7O3BQmmX/GkZWHtbfslGY="
         }
       },
       "is_incremental": true,
@@ -57,10 +57,10 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.BaseDatabase.html",
-          "hash": "G00Nqxn35crtZZc0A46y6Swvortg6IYaSAKUZpbuPik="
+          "hash": "oL8iVarHf9btgIWw2h/YmncDr59Y5YD9BBx/Ftvf/5k="
         }
       },
-      "is_incremental": false,
+      "is_incremental": true,
       "version": ""
     },
     {
@@ -69,7 +69,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.Compiler.CSS.Properties.html",
-          "hash": "nc/WEvwRF+vCDNUnSSKatd9dEY9hnCs2vOgitiUHfac="
+          "hash": "Ix9XehHYcj4368t20hwA7LtjnV8AmCuuzjYBysDZQlk="
         }
       },
       "is_incremental": true,
@@ -81,7 +81,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.Compiler.CSS.html",
-          "hash": "Y4OevCS2iRtIe80g2TqU6I2Aa9jB22m4lZzZqEX1HIc="
+          "hash": "lUvSjr9C0wmvXrKGaSL6lcAl4ow2itxyjDieM7lm7+4="
         }
       },
       "is_incremental": true,
@@ -93,7 +93,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.Compiler.HTML.Attributes.html",
-          "hash": "0y0fjExNCbwbQlyucPI3I81PdUI7wZk2lcUWUgM+c2A="
+          "hash": "7hVuNTwqpyXnO03Q1WmElz3Kqd1jQKFPHePjw/uLSN8="
         }
       },
       "is_incremental": true,
@@ -105,7 +105,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.Compiler.HTML.View.html",
-          "hash": "Zh54DUZT0rjouLjBswAF2/T6BZYodXoas8L7kp5oKHM="
+          "hash": "B9cwFvOsi22JJXtQyCjKIKqxEeVHGU/bnxhkjUWxh24="
         }
       },
       "is_incremental": true,
@@ -117,7 +117,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.Compiler.HTML.html",
-          "hash": "ksG/9rGka5HVa/R1bisFNFPquoyycrn3njkjS1QPm+A="
+          "hash": "gRanDFbLstIU1+Ms2E2C2d381PFtCtcfHF7cafSQ1KU="
         }
       },
       "is_incremental": true,
@@ -129,7 +129,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.Compiler.JS.Variables.html",
-          "hash": "l+0rcKi+5mVfHbZbzu/N5UIHEx/ZBi5fLe/+eqG+ggQ="
+          "hash": "qpgt9ohfKZVFR0NO48JwBUn2X2Z+OGCoJz91gvwGqG4="
         }
       },
       "is_incremental": true,
@@ -141,7 +141,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.Compiler.JS.html",
-          "hash": "glyVfkSPeooVNHCyO8Q7yGPVH6ZLtTlv2H+BpIaWH6Y="
+          "hash": "b6ME8vRqV3NJ4k+8pz/P7zt4OOrWSJyE5viQfIK/6LE="
         }
       },
       "is_incremental": true,
@@ -153,10 +153,10 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.Databases.MySqlDatabase.html",
-          "hash": "R/rzNSB4XLm9L5OX8tI1a1W6/4+3kcnO70tTqY45KMk="
+          "hash": "78KYoXSr2qO1S0o2gWNx2pqrUj2ujFN9d4VlED1nxyU="
         }
       },
-      "is_incremental": false,
+      "is_incremental": true,
       "version": ""
     },
     {
@@ -165,10 +165,10 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.Databases.html",
-          "hash": "Pq4PxsZ0IzeRk5eyW7BDnmw0s7wKr3v67+moTBua3Hw="
+          "hash": "P8op3idORZfqA6Yvbd5gBRqmO6G6hyMiIADpTDdIKBk="
         }
       },
-      "is_incremental": false,
+      "is_incremental": true,
       "version": ""
     },
     {
@@ -177,7 +177,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.DotEnv.html",
-          "hash": "tQY215TMwkIn/w9PXhgr9ZG4VrpAuAstpl5/3bIUiCg="
+          "hash": "NowhlH11zpGrjwXlvnNpxLdCQGgEDO7iAqdHUiWH6Lo="
         }
       },
       "is_incremental": true,
@@ -189,7 +189,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.Formater.SpecialCharacterToClean.html",
-          "hash": "cfyTrlMTyZbXgpNzTuSiJS/3oIgiBjSePfIW3SG2F2c="
+          "hash": "YZ96PIdW4q4nUr6fZsX3kr5gijzGlhXzMHaojDhIU58="
         }
       },
       "is_incremental": true,
@@ -201,7 +201,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.Formater.UnsafeCharStruct.html",
-          "hash": "xcLhEndeKJBI996ndZ5AA3JUrg0D/hqEwTbCBjO+r7Q="
+          "hash": "D0Wff/xEB0t99IgTZlxTiNr/0rzInNFku1Uy1vHkASs="
         }
       },
       "is_incremental": true,
@@ -213,7 +213,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.Formater.html",
-          "hash": "cjgD2Eq1IVwKAyfUuGOhJCZdh76+5JEPyA5U29D5Hg0="
+          "hash": "lubbp3miTX1oVpWtZ74OuEuk5zp8is0nGdx56ZnJMqM="
         }
       },
       "is_incremental": true,
@@ -225,7 +225,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.LineType.html",
-          "hash": "Dd08JjxPrzmGQdZTEwX+tb6v9+rOiwA/aBtlj8hDhU0="
+          "hash": "XgETXmodsKCnWVVK1Qpy1rybejnSI2wA2pYzAe5JY38="
         }
       },
       "is_incremental": true,
@@ -237,7 +237,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.LogicTest.html",
-          "hash": "Iy2tYZ1aemN3MNxlykta/sCPHZLUOJf2ZNpmNwUgJZA="
+          "hash": "56e89SppaYe4bzktgYxoxHwPXOvq+1sosbHIKzK9bEs="
         }
       },
       "is_incremental": true,
@@ -249,7 +249,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.ProcessedLine.html",
-          "hash": "8f4R6x1tGcv7azFgbTPvsWNcV1pOQk70limsrf/Rsck="
+          "hash": "nAAMkIN29BBPJimRzRn39GfFgdw6zuY25+gIIJ6kG58="
         }
       },
       "is_incremental": true,
@@ -261,7 +261,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.Security.Keys.html",
-          "hash": "DiR41ta4Kagzmw+Iv/XEd1T0Sef/1tJ87yIm1Fml9pc="
+          "hash": "OEQBCIuybFcvzUslDwYqNXCpkTkZ69xwxgHbqFMnSwY="
         }
       },
       "is_incremental": true,
@@ -273,10 +273,10 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.Security.UserSession.html",
-          "hash": "+wwcq1j9kFPuXXgrrTE3EPWiiN0sZ9oG0l2OeGjJf4Q="
+          "hash": "ooI7fwhxXNWTZa8iN1dOurQA3sJPcvnsg/rXIrSf+Zs="
         }
       },
-      "is_incremental": false,
+      "is_incremental": true,
       "version": ""
     },
     {
@@ -285,7 +285,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.Security.UserSessionManager.html",
-          "hash": "tAx8tRFYIeMKr5aieQkmSr+B7MlaZRYtkfSvhOcrW6A="
+          "hash": "rXhXLZb9gsdElccmEi/E2ZpcqtsoFoojfikXp3ZZxo0="
         }
       },
       "is_incremental": true,
@@ -297,10 +297,10 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.Security.html",
-          "hash": "zJ11rmfvq3/uzjPJ6Kl7okOfbCigkXtpULviBDIYZiQ="
+          "hash": "oqK0B9NmaApeuqnNyKL+Erd15BjDEgZ3c6vQiMEPkMw="
         }
       },
-      "is_incremental": false,
+      "is_incremental": true,
       "version": ""
     },
     {
@@ -309,10 +309,10 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.Token.html",
-          "hash": "LMG7TAILh3qNn05hckU7KsVgEx5VBjuPmGNKK2X9mAI="
+          "hash": "qJpf30uRiuB7zzObJCHWhFYecurMRh8ngYwINVjmkJ0="
         }
       },
-      "is_incremental": false,
+      "is_incremental": true,
       "version": ""
     },
     {
@@ -321,7 +321,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.TokenData.html",
-          "hash": "rN4PdW3zXSnT/QJwrDUHKUZW0FYFpRWKbXKMLEYQOKw="
+          "hash": "1McijySB4+bjvFXlbd1ATqd5Of3Q1rkJ/qPbuWM8eV0="
         }
       },
       "is_incremental": true,
@@ -333,7 +333,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.TokenDataContainer.html",
-          "hash": "7f4ViEwJlbvs0fGbR8mruhZt2jQuD8jX8K2Tu9v0oPg="
+          "hash": "yJRQ9o8HBZ9dAA1+WiJ46bGUwqhSUE25TyKqM+qoX94="
         }
       },
       "is_incremental": true,
@@ -345,7 +345,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.TokenDataLogic.html",
-          "hash": "mEHC7UyjjeBCP7nX/4bpkNjJruAlgDtuvPcOVfK8nDA="
+          "hash": "N1whpfqfeIWwXv4hp/8Ju+ObAyjYMqpvLIKXageqbKo="
         }
       },
       "is_incremental": true,
@@ -357,7 +357,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.TokenDataVariable.html",
-          "hash": "iDh4LQoPPYHbb4qn1YQe+ypjKmhO76R87/M7nVMTIKk="
+          "hash": "/KYBeMYK7okXvbMSdSVHHLVhl1CBq8D3DZIPj5PCcwU="
         }
       },
       "is_incremental": true,
@@ -369,7 +369,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.TokenUtils.html",
-          "hash": "d91vs0+NaL0Zpx45LCaOFrlRWhRaZpumqAVm0VkfBSE="
+          "hash": "15BzxFirKx/f/XtEE8PGJn3p/kgrZlTdzKwcv5UPyGU="
         }
       },
       "is_incremental": true,
@@ -381,10 +381,10 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.Tokenizer.html",
-          "hash": "Rlcd+l+hSrYga9RjE/UWJXwHhr3gptI+csAl9a44rBE="
+          "hash": "622LrYMg9MoCYMSQTvYclf3mzt1mc+nl1wIXUHlt7hI="
         }
       },
-      "is_incremental": false,
+      "is_incremental": true,
       "version": ""
     },
     {
@@ -393,7 +393,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.UnprocessedLine.html",
-          "hash": "PhzBbbJIUt+E6xczYt4Kgqjil7snrm3YXwKmu/iMW8E="
+          "hash": "mrNKS8Wc9yxqXUjcie7PHmub8LcbmXsTRrPqTDntUfg="
         }
       },
       "is_incremental": true,
@@ -405,7 +405,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.WebServer.MetaData.html",
-          "hash": "XOOS0CvfxnQD/Twf4iVYhglw6eLRx+Ng4hPCBIwdvQc="
+          "hash": "bYQYctbovXm1n186yTBxbZ37YCnM3gUTZrfgLNPRG1g="
         }
       },
       "is_incremental": true,
@@ -417,7 +417,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.WebServer.WebMetaDataType.html",
-          "hash": "BWdYTsg/aY4Fb49CfJ++otC+oTQasY7k7yjO05qDqA8="
+          "hash": "Czq/+PfUwD7EYEjSdzK6v102vq3Ddyy07TpmWXfQg3o="
         }
       },
       "is_incremental": true,
@@ -429,7 +429,7 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.WebServer.html",
-          "hash": "g4nK55Mv/ym8oqyuGp/94fx9Osuetr5DxeuK3byenqY="
+          "hash": "X/06fi6M/lCcpDVQapJIwdUqa3Zylfv1P/hzK0sDEp8="
         }
       },
       "is_incremental": true,
@@ -441,10 +441,10 @@
       "output": {
         ".html": {
           "relative_path": "api/BuckshotPlusPlus.html",
-          "hash": "/5J9RGMg7+i8Lm/CbRNeMnP7xGbnw4GTainFVK+r5kE="
+          "hash": "vI6SUNf6LDuF8/DbtWH4iRB+To+jkCbSEkp8sSKNQr8="
         }
       },
-      "is_incremental": false,
+      "is_incremental": true,
       "version": ""
     },
     {
@@ -453,7 +453,7 @@
       "output": {
         ".html": {
           "relative_path": "api/index.html",
-          "hash": "gBGtxd3JCuiIfiTnfCChuhfHF8qafY4M6Nf1QR5Affw="
+          "hash": "svO/iMZoJdpkPIwR2JygIJHjd+3g4sVq03k8x+nP6Nw="
         }
       },
       "is_incremental": true,
@@ -465,7 +465,7 @@
       "output": {
         ".html": {
           "relative_path": "api/toc.html",
-          "hash": "AvKfVTNEmL55Edy43s7mABvPNDwIngZ4zALZeQr1pIk="
+          "hash": "H4L/DDfZKpwXPzY0kpRaOUkizgzZMoyLFWgApRGCWHE="
         }
       },
       "is_incremental": false,
@@ -477,7 +477,7 @@
       "output": {
         ".html": {
           "relative_path": "articles/intro.html",
-          "hash": "rN4iuNBIx/YZrSadEJddLcFt+nevxnT4muYL0ni7JO0="
+          "hash": "hTQTpFNmnAhxVBxk+val7WRRcIpZROQjztPdfg4h7DI="
         }
       },
       "is_incremental": true,
@@ -489,7 +489,7 @@
       "output": {
         ".html": {
           "relative_path": "articles/toc.html",
-          "hash": "9CQlX43DzIA40V4Syxv3yUuQuA2RZRQ9NqQOpwfSUtY="
+          "hash": "2jFC4VrbbewTd/RWnMKFAgk+4ePN3idHkwLbKavVH+s="
         }
       },
       "is_incremental": false,
@@ -501,7 +501,7 @@
       "output": {
         ".html": {
           "relative_path": "index.html",
-          "hash": "dBBcVm4jwJ2LQKhdR4UyGD/b8iEQQwLCisdBlTr9Si4="
+          "hash": "PCQTiCyyw2IKWX9aV4w7i3h67pBN2cSrRT+IdhRtsCc="
         }
       },
       "is_incremental": true,
@@ -513,7 +513,7 @@
       "output": {
         ".html": {
           "relative_path": "toc.html",
-          "hash": "+ZhMBnJww1L9MfNvOREE3C792J47FEy5z8H8Bn+1evc="
+          "hash": "KzHIORoNAB7Ho3ZwqyQLKrvn3DYGok3oinNbd8vMf/o="
         }
       },
       "is_incremental": false,
@@ -539,7 +539,7 @@
           "can_incremental": true,
           "incrementalPhase": "build",
           "total_file_count": 37,
-          "skipped_file_count": 36
+          "skipped_file_count": 37
         },
         "TocDocumentProcessor": {
           "can_incremental": false,

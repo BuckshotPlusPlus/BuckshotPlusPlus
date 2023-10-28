@@ -4,35 +4,35 @@ namespace BuckshotPlusPlus.Analyzer
 {
     public class Array
     {
-        public static List<Token> GetArrayValues(Token MyToken)
+        public static List<Token> GetArrayValues(Token myToken)
         {
-            TokenDataVariable MyArray = (TokenDataVariable)MyToken.Data;
-            List<Token> Values = new List<Token>();
-            if (MyArray.VariableType != "array")
+            TokenDataVariable myArray = (TokenDataVariable)myToken.Data;
+            List<Token> values = new List<Token>();
+            if (myArray.VariableType != "array")
             {
-                Formater.TokenCriticalError("Can't read array variable, because the following token is not an array", MyToken);
+                Formater.TokenCriticalError("Can't read array variable, because the following token is not an array", myToken);
             }
             else
             {
-                List<string> ArrayValues = Formater.SafeSplit(
-                    MyArray.VariableData.Substring(1, MyArray.VariableData.Length - 2),
+                List<string> arrayValues = Formater.SafeSplit(
+                    myArray.VariableData.Substring(1, myArray.VariableData.Length - 2),
                     ','
                 );
-                foreach (string ArrayValue in ArrayValues)
+                foreach (string arrayValue in arrayValues)
                 {
-                    Values.Add(
+                    values.Add(
 
 
                         new Token(
-                            MyToken.FileName,
-                            ArrayValue,
-                            MyToken.LineNumber,
-                            MyToken.MyTokenizer
+                            myToken.FileName,
+                            arrayValue,
+                            myToken.LineNumber,
+                            myToken.MyTokenizer
                         )
                     );
                 }
             }
-            return Values;
+            return values;
         }
     }
 }

@@ -8,11 +8,11 @@ namespace BuckshotPlusPlus
         public Dictionary<string, string> DatabaseParameters { get; set; }
         public Tokenizer MyTokenizer { get; set; }
 
-        public BaseDatabase(Dictionary<string, string> Parameters, Tokenizer MyTokenizer) { 
-            DatabaseParameters = Parameters;
-            this.MyTokenizer = MyTokenizer;
+        public BaseDatabase(Dictionary<string, string> parameters, Tokenizer myTokenizer) { 
+            DatabaseParameters = parameters;
+            this.MyTokenizer = myTokenizer;
         }
 
-        public abstract Token Query(string Query);
+        public abstract Token Query(string query);
     }
 }

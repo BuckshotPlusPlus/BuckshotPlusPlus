@@ -6,43 +6,43 @@ namespace BuckshotPlusPlus.Security
 {
     public class UserSession
     {
-        public string SessionID { get; set; }
+        public string SessionId { get; set; }
         public string SessionLang { get; set; }
         public string SessionPlatform { get; set; }
-        public string SessionIP { get; set; }
+        public string SessionIp { get; set; }
         public long SessionStarted { get; set; }
         public List<AnalyticTimedEvent> UrlHistory { get; set; }
         public DateTime LastUserInteraction { get; set; }
 
-        public UserSession(Dictionary<string, string> RequestHeaders)
+        public UserSession(Dictionary<string, string> requestHeaders)
         {
-            SessionID = Keys.CreateRandomUniqueKey();
+            SessionId = Keys.CreateRandomUniqueKey();
             UrlHistory = new List<AnalyticTimedEvent>();
-            if (RequestHeaders.ContainsKey("platform"))
+            if (requestHeaders.ContainsKey("platform"))
             {
-                SessionPlatform = RequestHeaders["platform"];
+                SessionPlatform = requestHeaders["platform"];
             }
             else
             {
                 SessionPlatform = "unknown";
             }
 
-            if (RequestHeaders.ContainsKey("lang"))
+            if (requestHeaders.ContainsKey("lang"))
             {
-                SessionLang = RequestHeaders["lang"];
+                SessionLang = requestHeaders["lang"];
             }
             else
             {
                 SessionLang = "unknown";
             }
 
-            if (RequestHeaders.ContainsKey("ip"))
+            if (requestHeaders.ContainsKey("ip"))
             {
-                SessionIP = RequestHeaders["ip"];
+                SessionIp = requestHeaders["ip"];
             }
             else
             {
-                SessionIP = "unknown";
+                SessionIp = "unknown";
             }
 
             SessionStarted = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -52,8 +52,8 @@ namespace BuckshotPlusPlus.Security
         public string GetUserSessionLineData()
         {
             return "data session{\n" +
-                   "ip = \"" + SessionIP + "\"\n" +
-                   "id = \"" + SessionID + "\"\n" +
+                   "ip = \"" + SessionIp + "\"\n" +
+                   "id = \"" + SessionId + "\"\n" +
                    "lang = \"" + SessionLang + "\"\n" +
                    "platform = \"" + SessionPlatform + "\"\n" +
                    "start = \"" + SessionStarted.ToString() + "\"\n" +
@@ -61,9 +61,9 @@ namespace BuckshotPlusPlus.Security
                    "}\n";
         }
 
-        public Token GetToken(Tokenizer MyTokenizer)
+        public Token GetToken(Tokenizer myTokenizer)
         {
-            return new Token("", GetUserSessionLineData(), 0, MyTokenizer);
+            return new Token("", GetUserSessionLineData(), 0, myTokenizer);
         }
 
         public void AddUrl(string url)

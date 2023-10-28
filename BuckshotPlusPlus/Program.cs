@@ -18,7 +18,7 @@ namespace BuckshotPlusPlus
 
         public void FileMonitoring()
         {
-            if (IsHTTP(_filePath) || File.Exists(_filePath))
+            if (IsHttp(_filePath) || File.Exists(_filePath))
             {
                 var taskController = new CancellationTokenSource();
                 var token = taskController.Token;
@@ -26,12 +26,12 @@ namespace BuckshotPlusPlus
                 Task t = Task.Run(
                     () =>
                     {
-                        WebServer.WebServer MyWebServer = StartWebServer(_filePath, token);
+                        WebServer.WebServer myWebServer = StartWebServer(_filePath, token);
                     },
                     token
                 );
 
-                if (!IsHTTP(_filePath))
+                if (!IsHttp(_filePath))
                 {
                     FileSystemWatcher watcher = new FileSystemWatcher
                     {
@@ -60,7 +60,7 @@ namespace BuckshotPlusPlus
                         t = Task.Run(
                             () =>
                             {
-                                WebServer.WebServer MyWebServer = StartWebServer(_filePath, token);
+                                WebServer.WebServer myWebServer = StartWebServer(_filePath, token);
                             },
                             token
                         );
@@ -89,40 +89,40 @@ namespace BuckshotPlusPlus
             }
         }
 
-        private static bool IsHTTP(string FilePath)
+        private static bool IsHttp(string filePath)
         {
-            return FilePath.Contains("http");
+            return filePath.Contains("http");
         }
 
-        private static WebServer.WebServer StartWebServer(string FilePath, CancellationToken token)
+        private static WebServer.WebServer StartWebServer(string filePath, CancellationToken token)
         {
-            Tokenizer MyTokenizer = Program.CompileMainFile(FilePath);
+            Tokenizer myTokenizer = Program.CompileMainFile(filePath);
 
-            WebServer.WebServer MyWebServer = new WebServer.WebServer { token = token };
-            MyWebServer.Start(MyTokenizer);
+            WebServer.WebServer myWebServer = new WebServer.WebServer { Token = token };
+            myWebServer.Start(myTokenizer);
 
-            return MyWebServer;
+            return myWebServer;
         }
     }
 
     internal class Program
     {
-        public static Tokenizer CompileMainFile(string FilePath)
+        public static Tokenizer CompileMainFile(string filePath)
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            Tokenizer MyTokenizer = new Tokenizer(FilePath);
+            Tokenizer myTokenizer = new Tokenizer(filePath);
 
             stopwatch.Stop();
             Formater.SuccessMessage($"Successfully compiled in {stopwatch.ElapsedMilliseconds} ms");
-            return MyTokenizer;
+            return myTokenizer;
         }
 
-        public static void DeleteDirectory(string TargetDir)
+        public static void DeleteDirectory(string targetDir)
         {
-            string[] files = Directory.GetFiles(TargetDir);
-            string[] dirs = Directory.GetDirectories(TargetDir);
+            string[] files = Directory.GetFiles(targetDir);
+            string[] dirs = Directory.GetDirectories(targetDir);
 
             foreach (string file in files)
             {
@@ -135,13 +135,13 @@ namespace BuckshotPlusPlus
                 DeleteDirectory(dir);
             }
 
-            Directory.Delete(TargetDir, false);
+            Directory.Delete(targetDir, false);
         }
 
         public static void ExportWebsite(string filePath, string exportDirectory)
         {
             // For now export directory is absolute only
-            Tokenizer MyTokenizer = CompileMainFile(filePath);
+            Tokenizer myTokenizer = CompileMainFile(filePath);
 
             if (Path.Exists(exportDirectory))
             {
@@ -150,22 +150,22 @@ namespace BuckshotPlusPlus
 
             Directory.CreateDirectory(exportDirectory);
 
-            foreach (Token PageToken in MyTokenizer.PagesTokens)
+            foreach (Token pageToken in myTokenizer.PagesTokens)
             {
-                TokenDataContainer MyPageData = (TokenDataContainer)PageToken.Data;
+                TokenDataContainer myPageData = (TokenDataContainer)pageToken.Data;
 
-                var Icon = TokenUtils.FindTokenByName(MyPageData.ContainerData, "icon");
-                if (Icon != null)
+                var icon = TokenUtils.FindTokenByName(myPageData.ContainerData, "icon");
+                if (icon != null)
                 {
-                    var Data = Icon.Data;
-                    var FileName = ((Data as TokenDataVariable)!).VariableData;
-                    string icoPath = Path.Combine(filePath, @"..\" + FileName);
-                    File.WriteAllBytes(exportDirectory + "/" + FileName, File.ReadAllBytes(icoPath));
+                    var data = icon.Data;
+                    var fileName = ((data as TokenDataVariable)!).VariableData;
+                    string icoPath = Path.Combine(filePath, @"..\" + fileName);
+                    File.WriteAllBytes(exportDirectory + "/" + fileName, File.ReadAllBytes(icoPath));
                 }
 
-                Formater.DebugMessage("Starting to export page " + MyPageData.ContainerName + "...");
-                File.WriteAllText(exportDirectory + "/" + MyPageData.ContainerName + ".html", Page.RenderWebPage(MyTokenizer.FileTokens, PageToken));
-                Formater.SuccessMessage("Successfully exported page " + MyPageData.ContainerName + ".html");
+                Formater.DebugMessage("Starting to export page " + myPageData.ContainerName + "...");
+                File.WriteAllText(exportDirectory + "/" + myPageData.ContainerName + ".html", Page.RenderWebPage(myTokenizer.FileTokens, pageToken));
+                Formater.SuccessMessage("Successfully exported page " + myPageData.ContainerName + ".html");
             }
         }
 
@@ -176,9 +176,9 @@ namespace BuckshotPlusPlus
                 Formater.CriticalError("To display all commands: -h");
             }
 
-            string FilePath = args[0];
+            string filePath = args[0];
 
-            if(FilePath == "export")
+            if(filePath == "export")
             {
                 if(args.Length == 3)
                 {
@@ -198,7 +198,7 @@ namespace BuckshotPlusPlus
                 var dotenv = Path.Combine(root, ".env");
                 DotEnv.Load(dotenv);
                 
-                FileMonitor fileMonitor = new FileMonitor(FilePath);
+                FileMonitor fileMonitor = new FileMonitor(filePath);
                 Thread workerThread = new Thread(fileMonitor.FileMonitoring);
                 workerThread.Start();
             }

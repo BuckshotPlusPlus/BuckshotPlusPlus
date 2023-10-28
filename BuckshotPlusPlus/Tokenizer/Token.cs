@@ -18,20 +18,20 @@ namespace BuckshotPlusPlus
         public Token PreviousToken { get; set; }
 
         public Token(
-            string FileName,
-            string LineData,
-            int LineNumber,
-            Tokenizer MyTokenizer,
-            TokenDataContainer Parent = null,
-            Token PreviousToken = null
+            string fileName,
+            string lineData,
+            int lineNumber,
+            Tokenizer myTokenizer,
+            TokenDataContainer parent = null,
+            Token previousToken = null
         )
         {
-            this.FileName = FileName;
-            this.LineData = LineData;
-            this.LineNumber = LineNumber;
-            this.MyTokenizer = MyTokenizer;
-            this.Parent = Parent;
-            this.PreviousToken = PreviousToken;
+            this.FileName = fileName;
+            this.LineData = lineData;
+            this.LineNumber = lineNumber;
+            this.MyTokenizer = myTokenizer;
+            this.Parent = parent;
+            this.PreviousToken = previousToken;
 
             // If Line Contains "=" load data of a variable
             if (TokenDataContainer.IsTokenDataContainer(this))

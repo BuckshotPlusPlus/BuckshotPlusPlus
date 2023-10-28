@@ -11,57 +11,57 @@ namespace BuckshotPlusPlus
         public Token RefData { get; set; }
         public Token VariableToken { get; set; }
 
-        public TokenDataVariable(Token MyToken)
+        public TokenDataVariable(Token myToken)
         {
-            VariableToken = MyToken;
-            MyToken.Type = "variable";
-            string[] MyVariableParams = Formater.SafeSplit(MyToken.LineData, ' ').ToArray();
+            VariableToken = myToken;
+            myToken.Type = "variable";
+            string[] myVariableParams = Formater.SafeSplit(myToken.LineData, ' ').ToArray();
             //Console.WriteLine(MyVariableParams.Length);
             // check if all parameters of a vriables are present
 
-            if (Formater.SafeContains(MyToken.LineData, '+'))
+            if (Formater.SafeContains(myToken.LineData, '+'))
             {
-                this.VariableName = MyVariableParams[0];
-                this.VariableData = MyVariableParams[2];
+                this.VariableName = myVariableParams[0];
+                this.VariableData = myVariableParams[2];
                 this.VariableType = "multiple";
             }
-            else if (MyVariableParams.Length == 3)
+            else if (myVariableParams.Length == 3)
             {
-                this.VariableType = FindVariableType(MyVariableParams[2], MyToken);
-                this.VariableName = MyVariableParams[0];
-                this.VariableData = MyVariableParams[2];
+                this.VariableType = FindVariableType(myVariableParams[2], myToken);
+                this.VariableName = myVariableParams[0];
+                this.VariableData = myVariableParams[2];
 
-                string[] VariablePath = VariableName.Split('.');
-                if(VariablePath.Length > 1)
+                string[] variablePath = VariableName.Split('.');
+                if(variablePath.Length > 1)
                 {
-                    MyToken.Type = "edit";
+                    myToken.Type = "edit";
                 }
             }
-            else if (MyVariableParams.Length == 1)
+            else if (myVariableParams.Length == 1)
             {
                 this.VariableName = "";
-                this.VariableData = MyVariableParams[0];
-                this.VariableType = FindVariableType(MyVariableParams[0], MyToken);
+                this.VariableData = myVariableParams[0];
+                this.VariableType = FindVariableType(myVariableParams[0], myToken);
             }
-            else if (MyVariableParams.Length == 4)
+            else if (myVariableParams.Length == 4)
             {
-                this.VariableType = FindVariableType(MyVariableParams[2], MyToken);
-                this.VariableName = MyVariableParams[0];
-                this.VariableData = MyVariableParams[2];
+                this.VariableType = FindVariableType(myVariableParams[2], myToken);
+                this.VariableName = myVariableParams[0];
+                this.VariableData = myVariableParams[2];
             }
             else
             {
-                Formater.TokenCriticalError("Invalid variable init ", MyToken);
+                Formater.TokenCriticalError("Invalid variable init ", myToken);
             }
 
             if (this.VariableType == "")
             {
-                Formater.TokenCriticalError("Unknown variable type ", MyToken);
+                Formater.TokenCriticalError("Unknown variable type ", myToken);
             }
 
             if (this.VariableType == "string")
             {
-                this.VariableData = GetValueFromString(this.VariableData, MyToken);
+                this.VariableData = GetValueFromString(this.VariableData, myToken);
             }
 
             //Console.WriteLine("I found a variable of type " + this.VariableType + " and name : " + this.VariableName + " Value : " + this.VariableData);
@@ -69,15 +69,15 @@ namespace BuckshotPlusPlus
             if (this.VariableType == "ref")
             {
                 this.RefData = TokenUtils.FindTokenByName(
-                    MyToken.MyTokenizer.FileTokens,
+                    myToken.MyTokenizer.FileTokens,
                     this.VariableData
                 );
                 if (RefData == null)
                 {
-                    if (MyToken.Parent != null)
+                    if (myToken.Parent != null)
                     {
                         this.RefData = TokenUtils.FindTokenByName(
-                            MyToken.Parent.ContainerData,
+                            myToken.Parent.ContainerData,
                             this.VariableData
                         );
                     }
@@ -85,40 +85,40 @@ namespace BuckshotPlusPlus
             }
         }
 
-        public static string GetValueFromString(string InitialValue, Token MyToken)
+        public static string GetValueFromString(string initialValue, Token myToken)
         {
             if (
-                    InitialValue[0] != '"'
+                    initialValue[0] != '"'
                 )
             {
-                Formater.TokenCriticalError("Invalid string value", MyToken);
+                Formater.TokenCriticalError("Invalid string value", myToken);
             }
-            return InitialValue.Substring(1, InitialValue.Length - 2);
+            return initialValue.Substring(1, initialValue.Length - 2);
         }
 
-        public static string FindVariableType(string Value, Token MyToken)
+        public static string FindVariableType(string value, Token myToken)
         {
-            int VariableIntData = 0;
-            float VariableFloatData = 0;
-            bool VariableBoolData = false;
+            int variableIntData = 0;
+            float variableFloatData = 0;
+            bool variableBoolData = false;
 
-            if (Value[0] == '[' && Value[^1] == ']')
+            if (value[0] == '[' && value[^1] == ']')
             {
                 return "array";
             }
-            else if (Value.Contains('"'))
+            else if (value.Contains('"'))
             {
                 return "string";
             }
-            else if (int.TryParse(Value, out VariableIntData))
+            else if (int.TryParse(value, out variableIntData))
             {
                 return "int";
             }
-            else if (float.TryParse(Value, out VariableFloatData))
+            else if (float.TryParse(value, out variableFloatData))
             {
                 return "float";
             }
-            else if (bool.TryParse(Value, out VariableBoolData))
+            else if (bool.TryParse(value, out variableBoolData))
             {
                 return "bool";
             } //else if(TokenUtils.FindTokenByName(MyToken.MyTokenizer.FileTokens,Value) != null)
@@ -129,13 +129,13 @@ namespace BuckshotPlusPlus
             //Formater.TokenCriticalError("Unknown variable type ", MyToken);
         }
 
-        public static bool IsTokenDataVariable(Token MyToken)
+        public static bool IsTokenDataVariable(Token myToken)
         {
-            if (Formater.SafeContains(MyToken.LineData, '='))
+            if (Formater.SafeContains(myToken.LineData, '='))
             {
                 return true;
             }
-            else if (FindVariableType(MyToken.LineData, MyToken) != "")
+            else if (FindVariableType(myToken.LineData, myToken) != "")
             {
                 return true;
             }
@@ -145,24 +145,24 @@ namespace BuckshotPlusPlus
             }
         }
 
-        public string GetCompiledVariableData(List<Token> FileTokens, bool compile_ref = false)
+        public string GetCompiledVariableData(List<Token> fileTokens, bool compileRef = false)
         {
             if(this.VariableType == "multiple") {
-                List<string> Variables = Formater.SafeSplit(this.VariableData, '+');
+                List<string> variables = Formater.SafeSplit(this.VariableData, '+');
 
-                string Result = "";
+                string result = "";
 
-                foreach (string Variable in Variables)
+                foreach (string variable in variables)
                 {
-                    string SafeVariableType = FindVariableType(Variable, null);
+                    string safeVariableType = FindVariableType(variable, null);
 
-                    if(SafeVariableType == "string") {
-                        Result += GetValueFromString(Variable, VariableToken);
-                    }else if(SafeVariableType == "ref") {
-                        TokenDataVariable FoundToken = TokenUtils.FindTokenDataVariableByName(FileTokens, Variable);
-                        if(FoundToken != null)
+                    if(safeVariableType == "string") {
+                        result += GetValueFromString(variable, VariableToken);
+                    }else if(safeVariableType == "ref") {
+                        TokenDataVariable foundToken = TokenUtils.FindTokenDataVariableByName(fileTokens, variable);
+                        if(foundToken != null)
                         {
-                            Result += FoundToken.VariableData;
+                            result += foundToken.VariableData;
                         }
                         else
                         {
@@ -171,14 +171,14 @@ namespace BuckshotPlusPlus
                         
                     }
                 }
-                return Result;
-            }else if(this.VariableType == "ref" && compile_ref)
+                return result;
+            }else if(this.VariableType == "ref" && compileRef)
             {
                 Console.WriteLine("Editing ref value for var " + this.VariableName);
-                TokenDataVariable FoundToken = TokenUtils.FindTokenDataVariableByName(FileTokens, this.VariableData);
-                if (FoundToken != null)
+                TokenDataVariable foundToken = TokenUtils.FindTokenDataVariableByName(fileTokens, this.VariableData);
+                if (foundToken != null)
                 {
-                    return FoundToken.VariableData;
+                    return foundToken.VariableData;
                 }
                 else
                 {

@@ -7,11 +7,11 @@ public class AnalyticTimedEvent
     public string EventName { get; set; }
     public string EventTimestamp { get; set; }
 
-    public AnalyticTimedEvent(string Event)
+    public AnalyticTimedEvent(string @event)
     {
-        var Now = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeMilliseconds();
-        EventTimestamp = Now.ToString();
-        EventName = Event;
+        var now = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeMilliseconds();
+        EventTimestamp = now.ToString();
+        EventName = @event;
 
     }
 }

@@ -14,43 +14,43 @@ namespace BuckshotPlusPlus
 
         public bool LastLogicTestResult { get; set; }
 
-        public TokenDataLogic(Token MyToken)
+        public TokenDataLogic(Token myToken)
         {
-            ParentToken = MyToken;
-            MyToken.Type = "logic";
-            LogicType = FindLogicTokenType(MyToken);
+            ParentToken = myToken;
+            myToken.Type = "logic";
+            LogicType = FindLogicTokenType(myToken);
             if(LogicType == "if")
             {
-                string TestString = Formater.SafeRemoveSpacesFromString(GetLogicTestString(MyToken));
-                TokenLogicTest = new LogicTest(TestString, MyToken);
+                string testString = Formater.SafeRemoveSpacesFromString(GetLogicTestString(myToken));
+                TokenLogicTest = new LogicTest(testString, myToken);
             }else if(LogicType == "else")
             {
-                if(MyToken.PreviousToken != null)
+                if(myToken.PreviousToken != null)
                 {
-                    MyToken.PreviousToken.NextToken = MyToken;
+                    myToken.PreviousToken.NextToken = myToken;
                 }
                 
             }
         }
 
-        public static bool IsTokenDataLogic(Token MyToken)
+        public static bool IsTokenDataLogic(Token myToken)
         {
-            string LogicTokenType = FindLogicTokenType(MyToken);
-            if(LogicTokenType == "invalid") {
+            string logicTokenType = FindLogicTokenType(myToken);
+            if(logicTokenType == "invalid") {
                 return false;
             }
             return true;
         }
 
-        public static string FindLogicTokenType(Token MyToken)
+        public static string FindLogicTokenType(Token myToken)
         {
-            foreach (string TokenType in LogicTokens)
+            foreach (string tokenType in LogicTokens)
             {
-                if (MyToken.LineData.Length > TokenType.Length)
+                if (myToken.LineData.Length > tokenType.Length)
                 {
-                    if (MyToken.LineData.StartsWith(TokenType))
+                    if (myToken.LineData.StartsWith(tokenType))
                     {
-                        return TokenType;
+                        return tokenType;
                     }
                 }
 
@@ -58,32 +58,32 @@ namespace BuckshotPlusPlus
             return "invalid";
         }
 
-        public static string GetLogicTestString(Token MyToken)
+        public static string GetLogicTestString(Token myToken)
         {
-            return Formater.SafeSplit(Formater.SafeSplit(MyToken.LineData, '(', true)[1], ')', true)[0];
+            return Formater.SafeSplit(Formater.SafeSplit(myToken.LineData, '(', true)[1], ')', true)[0];
         }
 
-        private void OnLogicTestSuccess(List<Token> TokenList)
+        private void OnLogicTestSuccess(List<Token> tokenList)
         {
-            TokenDataContainer ParentTokenDataContainer = (TokenDataContainer)ParentToken.Data;
-            foreach (Token LocalToken in ParentTokenDataContainer.ContainerData)
+            TokenDataContainer parentTokenDataContainer = (TokenDataContainer)ParentToken.Data;
+            foreach (Token localToken in parentTokenDataContainer.ContainerData)
             {
-                if (LocalToken.Type == "edit")
+                if (localToken.Type == "edit")
                 {
-                    TokenUtils.EditTokenData(TokenList, LocalToken);
+                    TokenUtils.EditTokenData(tokenList, localToken);
                 }
 
             }
             LastLogicTestResult = true;
         }
 
-        public bool RunLogicTest(List<Token> TokenList)
+        public bool RunLogicTest(List<Token> tokenList)
         {
             if(LogicType == "if")
             {
-                if (TokenLogicTest.RunLogicTest(TokenList, ParentToken))
+                if (TokenLogicTest.RunLogicTest(tokenList, ParentToken))
                 {
-                    OnLogicTestSuccess(TokenList);
+                    OnLogicTestSuccess(tokenList);
                 }
                 else
                 {
@@ -92,14 +92,14 @@ namespace BuckshotPlusPlus
                 
             }else if(LogicType == "else")
             {
-                Token PreviousToken = ParentToken.PreviousToken;
-                if(PreviousToken.Type == "logic")
+                Token previousToken = ParentToken.PreviousToken;
+                if(previousToken.Type == "logic")
                 {
-                    TokenDataContainer PreviousTokenDataContainer = (TokenDataContainer)PreviousToken.Data;
-                    TokenDataLogic PreviousLogic = (TokenDataLogic)PreviousTokenDataContainer.ContainerMetaData;
-                    if(PreviousLogic.LastLogicTestResult == false)
+                    TokenDataContainer previousTokenDataContainer = (TokenDataContainer)previousToken.Data;
+                    TokenDataLogic previousLogic = (TokenDataLogic)previousTokenDataContainer.ContainerMetaData;
+                    if(previousLogic.LastLogicTestResult == false)
                     {
-                        OnLogicTestSuccess(TokenList);
+                        OnLogicTestSuccess(tokenList);
                     }
                     else
                     {

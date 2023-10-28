@@ -7,58 +7,58 @@ namespace BuckshotPlusPlus
 {
     public class TokenUtils
     {
-        public static string GetTokenName(Token MyToken)
+        public static string GetTokenName(Token myToken)
         {
-            if (MyToken.Data.GetType() == typeof(TokenDataVariable))
+            if (myToken.Data.GetType() == typeof(TokenDataVariable))
             {
-                TokenDataVariable MyVar = (TokenDataVariable)MyToken.Data;
-                return MyVar.VariableName;
+                TokenDataVariable myVar = (TokenDataVariable)myToken.Data;
+                return myVar.VariableName;
             }
-            else if (MyToken.Data.GetType() == typeof(TokenDataContainer))
+            else if (myToken.Data.GetType() == typeof(TokenDataContainer))
             {
-                TokenDataContainer MyContainer = (TokenDataContainer)MyToken.Data;
-                return MyContainer.ContainerName;
+                TokenDataContainer myContainer = (TokenDataContainer)myToken.Data;
+                return myContainer.ContainerName;
             }
 
             return null;
         }
 
-        public static Token FindTokenByName(List<Token> MyTokenList, string TokenName, bool ReturnParent = false)
+        public static Token FindTokenByName(List<Token> myTokenList, string tokenName, bool returnParent = false)
         {
-            string[] SubTokenNames = TokenName.Split('.');
-            int Remain = SubTokenNames.Length;
-            foreach (string LocalTokenName in SubTokenNames)
+            string[] subTokenNames = tokenName.Split('.');
+            int remain = subTokenNames.Length;
+            foreach (string localTokenName in subTokenNames)
             {
-                Remain--;
-                foreach (Token MyToken in MyTokenList)
+                remain--;
+                foreach (Token myToken in myTokenList)
                 {
-                    if (MyToken.Data.GetType() == typeof(TokenDataVariable))
+                    if (myToken.Data.GetType() == typeof(TokenDataVariable))
                     {
-                        TokenDataVariable MyVar = (TokenDataVariable)MyToken.Data;
-                        if (MyVar.VariableName == LocalTokenName)
+                        TokenDataVariable myVar = (TokenDataVariable)myToken.Data;
+                        if (myVar.VariableName == localTokenName)
                         {
-                            if (Remain > 0)
+                            if (remain > 0)
                             {
-                                Formater.TokenCriticalError("Not a container!", MyToken);
+                                Formater.TokenCriticalError("Not a container!", myToken);
                             }
                             else
                             {
-                                return MyToken;
+                                return myToken;
                             }
                         }
                     }
-                    else if (MyToken.Data.GetType() == typeof(TokenDataContainer))
+                    else if (myToken.Data.GetType() == typeof(TokenDataContainer))
                     {
-                        TokenDataContainer MyContainer = (TokenDataContainer)MyToken.Data;
-                        if (MyContainer.ContainerName == LocalTokenName)
+                        TokenDataContainer myContainer = (TokenDataContainer)myToken.Data;
+                        if (myContainer.ContainerName == localTokenName)
                         {
-                            if (Remain > 0 && !ReturnParent)
+                            if (remain > 0 && !returnParent)
                             {
-                                MyTokenList = MyContainer.ContainerData;
+                                myTokenList = myContainer.ContainerData;
                                 break;
                             }
 
-                            return MyToken;
+                            return myToken;
                         }
                     }
                 }
@@ -67,82 +67,82 @@ namespace BuckshotPlusPlus
             return null;
         }
 
-        public static bool EditTokenData(List<Token> MyTokenList, Token MyToken)
+        public static bool EditTokenData(List<Token> myTokenList, Token myToken)
         {
-            TokenDataVariable Var = (TokenDataVariable)MyToken.Data;
-            Token TokenToEdit = FindTokenByName(MyTokenList, Var.VariableName);
-            if(TokenToEdit == null)
+            TokenDataVariable var = (TokenDataVariable)myToken.Data;
+            Token tokenToEdit = FindTokenByName(myTokenList, var.VariableName);
+            if(tokenToEdit == null)
             {
-                Token ParentToken = FindTokenByName(MyTokenList, Var.VariableName, true);
-                if(ParentToken == null)
+                Token parentToken = FindTokenByName(myTokenList, var.VariableName, true);
+                if(parentToken == null)
                 {
-                    Formater.TokenCriticalError("Can't find token with name: " + Var.VariableName, MyToken);
+                    Formater.TokenCriticalError("Can't find token with name: " + var.VariableName, myToken);
                     return false;
                 }
 
-                TokenDataContainer Container = (TokenDataContainer)ParentToken.Data;
-                Var.VariableName = Var.VariableName.Split('.').Last();
-                Container.ContainerData.Add(MyToken);
+                TokenDataContainer container = (TokenDataContainer)parentToken.Data;
+                var.VariableName = var.VariableName.Split('.').Last();
+                container.ContainerData.Add(myToken);
                 return true;
             }
 
-            TokenDataVariable MyVar = (TokenDataVariable)TokenToEdit.Data;
-            MyVar.VariableData = Var.GetCompiledVariableData(MyTokenList);
-            MyVar.VariableType = Var.VariableType == "multiple" ? "string" : Var.VariableType;
+            TokenDataVariable myVar = (TokenDataVariable)tokenToEdit.Data;
+            myVar.VariableData = var.GetCompiledVariableData(myTokenList);
+            myVar.VariableType = var.VariableType == "multiple" ? "string" : var.VariableType;
 
             return true;
         }
 
-        public static bool SafeEditTokenData(string LineData,List<Token> MyTokenList, Token MyToken)
+        public static bool SafeEditTokenData(string lineData,List<Token> myTokenList, Token myToken)
         {
-            if (Formater.SafeSplit(LineData, '.').Count > 1)
+            if (Formater.SafeSplit(lineData, '.').Count > 1)
             {
-                return EditTokenData(MyTokenList, MyToken);
+                return EditTokenData(myTokenList, myToken);
             }
 
             return false;
         }
 
-        public static void EditAllTokensOfContainer(List<Token> FileTokens,Token MyContainer)
+        public static void EditAllTokensOfContainer(List<Token> fileTokens,Token myContainer)
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            TokenDataContainer PageTokenDataContainer = (TokenDataContainer)MyContainer.Data;
-            if (PageTokenDataContainer == null)
+            TokenDataContainer pageTokenDataContainer = (TokenDataContainer)myContainer.Data;
+            if (pageTokenDataContainer == null)
             {
                 stopwatch.Stop();
-                Formater.TokenCriticalError("The provided token is not a container!", MyContainer);
+                Formater.TokenCriticalError("The provided token is not a container!", myContainer);
             }
             else
             {
-                foreach(Token ChildToken in PageTokenDataContainer.ContainerData)
+                foreach(Token childToken in pageTokenDataContainer.ContainerData)
                 {
-                    if(ChildToken.Data.GetType() == typeof(TokenDataVariable))
+                    if(childToken.Data.GetType() == typeof(TokenDataVariable))
                     {
-                        TokenDataVariable VarToken = (TokenDataVariable)ChildToken.Data;
-                        if (VarToken != null)
+                        TokenDataVariable varToken = (TokenDataVariable)childToken.Data;
+                        if (varToken != null)
                         {
-                            SafeEditTokenData(VarToken.VariableName, FileTokens, ChildToken);
+                            SafeEditTokenData(varToken.VariableName, fileTokens, childToken);
 
-                            if (VarToken.VariableType == "ref")
+                            if (varToken.VariableType == "ref")
                             {
-                                Token ReferencedToken = FindTokenByName(FileTokens, VarToken.VariableData);
-                                if (ReferencedToken == null)
+                                Token referencedToken = FindTokenByName(fileTokens, varToken.VariableData);
+                                if (referencedToken == null)
                                 {
-                                    Formater.TokenCriticalError("Token not super found " + VarToken.VariableData, ChildToken);
+                                    Formater.TokenCriticalError("Token not super found " + varToken.VariableData, childToken);
                                 }
                             }
                         }
                     }
-                    else if(ChildToken.Data.GetType() == typeof(TokenDataContainer))
+                    else if(childToken.Data.GetType() == typeof(TokenDataContainer))
                     {
-                        TokenDataContainer NewContainerTokenData = (TokenDataContainer)ChildToken.Data;
-                        if (NewContainerTokenData.ContainerType == "logic")
+                        TokenDataContainer newContainerTokenData = (TokenDataContainer)childToken.Data;
+                        if (newContainerTokenData.ContainerType == "logic")
                         {
                             // RUN LOGIC TEST
-                            TokenDataLogic MyLogic = (TokenDataLogic)NewContainerTokenData.ContainerMetaData;
-                            MyLogic.RunLogicTest(FileTokens);
+                            TokenDataLogic myLogic = (TokenDataLogic)newContainerTokenData.ContainerMetaData;
+                            myLogic.RunLogicTest(fileTokens);
 
                         }
                     }
@@ -155,17 +155,17 @@ namespace BuckshotPlusPlus
         }
 
         public static TokenDataVariable FindTokenDataVariableByName(
-            List<Token> MyTokenList,
-            string TokenName
+            List<Token> myTokenList,
+            string tokenName
         )
         {
-            Token FoundToken = FindTokenByName(MyTokenList, TokenName);
-            if (FoundToken != null)
+            Token foundToken = FindTokenByName(myTokenList, tokenName);
+            if (foundToken != null)
             {
-                if (FoundToken.Data.GetType() == typeof(TokenDataVariable))
+                if (foundToken.Data.GetType() == typeof(TokenDataVariable))
                 {
-                    TokenDataVariable MyVar = (TokenDataVariable)FoundToken.Data;
-                    return MyVar;
+                    TokenDataVariable myVar = (TokenDataVariable)foundToken.Data;
+                    return myVar;
                 }
             }
 
@@ -173,19 +173,19 @@ namespace BuckshotPlusPlus
         }
 
         public static TokenDataVariable TryFindTokenDataVariableValueByName(
-            List<Token> FileTokens,
-            List<Token> LocalTokenList,
-            string TokenName,
+            List<Token> fileTokens,
+            List<Token> localTokenList,
+            string tokenName,
             bool replaceRef = true
             )
         {
-            Token FoundToken = TryFindTokenValueByName(FileTokens, LocalTokenList, TokenName, replaceRef);
-            if (FoundToken != null)
+            Token foundToken = TryFindTokenValueByName(fileTokens, localTokenList, tokenName, replaceRef);
+            if (foundToken != null)
             {
-                if (FoundToken.Data.GetType() == typeof(TokenDataVariable))
+                if (foundToken.Data.GetType() == typeof(TokenDataVariable))
                 {
-                    TokenDataVariable MyVar = (TokenDataVariable)FoundToken.Data;
-                    return MyVar;
+                    TokenDataVariable myVar = (TokenDataVariable)foundToken.Data;
+                    return myVar;
                 }
             }
             return null;
@@ -193,62 +193,62 @@ namespace BuckshotPlusPlus
 
 
         public static TokenDataContainer TryFindTokenDataContainerValueByName(
-            List<Token> FileTokens,
-            List<Token> LocalTokenList,
-            string TokenName,
+            List<Token> fileTokens,
+            List<Token> localTokenList,
+            string tokenName,
             bool replaceRef = true
             )
         {
-            Token FoundToken = TryFindTokenValueByName(FileTokens, LocalTokenList, TokenName, replaceRef);
-            if (FoundToken != null)
+            Token foundToken = TryFindTokenValueByName(fileTokens, localTokenList, tokenName, replaceRef);
+            if (foundToken != null)
             {
-                if (FoundToken.Data.GetType() == typeof(TokenDataContainer))
+                if (foundToken.Data.GetType() == typeof(TokenDataContainer))
                 {
-                    TokenDataContainer MyContainer = (TokenDataContainer)FoundToken.Data;
-                    return MyContainer;
+                    TokenDataContainer myContainer = (TokenDataContainer)foundToken.Data;
+                    return myContainer;
                 }
             }
             return null;
         }
 
         public static Token TryFindTokenValueByName(
-            List<Token> FileTokens,
-            List<Token> LocalTokenList,
-            string TokenName,
+            List<Token> fileTokens,
+            List<Token> localTokenList,
+            string tokenName,
             bool replaceRef = true
             )
         {
-            Token FoundToken = FindTokenByName(LocalTokenList, TokenName);
-            if (FoundToken != null)
+            Token foundToken = FindTokenByName(localTokenList, tokenName);
+            if (foundToken != null)
             {
-                if (FoundToken.Data.GetType() == typeof(TokenDataVariable))
+                if (foundToken.Data.GetType() == typeof(TokenDataVariable))
                 {
-                    TokenDataVariable MyVar = (TokenDataVariable)FoundToken.Data;
-                    if(MyVar.VariableType == "ref" && replaceRef)
+                    TokenDataVariable myVar = (TokenDataVariable)foundToken.Data;
+                    if(myVar.VariableType == "ref" && replaceRef)
                     {
-                        return TryFindTokenValueByName(FileTokens, FileTokens, MyVar.VariableData);
+                        return TryFindTokenValueByName(fileTokens, fileTokens, myVar.VariableData);
                     }
 
-                    return FoundToken;
+                    return foundToken;
                 }
 
-                return FoundToken;
+                return foundToken;
             }
 
             return null;
         }
 
         public static TokenDataContainer FindTokenDataContainerByName(
-            List<Token> MyTokenList,
-            string TokenName
+            List<Token> myTokenList,
+            string tokenName
         )
         {
-            Token FoundToken = FindTokenByName(MyTokenList, TokenName);
-            if (FoundToken == null) return null;
-            if (FoundToken.Data.GetType() == typeof(TokenDataContainer))
+            Token foundToken = FindTokenByName(myTokenList, tokenName);
+            if (foundToken == null) return null;
+            if (foundToken.Data.GetType() == typeof(TokenDataContainer))
             {
-                TokenDataContainer MyVar = (TokenDataContainer)FoundToken.Data;
-                return MyVar;
+                TokenDataContainer myVar = (TokenDataContainer)foundToken.Data;
+                return myVar;
             }
 
             return null;

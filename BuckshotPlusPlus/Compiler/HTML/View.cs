@@ -3,108 +3,97 @@ using System.Collections.Generic;
 
 namespace BuckshotPlusPlus.Compiler.HTML
 {
+    /// <summary>
+    /// Class for handling views in BuckshotPlusPlus HTML compiler.
+    /// </summary>
     public class View
     {
-        public static string CompileView(List<Token> ServerSideTokens, Token MyViewToken)
+        /// <summary>
+        /// Compiles an HTML view based on server-side tokens and a view token.
+        /// </summary>
+        /// <param name="serverSideTokens">List of server-side tokens.</param>
+        /// <param name="myViewToken">The view token to compile.</param>
+        /// <returns>The compiled HTML string.</returns>
+        public static string CompileView(List<Token> serverSideTokens, Token myViewToken)
         {
-            TokenUtils.EditAllTokensOfContainer(ServerSideTokens, MyViewToken);
+            TokenUtils.EditAllTokensOfContainer(serverSideTokens, myViewToken);
 
-            TokenDataContainer MyContainer = (TokenDataContainer)MyViewToken.Data;
-            TokenDataVariable Type = TokenUtils.FindTokenDataVariableByName(
-                MyContainer.ContainerData,
-                "type"
-            );
-
-            string ViewType = String.Empty;
-            if (Type == null)
+            if (myViewToken.Data is not TokenDataContainer myContainer)
             {
-                Formater.TokenCriticalError("Missing view type !", MyViewToken);
-            } else
-            {
-                ViewType = Type.GetCompiledVariableData(ServerSideTokens);
+                Formater.TokenCriticalError("Invalid view token!", myViewToken);
+                return "";
             }
 
-            TokenDataVariable ViewContent = TokenUtils.FindTokenDataVariableByName(
-                MyContainer.ContainerData,
-                "content"
-            );
+            TokenDataVariable viewTypeToken = TokenUtils.FindTokenDataVariableByName(myContainer.ContainerData, "type");
 
-            string HTML = "<" + ViewType;
-            string HTMLAttributes = Attributes.GetHTMLAttributes(ServerSideTokens, MyViewToken);
-            if (HTMLAttributes.Length > 0)
+            string viewType = viewTypeToken?.GetCompiledVariableData(serverSideTokens) ?? throw new InvalidOperationException("Missing view type!");
+
+            TokenDataVariable viewContent = TokenUtils.FindTokenDataVariableByName(myContainer.ContainerData, "content");
+
+            string html = $"<{viewType}";
+            string htmlAttributes = Attributes.GetHtmlAttributes(serverSideTokens, myViewToken);
+
+            if (!string.IsNullOrEmpty(htmlAttributes))
             {
-                HTML += " " + HTMLAttributes;
+                html += $" {htmlAttributes}";
             }
 
-            string HTMLEvents = Events.GetHTMLEvents(ServerSideTokens, MyViewToken);
-            if (HTMLEvents.Length > 0)
+            string htmlEvents = Events.GetHtmlEvents(serverSideTokens, myViewToken);
+            if (!string.IsNullOrEmpty(htmlEvents))
             {
-                HTML += " " + HTMLEvents;
+                html += $" {htmlEvents}";
             }
 
-            string Style = CSS.Properties.GetCSSString(ServerSideTokens, MyViewToken);
-            if (Style.Length > 0)
-            {
-                HTML += " style=\"" + Style + "\">";
-            } else {
-                HTML += ">";
-            }
+            string style = CSS.Properties.GetCssString(serverSideTokens, myViewToken);
+            html += !string.IsNullOrEmpty(style) ? $" style=\"{style}\">" : ">";
 
-            HTML += CompileContent(ServerSideTokens,ViewContent, MyContainer);
-            
-            return HTML + "</" + ViewType + ">";
+            html += CompileContent(serverSideTokens, viewContent, myContainer);
+
+            return html + $"</{viewType}>";
         }
 
-        public static string CompileContent(List<Token> ServerSideTokens, TokenDataVariable ViewContent, TokenDataContainer MyContainer)
+        /// <summary>
+        /// Compiles the content of an HTML view.
+        /// </summary>
+        /// <param name="serverSideTokens">List of server-side tokens.</param>
+        /// <param name="viewContent">The content token data.</param>
+        /// <param name="myContainer">The containing token data.</param>
+        /// <returns>The compiled content string.</returns>
+        public static string CompileContent(List<Token> serverSideTokens, TokenDataVariable viewContent, TokenDataContainer myContainer)
         {
-            if (ViewContent != null)
+            if (viewContent == null)
             {
-                if (ViewContent.VariableType == "string" || ViewContent.VariableType == "multiple")
-                {
-                    return ViewContent.GetCompiledVariableData(ServerSideTokens);
-                }
-                else if (ViewContent.VariableType == "ref")
-                {
-                    Token FoundToken = TokenUtils.FindTokenByName(
-                        ServerSideTokens,
-                        ViewContent.GetCompiledVariableData(ServerSideTokens)
-                    );
-
-                    if (FoundToken.Data.GetType() == typeof(TokenDataContainer))
-                    {
-                        return CompileView(
-                            ServerSideTokens,
-                            TokenUtils.FindTokenByName(
-                                ServerSideTokens,
-                                ViewContent.GetCompiledVariableData(ServerSideTokens)
-                            )
-                        );
-                    }
-
-                    return ViewContent.GetCompiledVariableData(ServerSideTokens, true);
-                }
-                else if (ViewContent.VariableType == "array")
-                {
-                    string result = "";
-                    foreach (
-                        Token ChildViewToken in Analyzer.Array.GetArrayValues(ViewContent.VariableToken)
-                    )
-                    {
-                        TokenDataVariable ChildView = (TokenDataVariable)ChildViewToken.Data;
-                        result += CompileView(
-                            ServerSideTokens,
-                            TokenUtils.FindTokenByName(
-                                ServerSideTokens,
-                                ChildView.GetCompiledVariableData(ServerSideTokens)
-                            )
-                        );
-                    }
-
-                    return result;
-                }
+                return "";
             }
 
-            return "";
+            switch (viewContent.VariableType)
+            {
+                case "string":
+                case "multiple":
+                    return viewContent.GetCompiledVariableData(serverSideTokens);
+
+                case "ref":
+                    Token foundToken = TokenUtils.FindTokenByName(serverSideTokens, viewContent.GetCompiledVariableData(serverSideTokens));
+
+                    if (foundToken.Data is TokenDataContainer)
+                    {
+                        return CompileView(serverSideTokens, foundToken);
+                    }
+
+                    return viewContent.GetCompiledVariableData(serverSideTokens, true);
+
+                case "array":
+                    string result = "";
+                    foreach (Token childViewToken in Analyzer.Array.GetArrayValues(viewContent.VariableToken))
+                    {
+                        TokenDataVariable childView = (TokenDataVariable)childViewToken.Data;
+                        result += CompileView(serverSideTokens, TokenUtils.FindTokenByName(serverSideTokens, childView.GetCompiledVariableData(serverSideTokens)));
+                    }
+                    return result;
+
+                default:
+                    return "";
+            }
         }
     }
 }
