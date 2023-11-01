@@ -15,7 +15,6 @@ namespace BuckshotPlusPlus.WebServer
         public HttpListener Listener;
         public int RequestCount = 0;
         public bool RunServer = true;
-        public CancellationToken Token;
         
 
         public async Task HandleIncomingConnections(Tokenizer myTokenizer)
@@ -33,11 +32,6 @@ namespace BuckshotPlusPlus.WebServer
                 // Peel out the requests and response objects
                 HttpListenerRequest req = ctx.Request;
                 HttpListenerResponse resp = ctx.Response;
-
-                if (Token.IsCancellationRequested)
-                {
-                    RunServer = false;
-                }
 
                 string absolutePath = req.Url!.AbsolutePath;
                 if (absolutePath.Contains(".ico"))
@@ -138,22 +132,31 @@ namespace BuckshotPlusPlus.WebServer
             }
         }
 
-        public void Start(Tokenizer myTokenizer)
+        public void Start(Tokenizer myTokenizer, string localIp = "*")
         {
             // Create a Http server and start listening for incoming connections
 
-            string url = "http://" + (Environment.GetEnvironmentVariable("BPP_HOST") is { Length: > 0 } v ? v : "localhost:8080") + "/";
-            Listener = new HttpListener();
-            Listener.Prefixes.Add(url);
-            Listener.Start();
-            Formater.SuccessMessage($"Listening for connections on {url}");
+            string url = "http://" + (Environment.GetEnvironmentVariable("BPP_HOST") is { Length: > 0 } v ? v : localIp + ":8080") + "/";
+            try
+            {
+                Listener = new HttpListener();
+                Listener.Prefixes.Add(url);
+                Listener.Start();
+                Formater.SuccessMessage($"Listening for connections on {url}");
+                
+                
+                // Handle requests
+                Task listenTask = HandleIncomingConnections(myTokenizer);
+                listenTask.GetAwaiter().GetResult();
 
-            // Handle requests
-            Task listenTask = HandleIncomingConnections(myTokenizer);
-            listenTask.GetAwaiter().GetResult();
-
-            // Close the listener
-            Listener.Close();
+                // Close the listener
+                Listener.Close();
+            }
+            catch (HttpListenerException e)
+            {
+                Formater.Warn($"Error: {e.Message} for local ip " + localIp);
+                Start(myTokenizer, "localhost");
+            }
         }
     }
 }

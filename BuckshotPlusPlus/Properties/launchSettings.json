@@ -2,7 +2,7 @@
   "profiles": {
     "BuckshotPlusPlus": {
       "commandName": "Project",
-      "commandLineArgs": "\"C:\\Users\\Victor\\Documents\\GitHub\\auth_query_app\\main.bpp"
+      "commandLineArgs": "\"C:\\Users\\Victor\\Documents\\GitHub\\onlywish_ui\\Main.bpp"
     },
     "Docker": {
       "commandName": "Docker"

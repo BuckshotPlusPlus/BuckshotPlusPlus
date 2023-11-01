@@ -289,6 +289,11 @@ namespace BuckshotPlusPlus
                                     currentLineNumber++;
                                     lineData = uLine.Lines[currentLineNumber];
 
+                                    if (lineData == "")
+                                    {
+                                        continue;
+                                    }
+                                    
                                     if (lineData[^1] == 13)
                                     {
                                         lineData = lineData.Substring(0, lineData.Length - 1);

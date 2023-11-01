@@ -7,107 +7,6 @@ using System.Threading.Tasks;
 
 namespace BuckshotPlusPlus
 {
-    internal class FileMonitor
-    {
-        private readonly string _filePath;
-
-        public FileMonitor(string filePath)
-        {
-            _filePath = filePath;
-        }
-
-        public void FileMonitoring()
-        {
-            if (IsHttp(_filePath) || File.Exists(_filePath))
-            {
-                var taskController = new CancellationTokenSource();
-                var token = taskController.Token;
-
-                Task t = Task.Run(
-                    () =>
-                    {
-                        WebServer.WebServer myWebServer = StartWebServer(_filePath, token);
-                    },
-                    token
-                );
-
-                if (!IsHttp(_filePath))
-                {
-                    FileSystemWatcher watcher = new FileSystemWatcher
-                    {
-                        Path = Directory.GetParent(_filePath).FullName,
-                        IncludeSubdirectories = true,
-                        NotifyFilter =
-                            NotifyFilters.Attributes
-                            | NotifyFilters.CreationTime
-                            | NotifyFilters.DirectoryName
-                            | NotifyFilters.FileName
-                            | NotifyFilters.LastAccess
-                            | NotifyFilters.LastWrite
-                            | NotifyFilters.Security
-                            | NotifyFilters.Size,
-                        Filter = "*.bpp"
-                    };
-                    watcher.Changed += delegate(object source, FileSystemEventArgs e)
-                    {
-                        Formater.SuccessMessage("File changed!");
-                        taskController.Cancel();
-                        t.Wait();
-                        t.Dispose();
-                        taskController = new CancellationTokenSource();
-                        token = taskController.Token;
-
-                        t = Task.Run(
-                            () =>
-                            {
-                                WebServer.WebServer myWebServer = StartWebServer(_filePath, token);
-                            },
-                            token
-                        );
-                    };
-                    watcher.Created += delegate(object source, FileSystemEventArgs e)
-                    {
-                        Formater.SuccessMessage("File created!");
-                    };
-                    watcher.Deleted += delegate(object source, FileSystemEventArgs e)
-                    {
-                        Formater.SuccessMessage("File deleted!");
-                    };
-                    watcher.Renamed += delegate(object source, RenamedEventArgs e)
-                    {
-                        Formater.SuccessMessage("File renamed!");
-                    };
-                    //Start monitoring.
-                    watcher.EnableRaisingEvents = true;
-                }
-
-                Console.ReadLine();
-            }
-            else
-            {
-                Formater.CriticalError($"File {_filePath} not found");
-            }
-        }
-
-        private static bool IsHttp(string filePath)
-        {
-            return filePath.Contains("http");
-        }
-
-        private static WebServer.WebServer StartWebServer(string filePath, CancellationToken token)
-        {
-            Tokenizer myTokenizer = Program.CompileMainFile(filePath);
-            
-            var dotenv = Path.Combine(myTokenizer.RelativePath, ".env");
-            DotEnv.Load(dotenv);
-
-            WebServer.WebServer myWebServer = new WebServer.WebServer { Token = token };
-            myWebServer.Start(myTokenizer);
-
-            return myWebServer;
-        }
-    }
-
     internal class Program
     {
         public static Tokenizer CompileMainFile(string filePath)
@@ -174,6 +73,8 @@ namespace BuckshotPlusPlus
 
         private static void Main(string[] args)
         {
+            Console.WriteLine("Welcome on BuckShotPlusPlus!");
+            
             if (args.Length == 0)
             {
                 Formater.CriticalError("To display all commands: -h");
@@ -197,11 +98,13 @@ namespace BuckshotPlusPlus
             }
             else
             {
-                var root = Directory.GetCurrentDirectory();
-                
-                FileMonitor fileMonitor = new FileMonitor(filePath);
-                Thread workerThread = new Thread(fileMonitor.FileMonitoring);
-                workerThread.Start();
+                Tokenizer myTokenizer = Program.CompileMainFile(filePath);
+            
+                var dotenv = Path.Combine(myTokenizer.RelativePath, ".env");
+                DotEnv.Load(dotenv);
+
+                WebServer.WebServer myWebServer = new WebServer.WebServer {};
+                myWebServer.Start(myTokenizer);
             }
         }
     }
