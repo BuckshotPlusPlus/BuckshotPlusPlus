@@ -72,7 +72,7 @@ namespace BuckshotPlusPlus.WebServer
                         }
                         else
                         {
-                            urls.Add(envBaseUrl+"/{pageName}");
+                            urls.Add(envBaseUrl+"/" + pageName);
                         }
                         
                     }
