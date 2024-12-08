@@ -172,18 +172,27 @@ namespace BuckshotPlusPlus
                     }
                 }
                 return result;
-            }else if(this.VariableType == "ref" && compileRef)
+            }else if(this.VariableType == "ref")
             {
-                Console.WriteLine("Editing ref value for var " + this.VariableName);
-                TokenDataVariable foundToken = TokenUtils.FindTokenDataVariableByName(fileTokens, this.VariableData);
-                if (foundToken != null)
+                var sourceVar = TokenUtils.ResolveSourceReference(fileTokens, this.VariableData);
+                if (sourceVar != null)
                 {
-                    return foundToken.VariableData;
+                    return sourceVar.VariableData;
                 }
-                else
-                {
-                    Formater.RuntimeError("Token not found!", this.VariableToken);
+
+                if (compileRef) {
+                    Console.WriteLine("Editing ref value for var " + this.VariableName);
+                    TokenDataVariable foundToken = TokenUtils.FindTokenDataVariableByName(fileTokens, this.VariableData);
+                    if (foundToken != null)
+                    {
+                        return foundToken.VariableData;
+                    }
+                    else
+                    {
+                        Formater.RuntimeError("Token not found!", this.VariableToken);
+                    }
                 }
+                
             }
 
             return this.VariableData;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -32,8 +33,16 @@ namespace BuckshotPlusPlus.WebServer
                 // Peel out the requests and response objects
                 HttpListenerRequest req = ctx.Request;
                 HttpListenerResponse resp = ctx.Response;
+                
 
                 string absolutePath = req.Url!.AbsolutePath;
+
+                if (absolutePath.StartsWith("/source/"))
+                {
+                    await HandleSourceRequest(ctx, myTokenizer);
+                    continue;
+                }
+
                 if (absolutePath.Contains(".ico"))
                 {
                     string path = "." + absolutePath;
@@ -130,6 +139,61 @@ namespace BuckshotPlusPlus.WebServer
                     }
                 }
             }
+        }
+
+        private async Task HandleSourceRequest(HttpListenerContext ctx, Tokenizer myTokenizer)
+        {
+            var req = ctx.Request;
+            var resp = ctx.Response;
+
+            string sourceName = req.Url.AbsolutePath.Split('/').Last();
+
+            var sourceToken = TokenUtils.FindTokenByName(myTokenizer.FileTokens, sourceName);
+            if (sourceToken?.Data is TokenDataContainer container && container.ContainerType == "source")
+            {
+                var source = Source.BaseSource.CreateSource(container, myTokenizer);
+                if (source != null)
+                {
+                    var sourceData = await source.FetchDataAsync();
+                    if (sourceData?.Data is TokenDataContainer dataContainer)
+                    {
+                        // Convert container data to a dictionary
+                        var responseData = new Dictionary<string, object>();
+                        foreach (var token in dataContainer.ContainerData)
+                        {
+                            if (token.Data is TokenDataVariable variable)
+                            {
+                                responseData[variable.VariableName] = variable.VariableData;
+                            }
+                        }
+
+                        string jsonResponse = Newtonsoft.Json.JsonConvert.SerializeObject(new
+                        {
+                            success = true,
+                            data = responseData
+                        });
+
+                        byte[] buffer = System.Text.Encoding.UTF8.GetBytes(jsonResponse);
+                        resp.ContentType = "application/json";
+                        resp.ContentLength64 = buffer.Length;
+                        await resp.OutputStream.WriteAsync(buffer, 0, buffer.Length);
+                        resp.Close();
+                        return;
+                    }
+                }
+            }
+
+            // Handle error case
+            string errorResponse = Newtonsoft.Json.JsonConvert.SerializeObject(new
+            {
+                success = false,
+                error = "Source not found or failed to fetch data"
+            });
+            byte[] errorBuffer = System.Text.Encoding.UTF8.GetBytes(errorResponse);
+            resp.ContentType = "application/json";
+            resp.ContentLength64 = errorBuffer.Length;
+            await resp.OutputStream.WriteAsync(errorBuffer, 0, errorBuffer.Length);
+            resp.Close();
         }
 
         public void Start(Tokenizer myTokenizer, string localIp = "*")

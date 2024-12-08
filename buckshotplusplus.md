@@ -670,23 +670,39 @@ namespace BuckshotPlusPlus.Compiler.HTML
 
 ```csharp
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace BuckshotPlusPlus.Compiler.JS
 {
     class Event
     {
+        private static string GenerateSourceFetchCode(string sourceName, string propertyPath)
+        {
+            return @$"
+                fetch('/source/{sourceName}')
+                    .then(response => response.json())
+                    .then(data => {{
+                        if (data.success) {{
+                            const result = data.data.{propertyPath};
+                            if (result !== undefined) {{
+                                this.textContent = result;
+                            }}
+                        }}
+                    }})
+                    .catch(error => console.error('Error:', error));
+            ";
+        }
+
         public static string GetEventString(List<Token> serverSideTokens, Token myJsEventToken)
         {
             TokenDataContainer myJsEvent = (TokenDataContainer)myJsEventToken.Data;
-
             string eventString = "";
 
             int tokenId = 0;
             foreach (Token childToken in myJsEvent.ContainerData)
             {
-                if (childToken.Data.GetType() == typeof(TokenDataVariable))
+                if (childToken.Data is TokenDataVariable childVar)
                 {
-                    TokenDataVariable childVar = (TokenDataVariable)childToken.Data;
                     if (CSS.Properties.IsCssProp(childToken))
                     {
                         eventString +=
@@ -698,18 +714,38 @@ namespace BuckshotPlusPlus.Compiler.JS
                     }
                     else if (childVar.VariableName == "content")
                     {
-                        eventString += "this.textContent = '" + childVar.GetCompiledVariableData(serverSideTokens) + "';";
+                        if (childVar.VariableType == "ref")
+                        {
+                            // Check if it's a source reference
+                            string[] parts = childVar.VariableData.Split('.');
+                            if (parts.Length >= 2)
+                            {
+                                var sourceToken = TokenUtils.FindTokenByName(serverSideTokens, parts[0]);
+                                if (sourceToken?.Data is TokenDataContainer container &&
+                                    container.ContainerType == "source")
+                                {
+                                    eventString += GenerateSourceFetchCode(parts[0], string.Join(".", parts.Skip(1)));
+                                    continue;
+                                }
+                            }
+                        }
+                        eventString += "this.textContent = '" +
+                            childVar.GetCompiledVariableData(serverSideTokens) + "';";
                     }
                     else
                     {
-                        eventString += Variables.GetVarString(serverSideTokens,myJsEvent.ContainerData, tokenId) + ";";
+                        eventString += Variables.GetVarString(
+                            serverSideTokens,
+                            myJsEvent.ContainerData,
+                            tokenId
+                        ) + ";";
                     }
                 }
                 else
                 {
                     eventString += childToken.LineData.Replace("\"", "'") + ";";
                 }
-                
+
                 tokenId++;
             }
 
@@ -717,7 +753,6 @@ namespace BuckshotPlusPlus.Compiler.JS
         }
     }
 }
-
 ```
 
 ### File: Compiler\JS\Variables.cs
@@ -1423,6 +1458,19 @@ namespace BuckshotPlusPlus
                         "\t- path/to/your/export/directory");
                 }
             }
+            else if (filePath == "merge")
+            {
+                if (args.Length == 2)
+                {
+                    ProgramExtensions.GenerateCompleteProject(args[1]);
+                }
+                else
+                {
+                    Formater.CriticalError("You need to provide the path to your main.bpp file:\n" +
+                        "\t- merge\n" +
+                        "\t- path/to/your/main.bpp");
+                }
+            }
             else
             {
                 Tokenizer myTokenizer = Program.CompileMainFile(filePath);
@@ -1437,6 +1485,129 @@ namespace BuckshotPlusPlus
     }
 }
 
+```
+
+### File: ProjectMerger.cs
+
+```csharp
+﻿using System;
+using System.IO;
+using System.Text;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace BuckshotPlusPlus
+{
+    public class ProjectMerger
+    {
+        private readonly string _projectPath;
+        private readonly HashSet<string> _processedFiles;
+        private readonly StringBuilder _mergedContent;
+
+        public ProjectMerger(string projectPath)
+        {
+            _projectPath = projectPath;
+            _processedFiles = new HashSet<string>();
+            _mergedContent = new StringBuilder();
+        }
+
+        public void MergeProject()
+        {
+            try
+            {
+                // Add header comment
+                _mergedContent.AppendLine("## CompleteProject.BPP");
+                _mergedContent.AppendLine($"## Generated on: {DateTime.Now}");
+                _mergedContent.AppendLine("## This is an auto-generated file containing all BPP code from the project");
+                _mergedContent.AppendLine();
+
+                // Start with the main file
+                ProcessFile(_projectPath);
+
+                // Write the merged content to CompleteProject.BPP
+                string outputPath = Path.Combine(Path.GetDirectoryName(_projectPath), "CompleteProject.BPP");
+                File.WriteAllText(outputPath, _mergedContent.ToString());
+
+                Formater.SuccessMessage($"Successfully created CompleteProject.BPP at {outputPath}");
+            }
+            catch (Exception ex)
+            {
+                Formater.CriticalError($"Failed to merge project: {ex.Message}");
+            }
+        }
+
+        private void ProcessFile(string filePath)
+        {
+            // Avoid processing the same file twice
+            if (_processedFiles.Contains(filePath))
+                return;
+
+            _processedFiles.Add(filePath);
+
+            try
+            {
+                string content = File.ReadAllText(filePath);
+                string formattedContent = Formater.FormatFileData(content);
+
+                // Add file header
+                _mergedContent.AppendLine($"## File: {filePath}");
+                _mergedContent.AppendLine();
+
+                // Process includes
+                var lines = formattedContent.Split('\n');
+                foreach (var line in lines)
+                {
+                    if (line.TrimStart().StartsWith("include"))
+                    {
+                        string includePath = ParseIncludePath(line);
+                        if (!string.IsNullOrEmpty(includePath))
+                        {
+                            string fullPath = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(filePath), includePath));
+                            ProcessFile(fullPath);
+                        }
+                    }
+                    else
+                    {
+                        _mergedContent.AppendLine(line);
+                    }
+                }
+
+                _mergedContent.AppendLine();
+            }
+            catch (Exception ex)
+            {
+                Formater.Warn($"Error processing file {filePath}: {ex.Message}");
+            }
+        }
+
+        private string ParseIncludePath(string includeLine)
+        {
+            try
+            {
+                var parts = includeLine.Split('"');
+                if (parts.Length >= 2)
+                {
+                    return parts[1];
+                }
+            }
+            catch (Exception)
+            {
+                // Ignore parsing errors
+            }
+            return null;
+        }
+    }
+
+    // Extension for Program.cs
+    public static class ProgramExtensions
+    {
+        public static void GenerateCompleteProject(string filePath)
+        {
+            var merger = new ProjectMerger(filePath);
+            merger.MergeProject();
+        }
+    }
+}
 ```
 
 ### File: Security\Keys.cs
@@ -1657,6 +1828,259 @@ namespace BuckshotPlusPlus.Security
 
 ```
 
+### File: Source\BaseSource.cs
+
+```csharp
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace BuckshotPlusPlus.Source
+{
+    public abstract class BaseSource
+    {
+        protected Dictionary<string, string> SourceParameters { get; set; }
+        protected TokenDataContainer SourceContainer { get; set; }
+        protected Tokenizer SourceTokenizer { get; set; }
+
+        protected BaseSource(TokenDataContainer container, Tokenizer tokenizer)
+        {
+            SourceParameters = new Dictionary<string, string>();
+            SourceContainer = container;
+            SourceTokenizer = tokenizer;
+
+            foreach (Token token in container.ContainerData)
+            {
+                if (token.Data is TokenDataVariable variable)
+                {
+                    SourceParameters[variable.VariableName] = variable.VariableData;
+                }
+            }
+        }
+
+        public abstract Task<Token> FetchDataAsync();
+
+        protected abstract Token TransformResponse(object rawResponse);
+
+        public abstract bool ValidateConfiguration();
+
+        protected Token CreateDataToken(string data)
+        {
+            string tokenData = $"data {SourceContainer.ContainerName}_data {{\n{data}\n}}";
+            return new Token(
+                SourceContainer.ContainerToken.FileName,
+                tokenData,
+                SourceContainer.ContainerToken.LineNumber,
+                SourceTokenizer
+            );
+        }
+
+        public static BaseSource CreateSource(TokenDataContainer container, Tokenizer tokenizer)
+        {
+            var typeVar = TokenUtils.FindTokenDataVariableByName(container.ContainerData, "type");
+            string sourceType = typeVar?.VariableData ?? "http";
+
+            return sourceType.ToLower() switch
+            {
+                "http" => new HttpSource(container, tokenizer),
+                _ => throw new NotSupportedException($"Source type {sourceType} is not supported")
+            };
+        }
+    }
+}
+```
+
+### File: Source\HttpSource.cs
+
+```csharp
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
+namespace BuckshotPlusPlus.Source
+{
+    public class HttpSource : BaseSource
+    {
+        private readonly HttpClient _httpClient;
+        private const int DEFAULT_TIMEOUT = 30;
+
+        public HttpSource(TokenDataContainer container, Tokenizer tokenizer) : base(container, tokenizer)
+        {
+            _httpClient = new HttpClient
+            {
+                Timeout = TimeSpan.FromSeconds(DEFAULT_TIMEOUT)
+            };
+        }
+
+        public override async Task<Token> FetchDataAsync()
+        {
+            if (!ValidateConfiguration())
+            {
+                Formater.TokenCriticalError("Invalid HTTP source configuration", SourceContainer.ContainerToken);
+                return null;
+            }
+
+            try
+            {
+                var request = new HttpRequestMessage(
+                    GetHttpMethod(),
+                    SourceParameters["url"]
+                );
+
+                if (SourceParameters.ContainsKey("headers"))
+                {
+                    AddHeaders(request);
+                }
+
+                var response = await _httpClient.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+
+                var content = await response.Content.ReadAsStringAsync();
+                return TransformResponse(content);
+            }
+            catch (Exception ex)
+            {
+                Formater.RuntimeError($"HTTP request failed: {ex.Message}", SourceContainer.ContainerToken);
+                return null;
+            }
+        }
+
+        private HttpMethod GetHttpMethod()
+        {
+            var method = SourceParameters.GetValueOrDefault("method", "GET").ToUpper();
+            return method switch
+            {
+                "GET" => HttpMethod.Get,
+                "POST" => HttpMethod.Post,
+                "PUT" => HttpMethod.Put,
+                "DELETE" => HttpMethod.Delete,
+                _ => HttpMethod.Get
+            };
+        }
+
+        private void AddHeaders(HttpRequestMessage request)
+        {
+            var headersVar = TokenUtils.FindTokenDataVariableByName(
+                SourceContainer.ContainerData,
+                "headers"
+            );
+
+            if (headersVar?.VariableType == "array")
+            {
+                foreach (var headerToken in Analyzer.Array.GetArrayValues(headersVar.VariableToken))
+                {
+                    var headerVar = (TokenDataVariable)headerToken.Data;
+                    var headerParts = headerVar.VariableData.Split(':', 2);
+                    if (headerParts.Length == 2)
+                    {
+                        request.Headers.Add(headerParts[0].Trim(), headerParts[1].Trim());
+                    }
+                }
+            }
+        }
+
+        protected override Token TransformResponse(object rawResponse)
+        {
+            if (rawResponse is not string stringResponse)
+                return null;
+
+            try
+            {
+                var jsonData = JObject.Parse(stringResponse);
+                var dataLines = new List<string>();
+
+                // Create a flat data structure from JSON
+                foreach (var prop in jsonData.Properties())
+                {
+                    // Handle numbers without quotes, strings with quotes
+                    string value = prop.Value.Type == JTokenType.String
+                        ? $"\"{prop.Value}\""
+                        : prop.Value.ToString();
+
+                    dataLines.Add($"{prop.Name} = {value}");
+                }
+
+                string tokenData = $"data {SourceContainer.ContainerName}_data {{\n{string.Join("\n", dataLines)}\n}}";
+
+                Formater.DebugMessage($"Created source data: {tokenData}");
+
+                return new Token(
+                    SourceContainer.ContainerToken.FileName,
+                    tokenData,
+                    SourceContainer.ContainerToken.LineNumber,
+                    SourceTokenizer
+                );
+            }
+            catch (JsonException ex)
+            {
+                Formater.RuntimeError($"Failed to parse JSON response: {ex.Message}", SourceContainer.ContainerToken);
+                return null;
+            }
+        }
+
+        private Token CreateFlatDataStructure(JToken token, string prefix = "")
+        {
+            var dataLines = new List<string>();
+
+            switch (token.Type)
+            {
+                case JTokenType.Object:
+                    foreach (var prop in ((JObject)token).Properties())
+                    {
+                        string propPrefix = string.IsNullOrEmpty(prefix) ? prop.Name : $"{prefix}.{prop.Name}";
+
+                        if (prop.Value.Type == JTokenType.Object)
+                        {
+                            dataLines.AddRange(CreateFlatDataStructure(prop.Value, propPrefix).Data.ToString().Split('\n'));
+                        }
+                        else if (prop.Value.Type == JTokenType.Array)
+                        {
+                            var arrayValues = prop.Value.Select(item => $"\"{item}\"").ToList();
+                            dataLines.Add($"{propPrefix} = [{string.Join(",", arrayValues)}]");
+                        }
+                        else
+                        {
+                            dataLines.Add($"{propPrefix} = \"{prop.Value}\"");
+                        }
+                    }
+                    break;
+
+                case JTokenType.Array:
+                    dataLines.Add($"{prefix} = [{string.Join(",", token.Select(item => $"\"{item}\""))}]");
+                    break;
+
+                default:
+                    dataLines.Add($"{prefix} = \"{token}\"");
+                    break;
+            }
+
+            return CreateDataToken(string.Join("\n", dataLines));
+        }
+
+        public override bool ValidateConfiguration()
+        {
+            if (!SourceParameters.ContainsKey("url"))
+            {
+                Formater.RuntimeError("HTTP source must specify a url", SourceContainer.ContainerToken);
+                return false;
+            }
+
+            if (!Uri.TryCreate(SourceParameters["url"], UriKind.Absolute, out _))
+            {
+                Formater.RuntimeError("Invalid URL format", SourceContainer.ContainerToken);
+                return false;
+            }
+
+            return true;
+        }
+    }
+}
+```
+
 ### File: Tokenizer\Token.cs
 
 ```csharp
@@ -1721,7 +2145,8 @@ namespace BuckshotPlusPlus
 ### File: Tokenizer\TokenDataContainer.cs
 
 ```csharp
-﻿using System;
+﻿using BuckshotPlusPlus.Source;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -1753,7 +2178,8 @@ namespace BuckshotPlusPlus
             "table",
             "if",
             "else",
-            "elseif"
+            "elseif",
+            "source"
         };
 
         public TokenDataContainer(Token myToken)
@@ -1930,6 +2356,35 @@ namespace BuckshotPlusPlus
                         {
                             break;
                         }
+                }
+            }
+
+            if (this.ContainerType == "source")
+            {
+                try
+                {
+                    var source = Source.BaseSource.CreateSource(this, myToken.MyTokenizer);
+                    if (source != null)
+                    {
+                        var sourceData = source.FetchDataAsync().Result;
+                        if (sourceData?.Data is TokenDataContainer dataContainer)
+                        {
+                            // Transfer the data from the container to our ContainerData
+                            foreach (var dataToken in dataContainer.ContainerData)
+                            {
+                                ContainerData.Add(dataToken);
+                            }
+                            Formater.DebugMessage($"Source data initialized for {ContainerName}");
+                        }
+                        else
+                        {
+                            Formater.RuntimeError($"Invalid source data format", myToken);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Formater.RuntimeError($"Failed to initialize source: {ex.Message}", myToken);
                 }
             }
         }
@@ -2388,18 +2843,27 @@ namespace BuckshotPlusPlus
                     }
                 }
                 return result;
-            }else if(this.VariableType == "ref" && compileRef)
+            }else if(this.VariableType == "ref")
             {
-                Console.WriteLine("Editing ref value for var " + this.VariableName);
-                TokenDataVariable foundToken = TokenUtils.FindTokenDataVariableByName(fileTokens, this.VariableData);
-                if (foundToken != null)
+                var sourceVar = TokenUtils.ResolveSourceReference(fileTokens, this.VariableData);
+                if (sourceVar != null)
                 {
-                    return foundToken.VariableData;
+                    return sourceVar.VariableData;
                 }
-                else
-                {
-                    Formater.RuntimeError("Token not found!", this.VariableToken);
+
+                if (compileRef) {
+                    Console.WriteLine("Editing ref value for var " + this.VariableName);
+                    TokenDataVariable foundToken = TokenUtils.FindTokenDataVariableByName(fileTokens, this.VariableData);
+                    if (foundToken != null)
+                    {
+                        return foundToken.VariableData;
+                    }
+                    else
+                    {
+                        Formater.RuntimeError("Token not found!", this.VariableToken);
+                    }
                 }
+                
             }
 
             return this.VariableData;
@@ -2955,6 +3419,50 @@ namespace BuckshotPlusPlus
             return null;
         }
 
+        public static TokenDataVariable TryResolveSourceReference(
+            List<Token> fileTokens,
+            string tokenName
+        )
+        {
+            string[] parts = tokenName.Split('.');
+            if (parts.Length < 2) return null;
+
+            string sourceName = parts[0];
+            Token sourceData = WebServer.SourceEndpoint.GetSourceData(fileTokens, sourceName);
+
+            if (sourceData?.Data is TokenDataContainer container)
+            {
+                string dataPath = string.Join(".", parts.Skip(1));
+                return FindTokenDataVariableByName(container.ContainerData, dataPath);
+            }
+
+            return null;
+        }
+
+        public static TokenDataVariable ResolveSourceReference(List<Token> tokens, string reference)
+        {
+            string[] parts = reference.Split('.');
+            if (parts.Length < 2) return null;
+
+            string sourceName = parts[0];
+            string propertyPath = parts[1];
+
+            var sourceToken = FindTokenByName(tokens, sourceName);
+            if (sourceToken?.Data is TokenDataContainer container && container.ContainerType == "source")
+            {
+                // Look for the data in the source's container data
+                foreach (Token dataToken in container.ContainerData)
+                {
+                    if (dataToken.Data is TokenDataContainer dataContainer && dataContainer.ContainerType == "data")
+                    {
+                        return FindTokenDataVariableByName(dataContainer.ContainerData, propertyPath);
+                    }
+                }
+            }
+
+            return null;
+        }
+
         public static TokenDataVariable TryFindTokenDataVariableValueByName(
             List<Token> fileTokens,
             List<Token> localTokenList,
@@ -3300,6 +3808,53 @@ namespace BuckshotPlusPlus.WebServer
 
 ```
 
+### File: WebServer\SourceEndpoint.cs
+
+```csharp
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using BuckshotPlusPlus.Source;
+
+namespace BuckshotPlusPlus.WebServer
+{
+    public static class SourceEndpoint
+    {
+        private static readonly Dictionary<string, BaseSource> SourceCache = new();
+
+        public static async Task<Token> HandleSourceRequest(TokenDataContainer sourceContainer, Tokenizer tokenizer)
+        {
+            string sourceId = $"{sourceContainer.ContainerType}_{sourceContainer.ContainerName}";
+
+            if (!SourceCache.ContainsKey(sourceId))
+            {
+                var source = BaseSource.CreateSource(sourceContainer, tokenizer);
+                if (source != null)
+                {
+                    SourceCache[sourceId] = source;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
+            return await SourceCache[sourceId].FetchDataAsync();
+        }
+
+        public static Token GetSourceData(List<Token> serverSideTokens, string sourceName)
+        {
+            var sourceToken = TokenUtils.FindTokenByName(serverSideTokens, sourceName);
+            if (sourceToken?.Data is TokenDataContainer container)
+            {
+                return HandleSourceRequest(container, sourceToken.MyTokenizer).Result;
+            }
+            return null;
+        }
+    }
+}
+```
+
 ### File: WebServer\WebServer.cs
 
 ```csharp
@@ -3307,6 +3862,7 @@ namespace BuckshotPlusPlus.WebServer
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -3337,8 +3893,16 @@ namespace BuckshotPlusPlus.WebServer
                 // Peel out the requests and response objects
                 HttpListenerRequest req = ctx.Request;
                 HttpListenerResponse resp = ctx.Response;
+                
 
                 string absolutePath = req.Url!.AbsolutePath;
+
+                if (absolutePath.StartsWith("/source/"))
+                {
+                    await HandleSourceRequest(ctx, myTokenizer);
+                    continue;
+                }
+
                 if (absolutePath.Contains(".ico"))
                 {
                     string path = "." + absolutePath;
@@ -3437,6 +4001,61 @@ namespace BuckshotPlusPlus.WebServer
             }
         }
 
+        private async Task HandleSourceRequest(HttpListenerContext ctx, Tokenizer myTokenizer)
+        {
+            var req = ctx.Request;
+            var resp = ctx.Response;
+
+            string sourceName = req.Url.AbsolutePath.Split('/').Last();
+
+            var sourceToken = TokenUtils.FindTokenByName(myTokenizer.FileTokens, sourceName);
+            if (sourceToken?.Data is TokenDataContainer container && container.ContainerType == "source")
+            {
+                var source = Source.BaseSource.CreateSource(container, myTokenizer);
+                if (source != null)
+                {
+                    var sourceData = await source.FetchDataAsync();
+                    if (sourceData?.Data is TokenDataContainer dataContainer)
+                    {
+                        // Convert container data to a dictionary
+                        var responseData = new Dictionary<string, object>();
+                        foreach (var token in dataContainer.ContainerData)
+                        {
+                            if (token.Data is TokenDataVariable variable)
+                            {
+                                responseData[variable.VariableName] = variable.VariableData;
+                            }
+                        }
+
+                        string jsonResponse = Newtonsoft.Json.JsonConvert.SerializeObject(new
+                        {
+                            success = true,
+                            data = responseData
+                        });
+
+                        byte[] buffer = System.Text.Encoding.UTF8.GetBytes(jsonResponse);
+                        resp.ContentType = "application/json";
+                        resp.ContentLength64 = buffer.Length;
+                        await resp.OutputStream.WriteAsync(buffer, 0, buffer.Length);
+                        resp.Close();
+                        return;
+                    }
+                }
+            }
+
+            // Handle error case
+            string errorResponse = Newtonsoft.Json.JsonConvert.SerializeObject(new
+            {
+                success = false,
+                error = "Source not found or failed to fetch data"
+            });
+            byte[] errorBuffer = System.Text.Encoding.UTF8.GetBytes(errorResponse);
+            resp.ContentType = "application/json";
+            resp.ContentLength64 = errorBuffer.Length;
+            await resp.OutputStream.WriteAsync(errorBuffer, 0, errorBuffer.Length);
+            resp.Close();
+        }
+
         public void Start(Tokenizer myTokenizer, string localIp = "*")
         {
             // Create a Http server and start listening for incoming connections
@@ -3474,6 +4093,6 @@ namespace BuckshotPlusPlus.WebServer
 ### File Count by Type
 
 - Project Files: 1
-- Source Files: 28
+- Source Files: 32
 
-Total files processed: 29
+Total files processed: 33

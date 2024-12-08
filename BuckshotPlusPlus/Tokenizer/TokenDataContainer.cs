@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BuckshotPlusPlus.Source;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -30,7 +31,8 @@ namespace BuckshotPlusPlus
             "table",
             "if",
             "else",
-            "elseif"
+            "elseif",
+            "source"
         };
 
         public TokenDataContainer(Token myToken)
@@ -207,6 +209,35 @@ namespace BuckshotPlusPlus
                         {
                             break;
                         }
+                }
+            }
+
+            if (this.ContainerType == "source")
+            {
+                try
+                {
+                    var source = Source.BaseSource.CreateSource(this, myToken.MyTokenizer);
+                    if (source != null)
+                    {
+                        var sourceData = source.FetchDataAsync().Result;
+                        if (sourceData?.Data is TokenDataContainer dataContainer)
+                        {
+                            // Transfer the data from the container to our ContainerData
+                            foreach (var dataToken in dataContainer.ContainerData)
+                            {
+                                ContainerData.Add(dataToken);
+                            }
+                            Formater.DebugMessage($"Source data initialized for {ContainerName}");
+                        }
+                        else
+                        {
+                            Formater.RuntimeError($"Invalid source data format", myToken);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Formater.RuntimeError($"Failed to initialize source: {ex.Message}", myToken);
                 }
             }
         }

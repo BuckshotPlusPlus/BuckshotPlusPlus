@@ -173,6 +173,50 @@ namespace BuckshotPlusPlus
             return null;
         }
 
+        public static TokenDataVariable TryResolveSourceReference(
+            List<Token> fileTokens,
+            string tokenName
+        )
+        {
+            string[] parts = tokenName.Split('.');
+            if (parts.Length < 2) return null;
+
+            string sourceName = parts[0];
+            Token sourceData = WebServer.SourceEndpoint.GetSourceData(fileTokens, sourceName);
+
+            if (sourceData?.Data is TokenDataContainer container)
+            {
+                string dataPath = string.Join(".", parts.Skip(1));
+                return FindTokenDataVariableByName(container.ContainerData, dataPath);
+            }
+
+            return null;
+        }
+
+        public static TokenDataVariable ResolveSourceReference(List<Token> tokens, string reference)
+        {
+            string[] parts = reference.Split('.');
+            if (parts.Length < 2) return null;
+
+            string sourceName = parts[0];
+            string propertyPath = parts[1];
+
+            var sourceToken = FindTokenByName(tokens, sourceName);
+            if (sourceToken?.Data is TokenDataContainer container && container.ContainerType == "source")
+            {
+                // Look for the data in the source's container data
+                foreach (Token dataToken in container.ContainerData)
+                {
+                    if (dataToken.Data is TokenDataContainer dataContainer && dataContainer.ContainerType == "data")
+                    {
+                        return FindTokenDataVariableByName(dataContainer.ContainerData, propertyPath);
+                    }
+                }
+            }
+
+            return null;
+        }
+
         public static TokenDataVariable TryFindTokenDataVariableValueByName(
             List<Token> fileTokens,
             List<Token> localTokenList,
