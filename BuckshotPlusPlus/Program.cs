@@ -96,6 +96,19 @@ namespace BuckshotPlusPlus
                         "\t- path/to/your/export/directory");
                 }
             }
+            else if (filePath == "merge")
+            {
+                if (args.Length == 2)
+                {
+                    ProgramExtensions.GenerateCompleteProject(args[1]);
+                }
+                else
+                {
+                    Formater.CriticalError("You need to provide the path to your main.bpp file:\n" +
+                        "\t- merge\n" +
+                        "\t- path/to/your/main.bpp");
+                }
+            }
             else
             {
                 Tokenizer myTokenizer = Program.CompileMainFile(filePath);

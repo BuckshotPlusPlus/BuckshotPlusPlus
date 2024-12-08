@@ -1,7 +1,5 @@
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
-
 RUN apt-get update -y && apt-get install -y git
-
 WORKDIR /app
 EXPOSE 8080
 
@@ -17,10 +15,11 @@ RUN dotnet build "BuckshotPlusPlus.csproj" -c Release -o /app/build
 FROM build AS publish
 RUN dotnet publish "BuckshotPlusPlus.csproj" -c Release -o /app/publish
 
-
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 COPY entrypoint.sh .
-RUN chmod +x /app/entrypoint.sh
+# Fix Windows line endings and ensure script is executable
+RUN sed -i 's/\r$//' /app/entrypoint.sh && \
+    chmod +x /app/entrypoint.sh
 ENTRYPOINT ["/app/entrypoint.sh"]

@@ -15,4 +15,4 @@ else
     echo "MAIN_BPP_PATH not specified"
 fi
 
-exec ./BuckshotPlusPlus $MAIN_BPP_PATH
+exec ./BuckshotPlusPlus ./local_repo/$MAIN_BPP_PATH
