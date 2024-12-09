@@ -1,79 +1,211 @@
+name: Release
+
 on:
   push:
     tags:
       - "v*"
 
-name: build
-
 jobs:
-  build:
-    name: Ubuntu build
+  build-all:
+    name: Build for all platforms
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - uses: actions/setup-dotnet@v3
         with:
           dotnet-version: "7.0"
-      - run: dotnet build BuckshotPlusPlus
 
-      - name: Archive Release
-        uses: thedoctor0/zip-release@0.7.1
+      - uses: actions/setup-node@v3
         with:
-          type: "zip"
-          filename: "ubuntu.zip"
-          directory: "BuckshotPlusPlus/bin/Debug/net7.0/"
+          node-version: '18'
+          registry-url: 'https://registry.npmjs.org'
 
-      - name: Upload binaries to release
+      # Build for each platform
+      - name: Build Windows
+        run: dotnet publish BuckshotPlusPlus -c Release -r win-x64 --self-contained true /p:PublishSingleFile=false
+
+      - name: Build Linux
+        run: dotnet publish BuckshotPlusPlus -c Release -r linux-x64 --self-contained true /p:PublishSingleFile=false
+
+      - name: Build macOS
+        run: dotnet publish BuckshotPlusPlus -c Release -r osx-x64 --self-contained true /p:PublishSingleFile=false
+
+      # Create npm package structure
+      - name: Create npm package structure
+        run: |
+          mkdir -p bpp/lib/binaries/win-x64
+          mkdir -p bpp/lib/binaries/linux-x64
+          mkdir -p bpp/lib/binaries/darwin-x64
+          mkdir -p bpp/bin
+          mkdir -p bpp/scripts
+          
+          # Copy binaries
+          cp BuckshotPlusPlus/bin/Release/net7.0/win-x64/publish/* bpp/lib/binaries/win-x64/
+          cp BuckshotPlusPlus/bin/Release/net7.0/linux-x64/publish/* bpp/lib/binaries/linux-x64/
+          cp BuckshotPlusPlus/bin/Release/net7.0/osx-x64/publish/* bpp/lib/binaries/darwin-x64/
+
+      # Create package.json with version from git tag
+      - name: Create package.json
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          cat > bpp/package.json << EOL
+          {
+            "name": "bpp",
+            "version": "$VERSION",
+            "description": "BuckshotPlusPlus - A simple and efficient web development language",
+            "main": "bin/bpp.js",
+            "bin": {
+              "bpp": "./bin/bpp.js"
+            },
+            "scripts": {
+              "postinstall": "node scripts/install.js"
+            },
+            "keywords": [
+              "buckshot",
+              "buckshotplusplus",
+              "web",
+              "development",
+              "language"
+            ],
+            "author": "Vic92548",
+            "license": "MIT",
+            "repository": {
+              "type": "git",
+              "url": "https://github.com/BuckshotPlusPlus/BuckshotPlusPlus"
+            },
+            "os": ["win32", "linux", "darwin"],
+            "cpu": ["x64"],
+            "engines": {
+              "node": ">=12.0.0"
+            }
+          }
+          EOL
+
+      # Create CLI files
+      - name: Create CLI files
+        run: |
+          # Create bpp.js
+          cat > bpp/bin/bpp.js << 'EOL'
+          #!/usr/bin/env node
+          const path = require('path');
+          const { spawn } = require('child_process');
+          const os = require('os');
+
+          const platform = os.platform();
+          const arch = os.arch();
+
+          if (arch !== 'x64') {
+              console.error('Error: BuckshotPlusPlus only supports x64 architecture');
+              process.exit(1);
+          }
+
+          const getBinaryDir = () => {
+              const platformDir = `${platform}-${arch}`;
+              return path.join(__dirname, '..', 'lib', 'binaries', platformDir);
+          };
+
+          const binaryDir = getBinaryDir();
+          const binaryName = platform === 'win32' ? 'BuckshotPlusPlus.exe' : 'BuckshotPlusPlus';
+          const binaryPath = path.join(binaryDir, binaryName);
+
+          const args = process.argv.slice(2);
+
+          const bppProcess = spawn(binaryPath, args, {
+              stdio: 'inherit',
+              cwd: binaryDir
+          });
+
+          bppProcess.on('error', (err) => {
+              console.error(`Failed to start BuckshotPlusPlus: ${err.message}`);
+              process.exit(1);
+          });
+
+          bppProcess.on('exit', (code) => {
+              process.exit(code);
+          });
+          EOL
+
+          chmod +x bpp/bin/bpp.js
+
+          # Create install.js
+          cat > bpp/scripts/install.js << 'EOL'
+          const fs = require('fs');
+          const path = require('path');
+          const os = require('os');
+
+          const platform = os.platform();
+          const arch = os.arch();
+
+          if (arch !== 'x64') {
+              console.error('Error: BuckshotPlusPlus only supports x64 architecture');
+              process.exit(1);
+          }
+
+          const getBinaryDir = () => {
+              const platformDir = `${platform}-${arch}`;
+              return path.join(__dirname, '..', 'lib', 'binaries', platformDir);
+          };
+
+          const binaryDir = getBinaryDir();
+
+          if (platform !== 'win32') {
+              try {
+                  const files = fs.readdirSync(binaryDir);
+          
+                  files.forEach(file => {
+                      const filePath = path.join(binaryDir, file);
+                      const stats = fs.statSync(filePath);
+          
+                      if (stats.isFile()) {
+                          fs.chmodSync(filePath, '755');
+                          console.log(`Set executable permissions for: ${file}`);
+                      }
+                  });
+          
+                  console.log('Successfully set executable permissions for all files');
+              } catch (err) {
+                  console.error('Failed to set executable permissions:', err);
+                  process.exit(1);
+              }
+          }
+          EOL
+
+      # Create release for GitHub
+      - name: Create GitHub Release Assets
+        run: |
+          cd bpp
+          zip -r ../windows.zip lib/binaries/win-x64
+          zip -r ../linux.zip lib/binaries/linux-x64
+          zip -r ../macos.zip lib/binaries/darwin-x64
+          cd ..
+
+      # Upload release assets
+      - name: Upload Windows Release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: "BuckshotPlusPlus/bin/Debug/net7.0/ubuntu.zip"
+          file: windows.zip
           tag: ${{ github.ref }}
 
-  build-win:
-    name: Windows build
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: "7.0"
-      - run: dotnet build BuckshotPlusPlus
-
-      - name: Archive Release
-        uses: thedoctor0/zip-release@0.7.1
-        with:
-          type: "zip"
-          filename: "windows.zip"
-          directory: "BuckshotPlusPlus/bin/Debug/net7.0/"
-
-      - name: Upload binaries to release
+      - name: Upload Linux Release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: "BuckshotPlusPlus/bin/Debug/net7.0/windows.zip"
+          file: linux.zip
           tag: ${{ github.ref }}
 
-  build-macos:
-    name: MacOs build
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: "7.0"
-      - run: dotnet build BuckshotPlusPlus
-
-      - name: Archive Release
-        uses: thedoctor0/zip-release@0.7.1
-        with:
-          type: "zip"
-          filename: "macos.zip"
-          directory: "BuckshotPlusPlus/bin/Debug/net7.0/"
-
-      - name: Upload binaries to release
+      - name: Upload macOS Release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: "BuckshotPlusPlus/bin/Debug/net7.0/macos.zip"
+          file: macos.zip
           tag: ${{ github.ref }}
+
+      # Publish to npm
+      - name: Publish to npm
+        run: |
+          cd bpp
+          npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
