@@ -51,7 +51,7 @@ jobs:
           VERSION=${GITHUB_REF#refs/tags/v}
           cat > bpp/package.json << EOL
           {
-            "name": "bpp",
+            "name": "buckshotplusplus",
             "version": "$VERSION",
             "description": "BuckshotPlusPlus - A simple and efficient web development language",
             "main": "bin/bpp.js",
@@ -64,6 +64,7 @@ jobs:
             "keywords": [
               "buckshot",
               "buckshotplusplus",
+              "bpp",
               "web",
               "development",
               "language"
