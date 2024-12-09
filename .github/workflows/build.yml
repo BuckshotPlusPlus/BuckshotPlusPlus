@@ -45,6 +45,86 @@ jobs:
           cp BuckshotPlusPlus/bin/Release/net7.0/linux-x64/publish/* bpp/lib/binaries/linux-x64/
           cp BuckshotPlusPlus/bin/Release/net7.0/osx-x64/publish/* bpp/lib/binaries/darwin-x64/
 
+      # Create README.md first so it's included in the package
+      - name: Create README
+        run: |
+          cat > bpp/README.md << 'EOL'
+          # BuckshotPlusPlus
+
+          BuckshotPlusPlus is a simple and efficient web development language that makes creating websites easy and intuitive.
+
+          ## Installation
+
+          ```bash
+          npm install -g buckshotplusplus
+          ```
+
+          ## Quick Start
+
+          1. Create a new file `main.bpp`:
+
+          ```lua
+          view Title {
+            content = "Hello World!"
+            type = "h1"
+            color = "blue"
+          }
+
+          view Home {
+            type = "body"
+            margin = "0"
+            padding = "0"
+            content = Title
+          }
+
+          page index {
+            title = "Home!"
+            body = Home
+          }
+          ```
+
+          2. Run your BuckshotPlusPlus server:
+
+          ```bash
+          bpp main.bpp
+          ```
+
+          3. Visit `http://localhost:8080` in your browser to see your website.
+
+          ## Features
+
+          - Simple and intuitive syntax
+          - Hot reloading for development
+          - Built-in server
+          - CSS-like styling
+          - Component-based architecture
+
+          ## Requirements
+
+          - Node.js 12 or higher
+          - x64 architecture
+
+          ## Example Projects
+
+          For more examples and starter projects, visit our [official website](https://bpplang.com).
+
+          ## Documentation
+
+          For full documentation, visit [our documentation](https://doc.bbplang.com).
+
+          ## Contributing
+
+          Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+
+          ## License
+
+          [MIT](https://github.com/BuckshotPlusPlus/BuckshotPlusPlus/blob/main/LICENSE)
+
+          ## Support
+
+          If you encounter any problems or have questions, please [open an issue](https://github.com/BuckshotPlusPlus/BuckshotPlusPlus/issues).
+          EOL
+
       # Create package.json with version from git tag
       - name: Create package.json
         run: |
@@ -73,8 +153,9 @@ jobs:
             "license": "MIT",
             "repository": {
               "type": "git",
-              "url": "https://github.com/BuckshotPlusPlus/BuckshotPlusPlus"
+              "url": "https://github.com/BuckshotPlusPlus/BuckshotPlusPlus.git"
             },
+            "homepage": "https://github.com/BuckshotPlusPlus/BuckshotPlusPlus#readme",
             "os": ["win32", "linux", "darwin"],
             "cpu": ["x64"],
             "engines": {
@@ -92,6 +173,7 @@ jobs:
           const path = require('path');
           const { spawn } = require('child_process');
           const os = require('os');
+          const fs = require('fs');
 
           const platform = os.platform();
           const arch = os.arch();
@@ -111,17 +193,27 @@ jobs:
           const binaryPath = path.join(binaryDir, binaryName);
 
           // Check if the binary exists
-          const fs = require('fs');
           if (!fs.existsSync(binaryPath)) {
               console.error(`Error: Binary not found at ${binaryPath}`);
               process.exit(1);
           }
 
-          const args = process.argv.slice(2);
+          const args = process.argv.slice(2).map(arg => {
+              // If the argument looks like a file path, convert it to absolute
+              if (arg.endsWith('.bpp')) {
+                  const absolutePath = path.resolve(process.cwd(), arg);
+                  if (!fs.existsSync(absolutePath)) {
+                      console.error(`Error: File not found: ${arg}`);
+                      process.exit(1);
+                  }
+                  return absolutePath;
+              }
+              return arg;
+          });
 
           const bppProcess = spawn(binaryPath, args, {
               stdio: 'inherit',
-              cwd: binaryDir
+              cwd: process.cwd() // Set working directory to current directory
           });
 
           bppProcess.on('error', (err) => {
@@ -182,85 +274,6 @@ jobs:
                   process.exit(1);
               }
           }
-          EOL
-
-      # Create README.md
-      - name: Create README
-        run: |
-          cat > bpp/README.md << 'EOL'
-          # BuckshotPlusPlus
-
-          BuckshotPlusPlus is a simple and efficient web development language that makes creating websites easy and intuitive.
-
-          ## Installation
-
-          ```bash
-          npm install -g buckshotplusplus
-          ```
-
-          ## Quick Start
-
-          1. Create a new file `main.bpp`:
-
-          ```lua
-          view Title {
-            content = "Hello World!"
-            type = "h1"
-            color = "blue"
-          }
-
-          view Home {
-            type = "body"
-            margin = "0"
-            padding = "0"
-            content = Title
-          }
-
-          page index {
-            title = "Home!"
-            body = Home
-          }
-          ```
-
-          2. Run your BuckshotPlusPlus server:
-
-          ```bash
-          bpp main.bpp
-          ```
-
-          3. Visit `http://localhost:8080` in your browser to see your website.
-
-          ## Features
-
-          - Simple and intuitive syntax
-          - Built-in server
-          - CSS-like styling
-          - Component-based architecture
-
-          ## Requirements
-
-          - Node.js 12 or higher
-          - x64 architecture
-
-          ## Example Projects
-
-          For more examples and starter projects, visit our [official website](https://bpplang.com).
-
-          ## Documentation
-
-          For full documentation, visit [our documentation](https://doc.bpplang.com).
-
-          ## Contributing
-
-          Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
-
-          ## License
-
-          [MIT](https://github.com/BuckshotPlusPlus/BuckshotPlusPlus/blob/main/LICENSE)
-
-          ## Support
-
-          If you encounter any problems or have questions, please [open an issue](https://github.com/BuckshotPlusPlus/BuckshotPlusPlus/issues).
           EOL
 
       # Create release for GitHub
