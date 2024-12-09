@@ -21,29 +21,39 @@ jobs:
           node-version: '18'
           registry-url: 'https://registry.npmjs.org'
 
-      # Build for each platform
-      - name: Build Windows
+      # Build for each platform including ARM64
+      - name: Build Windows x64
         run: dotnet publish BuckshotPlusPlus -c Release -r win-x64 --self-contained true /p:PublishSingleFile=false
 
-      - name: Build Linux
+      - name: Build Linux x64
         run: dotnet publish BuckshotPlusPlus -c Release -r linux-x64 --self-contained true /p:PublishSingleFile=false
 
-      - name: Build macOS
+      - name: Build Linux ARM64
+        run: dotnet publish BuckshotPlusPlus -c Release -r linux-arm64 --self-contained true /p:PublishSingleFile=false
+
+      - name: Build macOS x64
         run: dotnet publish BuckshotPlusPlus -c Release -r osx-x64 --self-contained true /p:PublishSingleFile=false
 
-      # Create npm package structure
+      - name: Build macOS ARM64
+        run: dotnet publish BuckshotPlusPlus -c Release -r osx-arm64 --self-contained true /p:PublishSingleFile=false
+
+      # Create npm package structure with ARM64 support
       - name: Create npm package structure
         run: |
           mkdir -p bpp/lib/binaries/win32-x64
           mkdir -p bpp/lib/binaries/linux-x64
+          mkdir -p bpp/lib/binaries/linux-arm64
           mkdir -p bpp/lib/binaries/darwin-x64
+          mkdir -p bpp/lib/binaries/darwin-arm64
           mkdir -p bpp/bin
           mkdir -p bpp/scripts
           
           # Copy binaries
           cp BuckshotPlusPlus/bin/Release/net7.0/win-x64/publish/* bpp/lib/binaries/win32-x64/
           cp BuckshotPlusPlus/bin/Release/net7.0/linux-x64/publish/* bpp/lib/binaries/linux-x64/
+          cp BuckshotPlusPlus/bin/Release/net7.0/linux-arm64/publish/* bpp/lib/binaries/linux-arm64/
           cp BuckshotPlusPlus/bin/Release/net7.0/osx-x64/publish/* bpp/lib/binaries/darwin-x64/
+          cp BuckshotPlusPlus/bin/Release/net7.0/osx-arm64/publish/* bpp/lib/binaries/darwin-arm64/
 
       # Create README.md first so it's included in the package
       - name: Create README
@@ -102,7 +112,7 @@ jobs:
           ## Requirements
 
           - Node.js 12 or higher
-          - x64 architecture
+          - x64 or ARM64 architecture
 
           ## Example Projects
 
@@ -157,7 +167,7 @@ jobs:
             },
             "homepage": "https://github.com/BuckshotPlusPlus/BuckshotPlusPlus#readme",
             "os": ["win32", "linux", "darwin"],
-            "cpu": ["x64"],
+            "cpu": ["x64", "arm64"],
             "engines": {
               "node": ">=12.0.0"
             }
@@ -177,11 +187,6 @@ jobs:
 
           const platform = os.platform();
           const arch = os.arch();
-
-          if (arch !== 'x64') {
-              console.error('Error: BuckshotPlusPlus only supports x64 architecture');
-              process.exit(1);
-          }
 
           const getBinaryDir = () => {
               const platformDir = `${platform}-${arch}`;
@@ -213,7 +218,7 @@ jobs:
 
           const bppProcess = spawn(binaryPath, args, {
               stdio: 'inherit',
-              cwd: process.cwd() // Set working directory to current directory
+              cwd: process.cwd()
           });
 
           bppProcess.on('error', (err) => {
@@ -236,11 +241,6 @@ jobs:
 
           const platform = os.platform();
           const arch = os.arch();
-
-          if (arch !== 'x64') {
-              console.error('Error: BuckshotPlusPlus only supports x64 architecture');
-              process.exit(1);
-          }
 
           const getBinaryDir = () => {
               const platformDir = `${platform}-${arch}`;
@@ -276,35 +276,51 @@ jobs:
           }
           EOL
 
-      # Create release for GitHub
+      # Create release assets including ARM64 builds
       - name: Create GitHub Release Assets
         run: |
           cd bpp
-          zip -r ../windows.zip lib/binaries/win32-x64
-          zip -r ../linux.zip lib/binaries/linux-x64
-          zip -r ../macos.zip lib/binaries/darwin-x64
+          zip -r ../windows-x64.zip lib/binaries/win32-x64
+          zip -r ../linux-x64.zip lib/binaries/linux-x64
+          zip -r ../linux-arm64.zip lib/binaries/linux-arm64
+          zip -r ../macos-x64.zip lib/binaries/darwin-x64
+          zip -r ../macos-arm64.zip lib/binaries/darwin-arm64
           cd ..
 
-      # Upload release assets
-      - name: Upload Windows Release
+      # Upload all release assets
+      - name: Upload Windows x64 Release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: windows.zip
+          file: windows-x64.zip
           tag: ${{ github.ref }}
 
-      - name: Upload Linux Release
+      - name: Upload Linux x64 Release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: linux.zip
+          file: linux-x64.zip
           tag: ${{ github.ref }}
 
-      - name: Upload macOS Release
+      - name: Upload Linux ARM64 Release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: macos.zip
+          file: linux-arm64.zip
+          tag: ${{ github.ref }}
+
+      - name: Upload macOS x64 Release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: macos-x64.zip
+          tag: ${{ github.ref }}
+
+      - name: Upload macOS ARM64 Release
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: macos-arm64.zip
           tag: ${{ github.ref }}
 
       # Publish to npm

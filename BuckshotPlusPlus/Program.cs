@@ -34,7 +34,7 @@ Options:
 
         private static void ShowVersion()
         {
-            Console.WriteLine("BuckshotPlusPlus v0.3.4");
+            Console.WriteLine("BuckshotPlusPlus v0.3.5");
         }
 
         private static void Main(string[] args)
