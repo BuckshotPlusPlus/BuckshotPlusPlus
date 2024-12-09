@@ -34,14 +34,14 @@ jobs:
       # Create npm package structure
       - name: Create npm package structure
         run: |
-          mkdir -p bpp/lib/binaries/win-x64
+          mkdir -p bpp/lib/binaries/win32-x64
           mkdir -p bpp/lib/binaries/linux-x64
           mkdir -p bpp/lib/binaries/darwin-x64
           mkdir -p bpp/bin
           mkdir -p bpp/scripts
           
           # Copy binaries
-          cp BuckshotPlusPlus/bin/Release/net7.0/win-x64/publish/* bpp/lib/binaries/win-x64/
+          cp BuckshotPlusPlus/bin/Release/net7.0/win-x64/publish/* bpp/lib/binaries/win32-x64/
           cp BuckshotPlusPlus/bin/Release/net7.0/linux-x64/publish/* bpp/lib/binaries/linux-x64/
           cp BuckshotPlusPlus/bin/Release/net7.0/osx-x64/publish/* bpp/lib/binaries/darwin-x64/
 
@@ -110,6 +110,13 @@ jobs:
           const binaryName = platform === 'win32' ? 'BuckshotPlusPlus.exe' : 'BuckshotPlusPlus';
           const binaryPath = path.join(binaryDir, binaryName);
 
+          // Check if the binary exists
+          const fs = require('fs');
+          if (!fs.existsSync(binaryPath)) {
+              console.error(`Error: Binary not found at ${binaryPath}`);
+              process.exit(1);
+          }
+
           const args = process.argv.slice(2);
 
           const bppProcess = spawn(binaryPath, args, {
@@ -150,6 +157,11 @@ jobs:
 
           const binaryDir = getBinaryDir();
 
+          if (!fs.existsSync(binaryDir)) {
+              console.error(`Error: Binary directory not found at ${binaryDir}`);
+              process.exit(1);
+          }
+
           if (platform !== 'win32') {
               try {
                   const files = fs.readdirSync(binaryDir);
@@ -172,11 +184,90 @@ jobs:
           }
           EOL
 
+      # Create README.md
+      - name: Create README
+        run: |
+          cat > bpp/README.md << 'EOL'
+          # BuckshotPlusPlus
+
+          BuckshotPlusPlus is a simple and efficient web development language that makes creating websites easy and intuitive.
+
+          ## Installation
+
+          ```bash
+          npm install -g buckshotplusplus
+          ```
+
+          ## Quick Start
+
+          1. Create a new file `main.bpp`:
+
+          ```lua
+          view Title {
+            content = "Hello World!"
+            type = "h1"
+            color = "blue"
+          }
+
+          view Home {
+            type = "body"
+            margin = "0"
+            padding = "0"
+            content = Title
+          }
+
+          page index {
+            title = "Home!"
+            body = Home
+          }
+          ```
+
+          2. Run your BuckshotPlusPlus server:
+
+          ```bash
+          bpp main.bpp
+          ```
+
+          3. Visit `http://localhost:8080` in your browser to see your website.
+
+          ## Features
+
+          - Simple and intuitive syntax
+          - Built-in server
+          - CSS-like styling
+          - Component-based architecture
+
+          ## Requirements
+
+          - Node.js 12 or higher
+          - x64 architecture
+
+          ## Example Projects
+
+          For more examples and starter projects, visit our [official website](https://bpplang.com).
+
+          ## Documentation
+
+          For full documentation, visit [our documentation](https://doc.bpplang.com).
+
+          ## Contributing
+
+          Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+
+          ## License
+
+          [MIT](https://github.com/BuckshotPlusPlus/BuckshotPlusPlus/blob/main/LICENSE)
+
+          ## Support
+
+          If you encounter any problems or have questions, please [open an issue](https://github.com/BuckshotPlusPlus/BuckshotPlusPlus/issues).
+          EOL
+
       # Create release for GitHub
       - name: Create GitHub Release Assets
         run: |
           cd bpp
-          zip -r ../windows.zip lib/binaries/win-x64
+          zip -r ../windows.zip lib/binaries/win32-x64
           zip -r ../linux.zip lib/binaries/linux-x64
           zip -r ../macos.zip lib/binaries/darwin-x64
           cd ..
