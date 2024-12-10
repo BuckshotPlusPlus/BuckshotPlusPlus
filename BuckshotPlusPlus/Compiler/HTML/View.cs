@@ -30,7 +30,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
 
             TokenDataVariable viewContent = TokenUtils.FindTokenDataVariableByName(myContainer.ContainerData, "content");
 
-            string html = $"<{viewType}";
+            string html = $"<{viewType} data-view=\"{myContainer.ContainerName}\"";
             string htmlAttributes = Attributes.GetHtmlAttributes(serverSideTokens, myViewToken);
 
             if (!string.IsNullOrEmpty(htmlAttributes))
