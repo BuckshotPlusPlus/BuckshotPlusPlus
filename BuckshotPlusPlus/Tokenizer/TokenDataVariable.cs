@@ -49,14 +49,10 @@ namespace BuckshotPlusPlus
                 this.VariableName = myVariableParams[0];
                 this.VariableData = myVariableParams[2];
             }
-            else
-            {
-                Formater.TokenCriticalError("Invalid variable init ", myToken);
-            }
 
             if (this.VariableType == "")
             {
-                Formater.TokenCriticalError("Unknown variable type ", myToken);
+                return;
             }
 
             if (this.VariableType == "string")
@@ -87,46 +83,47 @@ namespace BuckshotPlusPlus
 
         public static string GetValueFromString(string initialValue, Token myToken)
         {
-            if (
-                    initialValue[0] != '"'
-                )
+            // Trim any whitespace first
+            initialValue = initialValue.Trim();
+
+            // Check if the string starts and ends with quotes
+            if (initialValue.Length < 2 ||
+                (initialValue[0] != '"' && initialValue[0] != '\'') ||
+                (initialValue[^1] != '"' && initialValue[^1] != '\''))
             {
-                Formater.TokenCriticalError("Invalid string value", myToken);
+
+                //Formater.TokenCriticalError("Invalid string value", myToken);
+                return initialValue;
             }
+
+            // Return the string without the quotes
             return initialValue.Substring(1, initialValue.Length - 2);
         }
 
         public static string FindVariableType(string value, Token myToken)
         {
-            int variableIntData = 0;
-            float variableFloatData = 0;
-            bool variableBoolData = false;
+            // Trim the value first
+            value = value.Trim();
 
-            if (value[0] == '[' && value[^1] == ']')
-            {
+            // Check for array first
+            if (value.StartsWith("[") && value.EndsWith("]"))
                 return "array";
-            }
-            else if (value.Contains('"'))
-            {
+
+            // Check for string (both single and double quotes)
+            if ((value.StartsWith("\"") && value.EndsWith("\"")) ||
+                (value.StartsWith("'") && value.EndsWith("'")))
                 return "string";
-            }
-            else if (int.TryParse(value, out variableIntData))
-            {
+
+            // Try parsing as other types
+            if (int.TryParse(value, out _))
                 return "int";
-            }
-            else if (float.TryParse(value, out variableFloatData))
-            {
+            if (float.TryParse(value, out _))
                 return "float";
-            }
-            else if (bool.TryParse(value, out variableBoolData))
-            {
+            if (bool.TryParse(value, out _))
                 return "bool";
-            } //else if(TokenUtils.FindTokenByName(MyToken.MyTokenizer.FileTokens,Value) != null)
-            else
-            {
-                return "ref";
-            }
-            //Formater.TokenCriticalError("Unknown variable type ", MyToken);
+
+            // If none of the above, treat as reference
+            return "ref";
         }
 
         public static bool IsTokenDataVariable(Token myToken)
@@ -147,32 +144,46 @@ namespace BuckshotPlusPlus
 
         public string GetCompiledVariableData(List<Token> fileTokens, bool compileRef = false)
         {
-            if(this.VariableType == "multiple") {
+            if (this.VariableType == "multiple")
+            {
                 List<string> variables = Formater.SafeSplit(this.VariableData, '+');
-
                 string result = "";
 
                 foreach (string variable in variables)
                 {
-                    string safeVariableType = FindVariableType(variable, null);
+                    string trimmedVar = variable.Trim();
+                    string safeVariableType = FindVariableType(trimmedVar, null);
 
-                    if(safeVariableType == "string") {
-                        result += GetValueFromString(variable, VariableToken);
-                    }else if(safeVariableType == "ref") {
-                        TokenDataVariable foundToken = TokenUtils.FindTokenDataVariableByName(fileTokens, variable);
-                        if(foundToken != null)
+                    if (safeVariableType == "string")
+                    {
+                        // Already a string literal, just remove the quotes and add to result
+                        result += GetValueFromString(trimmedVar, VariableToken);
+                    }
+                    else if (safeVariableType == "ref")
+                    {
+                        TokenDataVariable foundToken = TokenUtils.FindTokenDataVariableByName(fileTokens, trimmedVar);
+                        if (foundToken != null)
                         {
-                            result += foundToken.VariableData;
+                            string value = foundToken.VariableData;
+
+                            // If the value isn't already a quoted string and we're in a string context,
+                            // we should use the raw value without quotes
+                            if (foundToken.VariableType == "string")
+                            {
+                                value = GetValueFromString(value, foundToken.VariableToken);
+                            }
+
+                            result += value;
                         }
                         else
                         {
-                            Formater.RuntimeError("Token not found!", this.VariableToken);
+                            Formater.RuntimeError($"Token not found: {trimmedVar}", this.VariableToken);
                         }
-                        
                     }
                 }
                 return result;
-            }else if(this.VariableType == "ref")
+            }
+            else if (this.VariableType == "ref")
             {
                 var sourceVar = TokenUtils.ResolveSourceReference(fileTokens, this.VariableData);
                 if (sourceVar != null)
@@ -180,8 +191,8 @@ namespace BuckshotPlusPlus
                     return sourceVar.VariableData;
                 }
 
-                if (compileRef) {
-                    Console.WriteLine("Editing ref value for var " + this.VariableName);
+                if (compileRef)
+                {
                     TokenDataVariable foundToken = TokenUtils.FindTokenDataVariableByName(fileTokens, this.VariableData);
                     if (foundToken != null)
                     {
@@ -192,10 +203,9 @@ namespace BuckshotPlusPlus
                         Formater.RuntimeError("Token not found!", this.VariableToken);
                     }
                 }
-                
             }
 
             return this.VariableData;
-        } 
+        }
     }
 }

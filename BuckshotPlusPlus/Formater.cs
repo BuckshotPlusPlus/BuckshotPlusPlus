@@ -109,20 +109,7 @@ namespace BuckshotPlusPlus
 
         public static bool SafeContains(string value, char c)
         {
-            bool isQuote = false;
-
-            for (int i = 0; i < value.Length; i++)
-            {
-                if (value[i] == '"')
-                {
-                    isQuote = !isQuote;
-                }
-                if (isQuote == false && value[i] == c)
-                {
-                    return true;
-                }
-            }
-            return false;
+            return StringHandler.SafeContains(value, c);
         }
 
         public struct UnsafeCharStruct
@@ -157,68 +144,7 @@ namespace BuckshotPlusPlus
 
         public static List<string> SafeSplit(string value, char c, bool onlyStrings = false)
         {
-            List<string> splitedString = new List<string>();
-
-            string[] unsafeChars = { "\"\"", "()" };
-
-            if (onlyStrings)
-            {
-                unsafeChars[1] = "\"\"";
-            }
-
-            UnsafeCharStruct lastUnsafeChar = new UnsafeCharStruct();
-            lastUnsafeChar.IsUnsafeChar = false;
-
-            int count = 0;
-            int lastPos = 0;
-
-            for (int i = 0; i < value.Length; i++)
-            {
-                count++;
-                if (lastUnsafeChar.IsUnsafeChar)
-                {
-                    UnsafeCharStruct currentUnsafeChar = IsUnsafeChar(
-                        unsafeChars,
-                        value[i]
-                    );
-                    if (currentUnsafeChar.IsUnsafeChar)
-                    {
-                        if (
-                            (
-                                currentUnsafeChar.IsFirstChar == false
-                                || currentUnsafeChar.UnsafeCharId == 0
-                            )
-                            && currentUnsafeChar.UnsafeCharId == lastUnsafeChar.UnsafeCharId
-                        )
-                        {
-                            lastUnsafeChar.IsUnsafeChar = false;
-                        }
-                    }
-                }
-                else
-                {
-                    UnsafeCharStruct currentUnsafeChar = IsUnsafeChar(
-                        unsafeChars,
-                        value[i]
-                    );
-                    if (currentUnsafeChar.IsUnsafeChar)
-                    {
-                        lastUnsafeChar = currentUnsafeChar;
-                    }
-                    else
-                    {
-                        if (value[i] == c)
-                        {
-                            splitedString.Add(value.Substring(i + 1 - count, count - 1));
-                            lastPos = i + 1;
-                            count = 0;
-                        }
-                    }
-                }
-            }
-            splitedString.Add(value.Substring(lastPos, value.Length - lastPos));
-
-            return splitedString;
+            return StringHandler.SafeSplit(value, c);
         }
 
         public static void CriticalError(string error)

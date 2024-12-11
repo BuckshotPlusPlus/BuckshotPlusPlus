@@ -14,20 +14,14 @@ namespace BuckshotPlusPlus
 
             this.FuncName = GetFunctionCallName(myToken.LineData, myToken);
             this.FuncArgs = GetFunctionArgs(myToken.LineData, myToken);
-
-            Console.WriteLine(
-                "I found a function call of name : "
-                    + this.FuncName
-                    + " and "
-                    + this.FuncArgs.Count
-                    + " args"
-            );
         }
         
 
         public static bool IsTokenDataFunctionCall(Token myToken)
         {
-            return Formater.SafeContains(myToken.LineData, '(');
+            int parenPos = myToken.LineData.IndexOf('(');
+            Formater.DebugMessage(parenPos.ToString() + " -> " + StringHandler.IsInsideQuotes(myToken.LineData, parenPos).ToString());
+            return parenPos != -1 && !StringHandler.IsInsideQuotes(myToken.LineData, parenPos);
         }
 
         public static string GetFunctionCallName(string value, Token myToken)

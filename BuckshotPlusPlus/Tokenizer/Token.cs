@@ -38,13 +38,13 @@ namespace BuckshotPlusPlus
             {
                 Data = new TokenDataContainer(this);
             }
-            else if (TokenDataFunctionCall.IsTokenDataFunctionCall(this))
-            {
-                Data = new TokenDataFunctionCall(this);
-            }
             else if (TokenDataVariable.IsTokenDataVariable(this))
             {
                 Data = new TokenDataVariable(this);
+            }
+            else if (TokenDataFunctionCall.IsTokenDataFunctionCall(this))
+            {
+                Data = new TokenDataFunctionCall(this);
             }
             else
             {

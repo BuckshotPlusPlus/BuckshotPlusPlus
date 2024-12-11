@@ -108,7 +108,6 @@ namespace BuckshotPlusPlus
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            Console.WriteLine(myContainer.LineData);
             TokenDataContainer pageTokenDataContainer = (TokenDataContainer)myContainer.Data;
             if (pageTokenDataContainer == null)
             {

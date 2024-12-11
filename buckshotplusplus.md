@@ -596,7 +596,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
 
             TokenDataVariable viewContent = TokenUtils.FindTokenDataVariableByName(myContainer.ContainerData, "content");
 
-            string html = $"<{viewType}";
+            string html = $"<{viewType} data-view=\"{myContainer.ContainerName}\"";
             string htmlAttributes = Attributes.GetHtmlAttributes(serverSideTokens, myViewToken);
 
             if (!string.IsNullOrEmpty(htmlAttributes))
@@ -671,46 +671,129 @@ namespace BuckshotPlusPlus.Compiler.HTML
 ```csharp
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace BuckshotPlusPlus.Compiler.JS
 {
     class Event
     {
-        private static string GenerateSourceFetchCode(string sourceName, string propertyPath)
+        private static string EscapeJsString(string str)
         {
-            return @$"
-                fetch('/source/{sourceName}')
-                    .then(response => response.json())
-                    .then(data => {{
-                        if (data.success) {{
-                            const result = data.data.{propertyPath};
-                            if (result !== undefined) {{
-                                this.textContent = result;
-                            }}
-                        }}
-                    }})
-                    .catch(error => console.error('Error:', error));
-            ";
+            if (str == null) return "null";
+
+            return str.Replace("\\", "\\\\")
+                     .Replace("'", "\\'")
+                     .Replace("\"", "\\\"")
+                     .Replace("\r", "\\r")
+                     .Replace("\n", "\\n")
+                     .Replace("\t", "\\t")
+                     .Replace("\f", "\\f")
+                     .Replace("\b", "\\b");
+        }
+
+        private static string GenerateSourceFetchCode(string sourceName, string propertyPath, bool useForEach = false)
+        {
+            // Use escaped values in the template
+            sourceName = EscapeJsString(sourceName);
+            propertyPath = EscapeJsString(propertyPath);
+
+            StringBuilder code = new StringBuilder();
+            code.Append($"fetch('/source/{sourceName}')");
+            code.Append(".then(response => response.json())");
+            code.Append(".then(data => {");
+            code.Append("if (data.success) {");
+            code.Append($"const result = data.data.{propertyPath};");
+            code.Append("if (result !== undefined) {");
+            code.Append(useForEach ? "el.textContent = result;" : "this.textContent = result;");
+            code.Append("}");
+            code.Append("}");
+            code.Append("})");
+            code.Append(".catch(error => console.error('Error:', error))");
+
+            if (useForEach)
+            {
+                code.Append("});");
+            }
+
+            return code.ToString();
         }
 
         public static string GetEventString(List<Token> serverSideTokens, Token myJsEventToken)
         {
             TokenDataContainer myJsEvent = (TokenDataContainer)myJsEventToken.Data;
-            string eventString = "";
+            StringBuilder eventString = new StringBuilder();
 
             int tokenId = 0;
             foreach (Token childToken in myJsEvent.ContainerData)
             {
                 if (childToken.Data is TokenDataVariable childVar)
                 {
-                    if (CSS.Properties.IsCssProp(childToken))
+                    // Handle view references (e.g., otherview.content or otherview.background-color)
+                    if (childVar.VariableName.Contains('.'))
                     {
-                        eventString +=
-                            "this.style."
-                            + CSS.Properties.ToDomProp(childVar.VariableName)
-                            + " = '"
-                            + childVar.GetCompiledVariableData(serverSideTokens)
-                            + "';";
+                        string[] parts = childVar.VariableName.Split('.');
+                        string viewName = parts[0];
+                        string property = parts[1];
+
+                        // Create a new token for property checking
+                        var propertyToken = new Token(
+                            childToken.FileName,
+                            property + " = " + childVar.GetCompiledVariableData(serverSideTokens),
+                            childToken.LineNumber,
+                            childToken.MyTokenizer
+                        );
+                        propertyToken.Data = new TokenDataVariable(propertyToken);
+
+                        // Generate JS to update all instances of the referenced view
+                        eventString.Append($"document.querySelectorAll('[data-view=\\'{viewName}\\']').forEach(el => {{");
+
+                        if (property == "content")
+                        {
+                            if (childVar.VariableType == "ref")
+                            {
+                                // Check if it's a source reference
+                                string[] refParts = childVar.VariableData.Split('.');
+                                if (refParts.Length >= 2)
+                                {
+                                    var sourceToken = TokenUtils.FindTokenByName(serverSideTokens, refParts[0]);
+                                    if (sourceToken?.Data is TokenDataContainer container &&
+                                        container.ContainerType == "source")
+                                    {
+                                        eventString.Append(GenerateSourceFetchCode(refParts[0], string.Join(".", refParts.Skip(1)), true));
+                                        continue;
+                                    }
+                                }
+                                // Handle normal ref
+                                eventString.Append($"el.textContent = '{EscapeJsString(childVar.GetCompiledVariableData(serverSideTokens))}';");
+                            }
+                            else
+                            {
+                                eventString.Append($"el.textContent = '{EscapeJsString(childVar.GetCompiledVariableData(serverSideTokens))}';");
+                            }
+                        }
+                        else if (CSS.Properties.IsCssProp(propertyToken))
+                        {
+                            // Handle CSS property updates using the proper DOM style property name
+                            eventString.Append($"el.style.{CSS.Properties.ToDomProp(property)} = '{EscapeJsString(childVar.GetCompiledVariableData(serverSideTokens))}';");
+                        }
+                        else
+                        {
+                            // Handle any custom properties or attributes
+                            eventString.Append($"el.setAttribute('{EscapeJsString(property)}', '{EscapeJsString(childVar.GetCompiledVariableData(serverSideTokens))}');");
+                        }
+
+                        eventString.Append("});");
+                    }
+                    // Handle existing self-referential properties
+                    else if (CSS.Properties.IsCssProp(childToken))
+                    {
+                        eventString.Append(
+                            "this.style." +
+                            CSS.Properties.ToDomProp(childVar.VariableName) +
+                            " = '" +
+                            EscapeJsString(childVar.GetCompiledVariableData(serverSideTokens)) +
+                            "';"
+                        );
                     }
                     else if (childVar.VariableName == "content")
                     {
@@ -724,32 +807,31 @@ namespace BuckshotPlusPlus.Compiler.JS
                                 if (sourceToken?.Data is TokenDataContainer container &&
                                     container.ContainerType == "source")
                                 {
-                                    eventString += GenerateSourceFetchCode(parts[0], string.Join(".", parts.Skip(1)));
+                                    eventString.Append(GenerateSourceFetchCode(parts[0], string.Join(".", parts.Skip(1)), false));
                                     continue;
                                 }
                             }
                         }
-                        eventString += "this.textContent = '" +
-                            childVar.GetCompiledVariableData(serverSideTokens) + "';";
+                        eventString.Append($"this.textContent = '{EscapeJsString(childVar.GetCompiledVariableData(serverSideTokens))}';");
                     }
                     else
                     {
-                        eventString += Variables.GetVarString(
+                        eventString.Append(Variables.GetVarString(
                             serverSideTokens,
                             myJsEvent.ContainerData,
                             tokenId
-                        ) + ";";
+                        ) + ";");
                     }
                 }
                 else
                 {
-                    eventString += childToken.LineData.Replace("\"", "'") + ";";
+                    eventString.Append(childToken.LineData.Replace("\"", "'") + ";");
                 }
 
                 tokenId++;
             }
 
-            return eventString;
+            return eventString.ToString();
         }
     }
 }
@@ -1061,20 +1143,7 @@ namespace BuckshotPlusPlus
 
         public static bool SafeContains(string value, char c)
         {
-            bool isQuote = false;
-
-            for (int i = 0; i < value.Length; i++)
-            {
-                if (value[i] == '"')
-                {
-                    isQuote = !isQuote;
-                }
-                if (isQuote == false && value[i] == c)
-                {
-                    return true;
-                }
-            }
-            return false;
+            return StringHandler.SafeContains(value, c);
         }
 
         public struct UnsafeCharStruct
@@ -1109,68 +1178,7 @@ namespace BuckshotPlusPlus
 
         public static List<string> SafeSplit(string value, char c, bool onlyStrings = false)
         {
-            List<string> splitedString = new List<string>();
-
-            string[] unsafeChars = { "\"\"", "()" };
-
-            if (onlyStrings)
-            {
-                unsafeChars[1] = "\"\"";
-            }
-
-            UnsafeCharStruct lastUnsafeChar = new UnsafeCharStruct();
-            lastUnsafeChar.IsUnsafeChar = false;
-
-            int count = 0;
-            int lastPos = 0;
-
-            for (int i = 0; i < value.Length; i++)
-            {
-                count++;
-                if (lastUnsafeChar.IsUnsafeChar)
-                {
-                    UnsafeCharStruct currentUnsafeChar = IsUnsafeChar(
-                        unsafeChars,
-                        value[i]
-                    );
-                    if (currentUnsafeChar.IsUnsafeChar)
-                    {
-                        if (
-                            (
-                                currentUnsafeChar.IsFirstChar == false
-                                || currentUnsafeChar.UnsafeCharId == 0
-                            )
-                            && currentUnsafeChar.UnsafeCharId == lastUnsafeChar.UnsafeCharId
-                        )
-                        {
-                            lastUnsafeChar.IsUnsafeChar = false;
-                        }
-                    }
-                }
-                else
-                {
-                    UnsafeCharStruct currentUnsafeChar = IsUnsafeChar(
-                        unsafeChars,
-                        value[i]
-                    );
-                    if (currentUnsafeChar.IsUnsafeChar)
-                    {
-                        lastUnsafeChar = currentUnsafeChar;
-                    }
-                    else
-                    {
-                        if (value[i] == c)
-                        {
-                            splitedString.Add(value.Substring(i + 1 - count, count - 1));
-                            lastPos = i + 1;
-                            count = 0;
-                        }
-                    }
-                }
-            }
-            splitedString.Add(value.Substring(lastPos, value.Length - lastPos));
-
-            return splitedString;
+            return StringHandler.SafeSplit(value, c);
         }
 
         public static void CriticalError(string error)
@@ -1396,7 +1404,7 @@ Options:
 
         private static void ShowVersion()
         {
-            Console.WriteLine("BuckshotPlusPlus v0.3.5");
+            Console.WriteLine("BuckshotPlusPlus v0.3.7");
         }
 
         private static void Main(string[] args)
@@ -2159,6 +2167,183 @@ namespace BuckshotPlusPlus.Source
 }
 ```
 
+### File: StringHandler.cs
+
+```csharp
+﻿using System;
+using System.Collections.Generic;
+
+namespace BuckshotPlusPlus
+{
+    public static class StringHandler
+    {
+        private enum StringParseState
+        {
+            Normal,
+            InSingleQuote,
+            InDoubleQuote,
+            Escaped
+        }
+
+        public static bool SafeContains(string input, char searchChar)
+        {
+            var state = StringParseState.Normal;
+
+            for (int i = 0; i < input.Length; i++)
+            {
+                char currentChar = input[i];
+
+                switch (state)
+                {
+                    case StringParseState.Normal:
+                        if (currentChar == '"')
+                            state = StringParseState.InDoubleQuote;
+                        else if (currentChar == '\'')
+                            state = StringParseState.InSingleQuote;
+                        else if (currentChar == '\\')
+                            state = StringParseState.Escaped;
+                        else if (currentChar == searchChar)
+                            return true;
+                        break;
+
+                    case StringParseState.InDoubleQuote:
+                        if (currentChar == '\\')
+                            state = StringParseState.Escaped;
+                        else if (currentChar == '"')
+                            state = StringParseState.Normal;
+                        break;
+
+                    case StringParseState.InSingleQuote:
+                        if (currentChar == '\\')
+                            state = StringParseState.Escaped;
+                        else if (currentChar == '\'')
+                            state = StringParseState.Normal;
+                        break;
+
+                    case StringParseState.Escaped:
+                        state = (state == StringParseState.Normal)
+                            ? StringParseState.Normal
+                            : (state == StringParseState.InDoubleQuote)
+                                ? StringParseState.InDoubleQuote
+                                : StringParseState.InSingleQuote;
+                        break;
+                }
+            }
+
+            return false;
+        }
+
+        public static List<string> SafeSplit(string input, char delimiter)
+        {
+            var result = new List<string>();
+            var currentSegment = new System.Text.StringBuilder();
+            var state = StringParseState.Normal;
+
+            for (int i = 0; i < input.Length; i++)
+            {
+                char currentChar = input[i];
+
+                switch (state)
+                {
+                    case StringParseState.Normal:
+                        if (currentChar == delimiter)
+                        {
+                            result.Add(currentSegment.ToString());
+                            currentSegment.Clear();
+                        }
+                        else
+                        {
+                            if (currentChar == '"')
+                                state = StringParseState.InDoubleQuote;
+                            else if (currentChar == '\'')
+                                state = StringParseState.InSingleQuote;
+                            else if (currentChar == '\\')
+                                state = StringParseState.Escaped;
+
+                            currentSegment.Append(currentChar);
+                        }
+                        break;
+
+                    case StringParseState.InDoubleQuote:
+                    case StringParseState.InSingleQuote:
+                        if (currentChar == '\\')
+                            state = StringParseState.Escaped;
+                        else if ((state == StringParseState.InDoubleQuote && currentChar == '"') ||
+                                (state == StringParseState.InSingleQuote && currentChar == '\''))
+                            state = StringParseState.Normal;
+
+                        currentSegment.Append(currentChar);
+                        break;
+
+                    case StringParseState.Escaped:
+                        currentSegment.Append(currentChar);
+                        state = (state == StringParseState.Normal)
+                            ? StringParseState.Normal
+                            : (state == StringParseState.InDoubleQuote)
+                                ? StringParseState.InDoubleQuote
+                                : StringParseState.InSingleQuote;
+                        break;
+                }
+            }
+
+            if (currentSegment.Length > 0)
+                result.Add(currentSegment.ToString());
+
+            return result;
+        }
+
+        public static bool IsInsideQuotes(string input, int position)
+        {
+            if (position >= input.Length)
+                return false;
+
+            var state = StringParseState.Normal;
+
+            for (int i = 0; i < position; i++)
+            {
+                char currentChar = input[i];
+
+                switch (state)
+                {
+                    case StringParseState.Normal:
+                        if (currentChar == '"')
+                            state = StringParseState.InDoubleQuote;
+                        else if (currentChar == '\'')
+                            state = StringParseState.InSingleQuote;
+                        else if (currentChar == '\\')
+                            state = StringParseState.Escaped;
+                        break;
+
+                    case StringParseState.InDoubleQuote:
+                        if (currentChar == '\\')
+                            state = StringParseState.Escaped;
+                        else if (currentChar == '"')
+                            state = StringParseState.Normal;
+                        break;
+
+                    case StringParseState.InSingleQuote:
+                        if (currentChar == '\\')
+                            state = StringParseState.Escaped;
+                        else if (currentChar == '\'')
+                            state = StringParseState.Normal;
+                        break;
+
+                    case StringParseState.Escaped:
+                        state = (state == StringParseState.Normal)
+                            ? StringParseState.Normal
+                            : (state == StringParseState.InDoubleQuote)
+                                ? StringParseState.InDoubleQuote
+                                : StringParseState.InSingleQuote;
+                        break;
+                }
+            }
+
+            return state == StringParseState.InDoubleQuote || state == StringParseState.InSingleQuote;
+        }
+    }
+}
+```
+
 ### File: Tokenizer\Token.cs
 
 ```csharp
@@ -2202,13 +2387,13 @@ namespace BuckshotPlusPlus
             {
                 Data = new TokenDataContainer(this);
             }
-            else if (TokenDataFunctionCall.IsTokenDataFunctionCall(this))
-            {
-                Data = new TokenDataFunctionCall(this);
-            }
             else if (TokenDataVariable.IsTokenDataVariable(this))
             {
                 Data = new TokenDataVariable(this);
+            }
+            else if (TokenDataFunctionCall.IsTokenDataFunctionCall(this))
+            {
+                Data = new TokenDataFunctionCall(this);
             }
             else
             {
@@ -2532,20 +2717,14 @@ namespace BuckshotPlusPlus
 
             this.FuncName = GetFunctionCallName(myToken.LineData, myToken);
             this.FuncArgs = GetFunctionArgs(myToken.LineData, myToken);
-
-            Console.WriteLine(
-                "I found a function call of name : "
-                    + this.FuncName
-                    + " and "
-                    + this.FuncArgs.Count
-                    + " args"
-            );
         }
         
 
         public static bool IsTokenDataFunctionCall(Token myToken)
         {
-            return Formater.SafeContains(myToken.LineData, '(');
+            int parenPos = myToken.LineData.IndexOf('(');
+            Formater.DebugMessage(parenPos.ToString() + " -> " + StringHandler.IsInsideQuotes(myToken.LineData, parenPos).ToString());
+            return parenPos != -1 && !StringHandler.IsInsideQuotes(myToken.LineData, parenPos);
         }
 
         public static string GetFunctionCallName(string value, Token myToken)
@@ -2798,14 +2977,10 @@ namespace BuckshotPlusPlus
                 this.VariableName = myVariableParams[0];
                 this.VariableData = myVariableParams[2];
             }
-            else
-            {
-                Formater.TokenCriticalError("Invalid variable init ", myToken);
-            }
 
             if (this.VariableType == "")
             {
-                Formater.TokenCriticalError("Unknown variable type ", myToken);
+                return;
             }
 
             if (this.VariableType == "string")
@@ -2836,46 +3011,47 @@ namespace BuckshotPlusPlus
 
         public static string GetValueFromString(string initialValue, Token myToken)
         {
-            if (
-                    initialValue[0] != '"'
-                )
+            // Trim any whitespace first
+            initialValue = initialValue.Trim();
+
+            // Check if the string starts and ends with quotes
+            if (initialValue.Length < 2 ||
+                (initialValue[0] != '"' && initialValue[0] != '\'') ||
+                (initialValue[^1] != '"' && initialValue[^1] != '\''))
             {
-                Formater.TokenCriticalError("Invalid string value", myToken);
+
+                //Formater.TokenCriticalError("Invalid string value", myToken);
+                return initialValue;
             }
+
+            // Return the string without the quotes
             return initialValue.Substring(1, initialValue.Length - 2);
         }
 
         public static string FindVariableType(string value, Token myToken)
         {
-            int variableIntData = 0;
-            float variableFloatData = 0;
-            bool variableBoolData = false;
+            // Trim the value first
+            value = value.Trim();
 
-            if (value[0] == '[' && value[^1] == ']')
-            {
+            // Check for array first
+            if (value.StartsWith("[") && value.EndsWith("]"))
                 return "array";
-            }
-            else if (value.Contains('"'))
-            {
+
+            // Check for string (both single and double quotes)
+            if ((value.StartsWith("\"") && value.EndsWith("\"")) ||
+                (value.StartsWith("'") && value.EndsWith("'")))
                 return "string";
-            }
-            else if (int.TryParse(value, out variableIntData))
-            {
+
+            // Try parsing as other types
+            if (int.TryParse(value, out _))
                 return "int";
-            }
-            else if (float.TryParse(value, out variableFloatData))
-            {
+            if (float.TryParse(value, out _))
                 return "float";
-            }
-            else if (bool.TryParse(value, out variableBoolData))
-            {
+            if (bool.TryParse(value, out _))
                 return "bool";
-            } //else if(TokenUtils.FindTokenByName(MyToken.MyTokenizer.FileTokens,Value) != null)
-            else
-            {
-                return "ref";
-            }
-            //Formater.TokenCriticalError("Unknown variable type ", MyToken);
+
+            // If none of the above, treat as reference
+            return "ref";
         }
 
         public static bool IsTokenDataVariable(Token myToken)
@@ -2896,32 +3072,46 @@ namespace BuckshotPlusPlus
 
         public string GetCompiledVariableData(List<Token> fileTokens, bool compileRef = false)
         {
-            if(this.VariableType == "multiple") {
+            if (this.VariableType == "multiple")
+            {
                 List<string> variables = Formater.SafeSplit(this.VariableData, '+');
-
                 string result = "";
 
                 foreach (string variable in variables)
                 {
-                    string safeVariableType = FindVariableType(variable, null);
+                    string trimmedVar = variable.Trim();
+                    string safeVariableType = FindVariableType(trimmedVar, null);
 
-                    if(safeVariableType == "string") {
-                        result += GetValueFromString(variable, VariableToken);
-                    }else if(safeVariableType == "ref") {
-                        TokenDataVariable foundToken = TokenUtils.FindTokenDataVariableByName(fileTokens, variable);
-                        if(foundToken != null)
+                    if (safeVariableType == "string")
+                    {
+                        // Already a string literal, just remove the quotes and add to result
+                        result += GetValueFromString(trimmedVar, VariableToken);
+                    }
+                    else if (safeVariableType == "ref")
+                    {
+                        TokenDataVariable foundToken = TokenUtils.FindTokenDataVariableByName(fileTokens, trimmedVar);
+                        if (foundToken != null)
                         {
-                            result += foundToken.VariableData;
+                            string value = foundToken.VariableData;
+
+                            // If the value isn't already a quoted string and we're in a string context,
+                            // we should use the raw value without quotes
+                            if (foundToken.VariableType == "string")
+                            {
+                                value = GetValueFromString(value, foundToken.VariableToken);
+                            }
+
+                            result += value;
                         }
                         else
                         {
-                            Formater.RuntimeError("Token not found!", this.VariableToken);
+                            Formater.RuntimeError($"Token not found: {trimmedVar}", this.VariableToken);
                         }
-                        
                     }
                 }
                 return result;
-            }else if(this.VariableType == "ref")
+            }
+            else if (this.VariableType == "ref")
             {
                 var sourceVar = TokenUtils.ResolveSourceReference(fileTokens, this.VariableData);
                 if (sourceVar != null)
@@ -2929,8 +3119,8 @@ namespace BuckshotPlusPlus
                     return sourceVar.VariableData;
                 }
 
-                if (compileRef) {
-                    Console.WriteLine("Editing ref value for var " + this.VariableName);
+                if (compileRef)
+                {
                     TokenDataVariable foundToken = TokenUtils.FindTokenDataVariableByName(fileTokens, this.VariableData);
                     if (foundToken != null)
                     {
@@ -2941,11 +3131,10 @@ namespace BuckshotPlusPlus
                         Formater.RuntimeError("Token not found!", this.VariableToken);
                     }
                 }
-                
             }
 
             return this.VariableData;
-        } 
+        }
     }
 }
 
@@ -3432,7 +3621,6 @@ namespace BuckshotPlusPlus
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            Console.WriteLine(myContainer.LineData);
             TokenDataContainer pageTokenDataContainer = (TokenDataContainer)myContainer.Data;
             if (pageTokenDataContainer == null)
             {
@@ -4171,6 +4359,6 @@ namespace BuckshotPlusPlus.WebServer
 ### File Count by Type
 
 - Project Files: 1
-- Source Files: 32
+- Source Files: 33
 
-Total files processed: 33
+Total files processed: 34
