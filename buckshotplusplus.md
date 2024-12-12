@@ -382,11 +382,125 @@ namespace BuckshotPlusPlus.Compiler.HTML
     {
         static List<(String, Boolean)> _props = new()
         {
-            ("href", false),
+            // Core attributes
             ("id", false),
             ("class", false),
+            ("style", false),
+            ("title", false),
+            ("lang", false),
+            ("dir", false),
+            
+            // Link and navigation
+            ("href", false),
             ("target", false),
-            ("disabled", true)
+            ("rel", false),
+            ("download", false),
+            ("hreflang", false),
+            
+            // Form attributes
+            ("action", false),
+            ("method", false),
+            ("name", false),
+            ("value", false),
+            ("type", false),
+            ("placeholder", false),
+            ("pattern", false),
+            ("min", false),
+            ("max", false),
+            ("step", false),
+            ("maxlength", false),
+            ("minlength", false),
+            ("accept", false),
+            ("autocomplete", false),
+            ("enctype", false),
+            
+            // Media attributes
+            ("src", false),
+            ("alt", false),
+            ("width", false),
+            ("height", false),
+            ("autoplay", true),
+            ("controls", true),
+            ("loop", true),
+            ("muted", true),
+            ("preload", false),
+            ("poster", false),
+            
+            // Table attributes
+            ("colspan", false),
+            ("rowspan", false),
+            ("headers", false),
+            ("scope", false),
+            
+            // Form state attributes
+            ("disabled", true),
+            ("checked", true),
+            ("selected", true),
+            ("readonly", true),
+            ("required", true),
+            ("multiple", true),
+            
+            // ARIA accessibility
+            ("role", false),
+            ("aria-label", false),
+            ("aria-describedby", false),
+            ("aria-hidden", false),
+            ("aria-live", false),
+            ("aria-atomic", false),
+            ("aria-expanded", false),
+            ("aria-controls", false),
+            ("aria-current", false),
+            ("aria-disabled", false),
+            ("aria-selected", false),
+            
+            // Data attributes
+            ("data-*", false),
+            
+            // Meta information
+            ("content", false),
+            ("http-equiv", false),
+            ("charset", false),
+            
+            // Draggable functionality
+            ("draggable", false),
+            ("dropzone", false),
+            
+            // Interactive attributes
+            ("contenteditable", false),
+            ("spellcheck", false),
+            ("tabindex", false),
+            
+            // Frame/iframe attributes
+            ("sandbox", false),
+            ("srcdoc", false),
+            ("frameborder", false),
+            ("allowfullscreen", true),
+            ("loading", false),
+            
+            // List attributes
+            ("start", false),
+            ("reversed", true),
+            
+            // Script attributes
+            ("async", true),
+            ("defer", true),
+            ("integrity", false),
+            ("crossorigin", false),
+            
+            // Form validation
+            ("novalidate", true),
+            ("formnovalidate", true),
+            ("autocapitalize", false),
+            ("inputmode", false),
+            
+            // Security
+            ("referrerpolicy", false),
+            
+            // Misc attributes
+            ("translate", false),
+            ("hidden", true),
+            ("cite", false),
+            ("datetime", false)
         };
 
         public static string GetHtmlAttributes(List<Token> serverSideTokens,Token myToken)
@@ -592,7 +706,12 @@ namespace BuckshotPlusPlus.Compiler.HTML
 
             TokenDataVariable viewTypeToken = TokenUtils.FindTokenDataVariableByName(myContainer.ContainerData, "type");
 
-            string viewType = viewTypeToken?.GetCompiledVariableData(serverSideTokens) ?? throw new InvalidOperationException("Missing view type!");
+            string viewType = viewTypeToken?.GetCompiledVariableData(serverSideTokens) ?? "not_found";
+
+            if(viewType == "not_found")
+            {
+                Formater.TokenCriticalError("Missing view type!", myContainer.ContainerToken);
+            }
 
             TokenDataVariable viewContent = TokenUtils.FindTokenDataVariableByName(myContainer.ContainerData, "content");
 
@@ -1404,7 +1523,7 @@ Options:
 
         private static void ShowVersion()
         {
-            Console.WriteLine("BuckshotPlusPlus v0.3.7");
+            Console.WriteLine("BuckshotPlusPlus v0.3.8");
         }
 
         private static void Main(string[] args)
@@ -3643,7 +3762,7 @@ namespace BuckshotPlusPlus
                                 Token referencedToken = FindTokenByName(fileTokens, varToken.VariableData);
                                 if (referencedToken == null)
                                 {
-                                    Formater.TokenCriticalError("Token not super found " + varToken.VariableData, childToken);
+                                    Formater.TokenCriticalError("Token super not found " + varToken.VariableData, childToken);
                                 }
                             }
                         }

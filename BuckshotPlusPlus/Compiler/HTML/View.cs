@@ -26,7 +26,12 @@ namespace BuckshotPlusPlus.Compiler.HTML
 
             TokenDataVariable viewTypeToken = TokenUtils.FindTokenDataVariableByName(myContainer.ContainerData, "type");
 
-            string viewType = viewTypeToken?.GetCompiledVariableData(serverSideTokens) ?? throw new InvalidOperationException("Missing view type!");
+            string viewType = viewTypeToken?.GetCompiledVariableData(serverSideTokens) ?? "not_found";
+
+            if(viewType == "not_found")
+            {
+                Formater.TokenCriticalError("Missing view type!", myContainer.ContainerToken);
+            }
 
             TokenDataVariable viewContent = TokenUtils.FindTokenDataVariableByName(myContainer.ContainerData, "content");
 

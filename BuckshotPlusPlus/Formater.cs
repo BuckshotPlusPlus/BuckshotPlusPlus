@@ -23,7 +23,8 @@ namespace BuckshotPlusPlus
             List<SpecialCharacterToClean> charactersToClean = new List<SpecialCharacterToClean>
             {
                 new() { Character = '+', CleanLeft = true, CleanRight = true },
-                new() { Character = ',', CleanLeft = true, CleanRight = true }
+                new() { Character = ',', CleanLeft = true, CleanRight = true },
+                new() { Character = ':', CleanLeft = true, CleanRight = true }
             };
 
             while (i < fileData.Length)
@@ -82,7 +83,7 @@ namespace BuckshotPlusPlus
                 {
                     isQuote = !isQuote;
                 }
-                if (content[i] == ' ' || content[i] == '\t' && isQuote == false)
+                if ((content[i] == ' ' || content[i] == '\t') && isQuote == false)
                 {
                     while (content[spaceCount + i] == ' ' || content[spaceCount + i] == '\t')
                     {

@@ -130,7 +130,7 @@ namespace BuckshotPlusPlus
                                 Token referencedToken = FindTokenByName(fileTokens, varToken.VariableData);
                                 if (referencedToken == null)
                                 {
-                                    Formater.TokenCriticalError("Token not super found " + varToken.VariableData, childToken);
+                                    Formater.TokenCriticalError("Token super not found " + varToken.VariableData, childToken);
                                 }
                             }
                         }
