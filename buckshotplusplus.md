@@ -683,17 +683,8 @@ using System.Collections.Generic;
 
 namespace BuckshotPlusPlus.Compiler.HTML
 {
-    /// <summary>
-    /// Class for handling views in BuckshotPlusPlus HTML compiler.
-    /// </summary>
     public class View
     {
-        /// <summary>
-        /// Compiles an HTML view based on server-side tokens and a view token.
-        /// </summary>
-        /// <param name="serverSideTokens">List of server-side tokens.</param>
-        /// <param name="myViewToken">The view token to compile.</param>
-        /// <returns>The compiled HTML string.</returns>
         public static string CompileView(List<Token> serverSideTokens, Token myViewToken)
         {
             TokenUtils.EditAllTokensOfContainer(serverSideTokens, myViewToken);
@@ -705,10 +696,11 @@ namespace BuckshotPlusPlus.Compiler.HTML
             }
 
             TokenDataVariable viewTypeToken = TokenUtils.FindTokenDataVariableByName(myContainer.ContainerData, "type");
+            TokenDataVariable inputTypeToken = TokenUtils.FindTokenDataVariableByName(myContainer.ContainerData, "input-type");
 
             string viewType = viewTypeToken?.GetCompiledVariableData(serverSideTokens) ?? "not_found";
 
-            if(viewType == "not_found")
+            if (viewType == "not_found")
             {
                 Formater.TokenCriticalError("Missing view type!", myContainer.ContainerToken);
             }
@@ -716,6 +708,13 @@ namespace BuckshotPlusPlus.Compiler.HTML
             TokenDataVariable viewContent = TokenUtils.FindTokenDataVariableByName(myContainer.ContainerData, "content");
 
             string html = $"<{viewType} data-view=\"{myContainer.ContainerName}\"";
+
+            // Add input type if element is an input and input-type is specified
+            if (viewType == "input" && inputTypeToken != null)
+            {
+                html += $" type=\"{inputTypeToken.GetCompiledVariableData(serverSideTokens)}\"";
+            }
+
             string htmlAttributes = Attributes.GetHtmlAttributes(serverSideTokens, myViewToken);
 
             if (!string.IsNullOrEmpty(htmlAttributes))
@@ -737,13 +736,6 @@ namespace BuckshotPlusPlus.Compiler.HTML
             return html + $"</{viewType}>";
         }
 
-        /// <summary>
-        /// Compiles the content of an HTML view.
-        /// </summary>
-        /// <param name="serverSideTokens">List of server-side tokens.</param>
-        /// <param name="viewContent">The content token data.</param>
-        /// <param name="myContainer">The containing token data.</param>
-        /// <returns>The compiled content string.</returns>
         public static string CompileContent(List<Token> serverSideTokens, TokenDataVariable viewContent, TokenDataContainer myContainer)
         {
             if (viewContent == null)
@@ -782,7 +774,6 @@ namespace BuckshotPlusPlus.Compiler.HTML
         }
     }
 }
-
 ```
 
 ### File: Compiler\JS\Event.cs
@@ -1176,7 +1167,8 @@ namespace BuckshotPlusPlus
             List<SpecialCharacterToClean> charactersToClean = new List<SpecialCharacterToClean>
             {
                 new() { Character = '+', CleanLeft = true, CleanRight = true },
-                new() { Character = ',', CleanLeft = true, CleanRight = true }
+                new() { Character = ',', CleanLeft = true, CleanRight = true },
+                new() { Character = ':', CleanLeft = true, CleanRight = true }
             };
 
             while (i < fileData.Length)
@@ -1235,7 +1227,7 @@ namespace BuckshotPlusPlus
                 {
                     isQuote = !isQuote;
                 }
-                if (content[i] == ' ' || content[i] == '\t' && isQuote == false)
+                if ((content[i] == ' ' || content[i] == '\t') && isQuote == false)
                 {
                     while (content[spaceCount + i] == ' ' || content[spaceCount + i] == '\t')
                     {
@@ -1523,7 +1515,7 @@ Options:
 
         private static void ShowVersion()
         {
-            Console.WriteLine("BuckshotPlusPlus v0.3.8");
+            Console.WriteLine("BuckshotPlusPlus v0.3.10");
         }
 
         private static void Main(string[] args)

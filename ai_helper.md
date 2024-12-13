@@ -107,6 +107,91 @@ view StyledComponent {
 }
 ```
 
+## 3b. Input Types
+
+### Description
+BPP uses two distinct type attributes: `type` for HTML elements and `input-type` for input field types. This separation helps avoid confusion between element types and input types while maintaining clean, readable code.
+
+### Capabilities
+- Define HTML element types with `type`
+- Specify input field types with `input-type`
+- Support all standard HTML input types
+- Clear separation of concerns
+- Improved code readability
+
+✅ DO:
+```bpp
+view TextInput {
+    type = "input"
+    input-type = "text"
+    placeholder = "Enter text"
+}
+
+view PasswordField {
+    type = "input"
+    input-type = "password"
+    placeholder = "Enter password"
+}
+
+view NumberInput {
+    type = "input"
+    input-type = "number"
+    min = "0"
+    max = "100"
+}
+
+view Form {
+    type = "form"
+    content = [
+        EmailInput,
+        SubmitButton
+    ]
+}
+```
+❌ DON'T:
+```bpp
+bppCopyview WrongInput {
+    type = "text"  // Wrong: using input type as element type
+    placeholder = "Wrong"
+}
+
+view IncorrectPassword {
+    input-type = "password"  // Missing type="input"
+    placeholder = "Wrong"
+}
+
+view MixedUp {
+    type = "input"
+    type = "password"  // Wrong: using type instead of input-type
+}
+
+view InvalidType {
+    type = "textfield"  // Wrong: not a valid HTML element
+    input-type = "text"
+}
+```
+The following input types are supported through input-type:
+
+text
+password
+number
+email
+tel
+url
+search
+date
+time
+datetime-local
+month
+week
+color
+file
+radio
+checkbox
+submit
+reset
+button
+
 ## 4. Event System
 
 ### Description
