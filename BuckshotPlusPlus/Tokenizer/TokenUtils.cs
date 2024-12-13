@@ -25,6 +25,9 @@ namespace BuckshotPlusPlus
 
         public static Token FindTokenByName(List<Token> myTokenList, string tokenName, bool returnParent = false)
         {
+            // Skip debug for common property types
+            bool shouldLog = ShouldLogTokenSearch(tokenName);
+
             string[] subTokenNames = tokenName.Split('.');
             int remain = subTokenNames.Length;
             foreach (string localTokenName in subTokenNames)
@@ -32,14 +35,16 @@ namespace BuckshotPlusPlus
                 remain--;
                 foreach (Token myToken in myTokenList)
                 {
-                    if (myToken.Data.GetType() == typeof(TokenDataVariable))
+                    if (myToken?.Data == null) continue;
+
+                    if (myToken.Data is TokenDataVariable)
                     {
                         TokenDataVariable myVar = (TokenDataVariable)myToken.Data;
                         if (myVar.VariableName == localTokenName)
                         {
                             if (remain > 0)
                             {
-                                Formater.TokenCriticalError("Not a container!", myToken);
+                                if (shouldLog) Formater.TokenCriticalError("Not a container!", myToken);
                             }
                             else
                             {
@@ -57,14 +62,45 @@ namespace BuckshotPlusPlus
                                 myTokenList = myContainer.ContainerData;
                                 break;
                             }
-
                             return myToken;
                         }
                     }
                 }
             }
 
+            // Only log if it's a token we care about debugging
+            if (shouldLog)
+            {
+                Formater.DebugMessage($"Token not found: {tokenName}");
+            }
             return null;
+        }
+
+        private static bool ShouldLogTokenSearch(string tokenName)
+        {
+            // Don't log CSS properties
+            if (Compiler.CSS.Properties._props.Contains(tokenName))
+                return false;
+
+            // Don't log common HTML attributes
+            var commonAttrs = new[] {
+        "type", "content", "style", "class", "id", "href", "src",
+        "title", "alt", "width", "height", "name", "value", "target",
+        "method", "action"
+    };
+            if (commonAttrs.Contains(tokenName))
+                return false;
+
+            // Don't log event handlers
+            if (tokenName.StartsWith("on"))
+                return false;
+
+            // Only log specific types of tokens
+            bool isSourceData = tokenName.Contains("_data");
+            bool isKvPair = tokenName.Equals("key") || tokenName.Equals("value");
+            bool isHeader = tokenName.Equals("headers");
+
+            return isSourceData || isKvPair || isHeader;
         }
 
         public static bool EditTokenData(List<Token> myTokenList, Token myToken)
@@ -154,22 +190,40 @@ namespace BuckshotPlusPlus
             //Formater.SuccessMessage($"It took {stopwatch.ElapsedMilliseconds} ms to run EditAllTokensOfContainer of container {PageTokenDataContainer.ContainerName}");
         }
 
-        public static TokenDataVariable FindTokenDataVariableByName(
-            List<Token> myTokenList,
-            string tokenName
-        )
+        public static TokenDataVariable FindTokenDataVariableByName(List<Token> myTokenList, string tokenName)
         {
+            // Only debug log for source data or non-style/attribute lookups
+            bool shouldLog = tokenName.Contains("_data") ||
+                            (!IsStyleProperty(tokenName) && !IsHtmlAttribute(tokenName));
+
             Token foundToken = FindTokenByName(myTokenList, tokenName);
             if (foundToken != null)
             {
-                if (foundToken.Data.GetType() == typeof(TokenDataVariable))
+                if (foundToken.Data is TokenDataVariable myVar)
                 {
-                    TokenDataVariable myVar = (TokenDataVariable)foundToken.Data;
                     return myVar;
                 }
             }
+            else if (shouldLog)
+            {
+                Formater.DebugMessage($"Token not found: {tokenName}");
+            }
 
             return null;
+        }
+
+        // Helper methods to identify token types
+        private static bool IsStyleProperty(string name)
+        {
+            // List of common CSS properties to avoid logging
+            return Compiler.CSS.Properties._props.Contains(name);
+        }
+
+        private static bool IsHtmlAttribute(string name)
+        {
+            // List of common HTML attributes to avoid logging
+            var htmlAttrs = new[] { "type", "content", "style", "class", "id", "href", "src" };
+            return htmlAttrs.Contains(name);
         }
 
         public static TokenDataVariable TryResolveSourceReference(

@@ -7,6 +7,42 @@ namespace BuckshotPlusPlus
 {
     public static class Formater
     {
+        private static bool _debugEnabled = false;
+
+        private static string EscapeMarkup(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return text;
+            return text.Replace("[", "[[").Replace("]", "]]");
+        }
+
+        private static void SafeMarkup(string style, string message, bool newLine = true)
+        {
+            try
+            {
+                string safeMessage = EscapeMarkup(message);
+                if (newLine)
+                {
+                    AnsiConsole.MarkupLine($"[{style}]{safeMessage}[/]");
+                }
+                else
+                {
+                    AnsiConsole.Markup($"[{style}]{safeMessage}[/]");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in markup rendering: {ex.Message}");
+                Console.WriteLine($"Attempted to render: {message}");
+                Console.WriteLine($"Style was: {style}");
+            }
+        }
+
+        public static void EnableDebug()
+        {
+            _debugEnabled = true;
+            DebugMessage("Debug mode enabled");
+        }
+
         public struct SpecialCharacterToClean
         {
             public char Character;
@@ -16,49 +52,54 @@ namespace BuckshotPlusPlus
 
         public static string FormatFileData(string fileData)
         {
+            if (_debugEnabled) DebugMessage($"Formatting file data of length: {fileData.Length}");
+
             int i = 0;
             int spaceCount = 0;
             bool isQuote = false;
 
-            List<SpecialCharacterToClean> charactersToClean = new List<SpecialCharacterToClean>
+            List<SpecialCharacterToClean> charactersToClean = new()
             {
                 new() { Character = '+', CleanLeft = true, CleanRight = true },
                 new() { Character = ',', CleanLeft = true, CleanRight = true },
                 new() { Character = ':', CleanLeft = true, CleanRight = true }
             };
 
-            while (i < fileData.Length)
+            StringBuilder result = new(fileData);
+
+            while (i < result.Length)
             {
-                if (fileData[i] == '"')
-                {
+                if (result[i] == '"')
                     isQuote = !isQuote;
-                }
-                if ((fileData[i] == ' ' || fileData[i] == '\t') && isQuote == false)
+
+                if ((result[i] == ' ' || result[i] == '\t') && !isQuote)
                 {
-                    while (fileData[spaceCount + i] == ' ' || fileData[spaceCount + i] == '\t')
+                    spaceCount = 0;
+                    while ((i + spaceCount) < result.Length &&
+                           (result[i + spaceCount] == ' ' || result[i + spaceCount] == '\t'))
                     {
                         spaceCount++;
                     }
 
-                    if (i == 0)
+                    if (i == 0 || result[i - 1] == '\n')
                     {
-                        fileData = fileData.Remove(i, spaceCount);
-                    }
-                    else if (fileData[i - 1] == '\n')
-                    {
-                        fileData = fileData.Remove(i, spaceCount);
+                        result.Remove(i, spaceCount);
                     }
                     else
                     {
-                        foreach(SpecialCharacterToClean charToCLean in charactersToClean)
+                        foreach (var charToClean in charactersToClean)
                         {
-                            if (fileData[spaceCount + i] == charToCLean.Character && charToCLean.CleanLeft)
+                            if (i + spaceCount < result.Length &&
+                                result[i + spaceCount] == charToClean.Character &&
+                                charToClean.CleanLeft)
                             {
-                                fileData = fileData.Remove(i, spaceCount);
+                                result.Remove(i, spaceCount);
                             }
-                            else if (fileData[i - 1] == charToCLean.Character && charToCLean.CleanRight)
+                            else if (i > 0 &&
+                                     result[i - 1] == charToClean.Character &&
+                                     charToClean.CleanRight)
                             {
-                                fileData = fileData.Remove(i, spaceCount);
+                                result.Remove(i, spaceCount);
                                 i--;
                             }
                         }
@@ -67,49 +108,51 @@ namespace BuckshotPlusPlus
                 }
                 i++;
             }
-            return fileData;
+
+            return result.ToString();
         }
 
         public static string SafeRemoveSpacesFromString(string content)
         {
+            if (_debugEnabled) DebugMessage($"Removing spaces from: {content}");
+
             int i = 0;
             int spaceCount = 0;
             bool isQuote = false;
+            StringBuilder result = new(content);
 
-            while (i < content.Length)
+            while (i < result.Length)
             {
-                // Gérer les chaines de character
-                if (content[i] == '"')
+                if (result[i] == '"')
                 {
                     isQuote = !isQuote;
                 }
-                if ((content[i] == ' ' || content[i] == '\t') && isQuote == false)
+                if ((result[i] == ' ' || result[i] == '\t') && !isQuote)
                 {
-                    while (content[spaceCount + i] == ' ' || content[spaceCount + i] == '\t')
+                    spaceCount = 0;
+                    while ((i + spaceCount) < result.Length &&
+                           (result[i + spaceCount] == ' ' || result[i + spaceCount] == '\t'))
                     {
                         spaceCount++;
                     }
 
-                    if (i == 0)
+                    if (i == 0 || spaceCount > 0)
                     {
-                        content = content.Remove(i, spaceCount);
-                    }
-                    else
-                    {
-                        if (spaceCount > 0)
-                        {
-                            content = content.Remove(i, spaceCount);
-                        }
+                        result.Remove(i, spaceCount);
                     }
                     spaceCount = 0;
                 }
                 i++;
             }
-            return content;
+
+            var finalResult = result.ToString();
+            if (_debugEnabled) DebugMessage($"Space removal result: {finalResult}");
+            return finalResult;
         }
 
         public static bool SafeContains(string value, char c)
         {
+            if (_debugEnabled) DebugMessage($"Checking if '{value}' contains '{c}'");
             return StringHandler.SafeContains(value, c);
         }
 
@@ -122,6 +165,8 @@ namespace BuckshotPlusPlus
 
         public static UnsafeCharStruct IsUnsafeChar(string[] unsafeCharsList, char c)
         {
+            if (_debugEnabled) DebugMessage($"Checking unsafe char: {c}");
+
             UnsafeCharStruct unsafeCharValue = new UnsafeCharStruct();
             for (int i = 0; i < unsafeCharsList.Length; i++)
             {
@@ -130,12 +175,14 @@ namespace BuckshotPlusPlus
                 {
                     unsafeCharValue.IsFirstChar = true;
                     unsafeCharValue.IsUnsafeChar = true;
+                    if (_debugEnabled) DebugMessage($"Found unsafe first char at index {i}");
                     return unsafeCharValue;
                 }
                 else if (c == unsafeCharsList[i][1])
                 {
                     unsafeCharValue.IsFirstChar = false;
                     unsafeCharValue.IsUnsafeChar = true;
+                    if (_debugEnabled) DebugMessage($"Found unsafe second char at index {i}");
                     return unsafeCharValue;
                 }
             }
@@ -145,61 +192,83 @@ namespace BuckshotPlusPlus
 
         public static List<string> SafeSplit(string value, char c, bool onlyStrings = false)
         {
-            return StringHandler.SafeSplit(value, c);
+            if (_debugEnabled) DebugMessage($"Splitting: '{value}' on character: '{c}'");
+            var result = StringHandler.SafeSplit(value, c);
+            if (_debugEnabled) DebugMessage($"Split result: {string.Join(" | ", result)}");
+            return result;
         }
 
         public static void CriticalError(string error)
         {
-            AnsiConsole.Markup($"[maroon on default]Error : {error}[/]");
-
+            SafeMarkup("red bold", $"CRITICAL ERROR: {error}");
             Environment.Exit(-1);
         }
 
         public static void RuntimeError(string error, Token myToken)
         {
-            if(myToken == null)
+            if (myToken == null)
             {
-                AnsiConsole.Markup($"[maroon on default]Runtime error : {error}[/]");
+                SafeMarkup("maroon", $"Runtime error: {error}");
             }
             else
             {
-                AnsiConsole.Markup("[maroon on default]Runtime error : " +
-                error +
-                " in file : "
-                    + myToken.FileName
-                    + " at line : "
-                    + myToken.LineNumber
-                    + Environment.NewLine
-                    + "=> "
-                    + myToken.LineData + "[/]\n");
+                var message = new StringBuilder()
+                    .AppendLine($"Runtime error: {error}")
+                    .AppendLine($"File: {myToken.FileName}")
+                    .AppendLine($"Line: {myToken.LineNumber}")
+                    .AppendLine($"Content: {myToken.LineData}");
+
+                SafeMarkup("maroon", message.ToString());
             }
         }
 
         public static void Warn(string error)
         {
-            AnsiConsole.Markup($"[orange3 on default]Warning : {error}[/]");
-            AnsiConsole.Write("\n");
+            SafeMarkup("orange3", $"Warning: {error}");
         }
 
         public static void TokenCriticalError(string error, Token myToken)
         {
-            Console.WriteLine(error);
-            Console.WriteLine(myToken.FileName);
-            Console.WriteLine(myToken.LineNumber);
-            Console.WriteLine(myToken.LineData);
-            CriticalError($"{error.ToString()} in file {myToken.FileName} at line : {myToken.LineNumber.ToString()}\n=> {myToken.LineData}");
+            var message = new StringBuilder()
+                .AppendLine(error)
+                .AppendLine($"File: {myToken.FileName}")
+                .AppendLine($"Line: {myToken.LineNumber}")
+                .AppendLine($"Content: {myToken.LineData}");
+
+            CriticalError(message.ToString());
         }
 
         public static void DebugMessage(string msg)
         {
-            AnsiConsole.Markup($"[dodgerblue3 on default]Debug : {msg}[/]");
-            AnsiConsole.Write("\n");
+            SafeMarkup("dodgerblue3", $"Debug: {msg}");
+        }
+
+        public static void TraceMessage(string category, string msg)
+        {
+            if (_debugEnabled)
+            {
+                SafeMarkup("grey", $"[{category}] {msg}");
+            }
         }
 
         public static void SuccessMessage(string msg)
         {
-            AnsiConsole.Markup($"[green4 on default]Success : {msg}[/]");
-            AnsiConsole.Write("\n");
+            SafeMarkup("green4", $"Success: {msg}");
+        }
+
+        public static void DumpToken(Token token, string context = "")
+        {
+            if (!_debugEnabled) return;
+
+            var dump = new StringBuilder()
+                .AppendLine($"Token Dump {(context != "" ? $"({context})" : "")}")
+                .AppendLine($"  File: {token.FileName}")
+                .AppendLine($"  Line: {token.LineNumber}")
+                .AppendLine($"  Type: {token.Type}")
+                .AppendLine($"  Data Type: {token.Data?.GetType().Name}")
+                .AppendLine($"  Content: {token.LineData}");
+
+            TraceMessage("TOKEN", dump.ToString());
         }
     }
 }

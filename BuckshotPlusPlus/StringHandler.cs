@@ -15,6 +15,9 @@ namespace BuckshotPlusPlus
 
         public static bool SafeContains(string input, char searchChar)
         {
+            // Add null check
+            if (string.IsNullOrEmpty(input)) return false;
+
             var state = StringParseState.Normal;
 
             for (int i = 0; i < input.Length; i++)

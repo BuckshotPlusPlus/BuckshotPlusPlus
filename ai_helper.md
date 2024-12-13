@@ -676,6 +676,68 @@ view Advanced {
 }
 ```
 
+KV (Key-Value) System for HTTP Headers
+BPP uses a key-value container system for managing HTTP headers in source requests. This provides a clean, reusable way to define and manage headers.
+✅ DO:
+```bpp
+kv user_agent {
+key = "User-Agent"
+value = "Mozilla/5.0"
+}
+
+kv accept_header {
+key = "Accept"
+value = "application/vnd.github.v3+json"
+}
+
+kv auth_header {
+key = "Authorization"
+value = "Bearer YOUR_TOKEN"
+}
+
+source API {
+type = "http"
+url = "https://api.example.com"
+method = "GET"
+headers = [user_agent, accept_header, auth_header]
+}
+```
+❌ DON'T:
+```bpp
+// Don't use string format for headers
+source API {
+headers = ["User-Agent: Mozilla"]  // Wrong format
+}
+
+// Don't define headers inline
+source API {
+headers = [{"key": "Accept"}]  // No objects allowed
+}
+
+// Don't use wrong case or missing spaces
+kv UserAgent {  // Wrong case
+Key="User-Agent"  // Wrong case and missing spaces
+Value="Mozilla"   // Wrong case
+}
+```
+Capabilities
+
+Reusable header definitions
+Clean syntax for HTTP headers
+Support for authentication tokens
+Consistent header formatting
+Multiple headers per source
+
+Key Points
+
+Use kv container type for header definitions
+Always include both key and value properties
+Use quotes around all values
+Use lowercase key and value property names
+Reference KV containers directly in headers array
+Use PascalCase for KV container names
+Include spaces around = operator
+
 Remember these key principles:
 1. All values must be strings
 2. No inline functions or computations

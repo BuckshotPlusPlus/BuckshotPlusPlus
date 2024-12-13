@@ -1515,7 +1515,7 @@ Options:
 
         private static void ShowVersion()
         {
-            Console.WriteLine("BuckshotPlusPlus v0.3.10");
+            Console.WriteLine("BuckshotPlusPlus v0.3.11");
         }
 
         private static void Main(string[] args)
@@ -2128,20 +2128,51 @@ namespace BuckshotPlusPlus.Source
                     SourceParameters["url"]
                 );
 
-                if (SourceParameters.ContainsKey("headers"))
+                AddHeaders(request);
+
+                // Check for debug mode
+                var debugVar = TokenUtils.FindTokenDataVariableByName(
+                    SourceContainer.ContainerData,
+                    "debug"
+                );
+                bool isDebug = debugVar?.GetCompiledVariableData(new List<Token>()) == "true";
+
+                if (isDebug)
                 {
-                    AddHeaders(request);
+                    Formater.DebugMessage($"Sending request to: {request.RequestUri}");
+                    Formater.DebugMessage("Headers:");
+                    foreach (var header in request.Headers)
+                    {
+                        Formater.DebugMessage($"{header.Key}: {string.Join(", ", header.Value)}");
+                    }
                 }
 
                 var response = await _httpClient.SendAsync(request);
+
+                if (isDebug)
+                {
+                    Formater.DebugMessage($"Response status: {response.StatusCode}");
+                }
+
                 response.EnsureSuccessStatusCode();
 
                 var content = await response.Content.ReadAsStringAsync();
+
+                if (isDebug)
+                {
+                    Formater.DebugMessage($"Response content: {content}");
+                }
+
                 return TransformResponse(content);
+            }
+            catch (HttpRequestException ex)
+            {
+                Formater.RuntimeError($"HTTP request failed: {ex.Message}", SourceContainer.ContainerToken);
+                return null;
             }
             catch (Exception ex)
             {
-                Formater.RuntimeError($"HTTP request failed: {ex.Message}", SourceContainer.ContainerToken);
+                Formater.RuntimeError($"Error during request: {ex.Message}", SourceContainer.ContainerToken);
                 return null;
             }
         }
@@ -2168,13 +2199,65 @@ namespace BuckshotPlusPlus.Source
 
             if (headersVar?.VariableType == "array")
             {
-                foreach (var headerToken in Analyzer.Array.GetArrayValues(headersVar.VariableToken))
+                foreach (Token headerToken in Analyzer.Array.GetArrayValues(headersVar.VariableToken))
                 {
-                    var headerVar = (TokenDataVariable)headerToken.Data;
-                    var headerParts = headerVar.VariableData.Split(':', 2);
-                    if (headerParts.Length == 2)
+                    if (headerToken.Data is TokenDataVariable headerVar &&
+                        headerVar.VariableType == "ref")
                     {
-                        request.Headers.Add(headerParts[0].Trim(), headerParts[1].Trim());
+                        // Find the referenced kv object
+                        var kvToken = TokenUtils.FindTokenByName(
+                            SourceContainer.ContainerToken.MyTokenizer.FileTokens,
+                            headerVar.GetCompiledVariableData(new List<Token>())
+                        );
+
+                        if (kvToken?.Data is TokenDataContainer kvContainer &&
+                            kvContainer.ContainerType == "kv")
+                        {
+                            var keyVar = TokenUtils.FindTokenDataVariableByName(
+                                kvContainer.ContainerData,
+                                "key"
+                            );
+                            var valueVar = TokenUtils.FindTokenDataVariableByName(
+                                kvContainer.ContainerData,
+                                "value"
+                            );
+
+                            if (keyVar != null && valueVar != null)
+                            {
+                                string headerName = keyVar.GetCompiledVariableData(new List<Token>());
+                                string headerValue = valueVar.GetCompiledVariableData(new List<Token>());
+
+                                // Remove quotes if present
+                                if (headerName.StartsWith("\"") && headerName.EndsWith("\""))
+                                    headerName = headerName.Substring(1, headerName.Length - 2);
+                                if (headerValue.StartsWith("\"") && headerValue.EndsWith("\""))
+                                    headerValue = headerValue.Substring(1, headerValue.Length - 2);
+
+                                try
+                                {
+                                    if (request.Headers.TryAddWithoutValidation(headerName, headerValue))
+                                    {
+                                        Formater.DebugMessage($"Successfully added header: {headerName}: {headerValue}");
+                                    }
+                                    else
+                                    {
+                                        Formater.RuntimeError($"Failed to add header: {headerName}", SourceContainer.ContainerToken);
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Formater.RuntimeError($"Error adding header {headerName}: {ex.Message}", SourceContainer.ContainerToken);
+                                }
+                            }
+                            else
+                            {
+                                Formater.RuntimeError($"Invalid kv object format for header: {headerVar.VariableData}", headerToken);
+                            }
+                        }
+                        else
+                        {
+                            Formater.RuntimeError($"Invalid or missing kv object: {headerVar.VariableData}", headerToken);
+                        }
                     }
                 }
             }
@@ -2191,19 +2274,9 @@ namespace BuckshotPlusPlus.Source
                 var dataLines = new List<string>();
 
                 // Create a flat data structure from JSON
-                foreach (var prop in jsonData.Properties())
-                {
-                    // Handle numbers without quotes, strings with quotes
-                    string value = prop.Value.Type == JTokenType.String
-                        ? $"\"{prop.Value}\""
-                        : prop.Value.ToString();
-
-                    dataLines.Add($"{prop.Name} = {value}");
-                }
+                FlattenJson("", jsonData, dataLines);
 
                 string tokenData = $"data {SourceContainer.ContainerName}_data {{\n{string.Join("\n", dataLines)}\n}}";
-
-                Formater.DebugMessage($"Created source data: {tokenData}");
 
                 return new Token(
                     SourceContainer.ContainerToken.FileName,
@@ -2219,43 +2292,34 @@ namespace BuckshotPlusPlus.Source
             }
         }
 
-        private Token CreateFlatDataStructure(JToken token, string prefix = "")
+        private void FlattenJson(string prefix, JToken token, List<string> dataLines)
         {
-            var dataLines = new List<string>();
-
             switch (token.Type)
             {
                 case JTokenType.Object:
-                    foreach (var prop in ((JObject)token).Properties())
+                    foreach (var prop in (token as JObject).Properties())
                     {
-                        string propPrefix = string.IsNullOrEmpty(prefix) ? prop.Name : $"{prefix}.{prop.Name}";
-
-                        if (prop.Value.Type == JTokenType.Object)
-                        {
-                            dataLines.AddRange(CreateFlatDataStructure(prop.Value, propPrefix).Data.ToString().Split('\n'));
-                        }
-                        else if (prop.Value.Type == JTokenType.Array)
-                        {
-                            var arrayValues = prop.Value.Select(item => $"\"{item}\"").ToList();
-                            dataLines.Add($"{propPrefix} = [{string.Join(",", arrayValues)}]");
-                        }
-                        else
-                        {
-                            dataLines.Add($"{propPrefix} = \"{prop.Value}\"");
-                        }
+                        FlattenJson(
+                            string.IsNullOrEmpty(prefix) ? prop.Name : $"{prefix}_{prop.Name}",
+                            prop.Value,
+                            dataLines
+                        );
                     }
                     break;
 
                 case JTokenType.Array:
-                    dataLines.Add($"{prefix} = [{string.Join(",", token.Select(item => $"\"{item}\""))}]");
+                    dataLines.Add($"{prefix} = [{string.Join(",", token.Select(t => FormatJsonValue(t)))}]");
                     break;
 
                 default:
-                    dataLines.Add($"{prefix} = \"{token}\"");
+                    dataLines.Add($"{prefix} = {FormatJsonValue(token)}");
                     break;
             }
+        }
 
-            return CreateDataToken(string.Join("\n", dataLines));
+        private string FormatJsonValue(JToken token)
+        {
+            return token.Type == JTokenType.String ? $"\"{token}\"" : token.ToString();
         }
 
         public override bool ValidateConfiguration()
@@ -2269,6 +2333,17 @@ namespace BuckshotPlusPlus.Source
             if (!Uri.TryCreate(SourceParameters["url"], UriKind.Absolute, out _))
             {
                 Formater.RuntimeError("Invalid URL format", SourceContainer.ContainerToken);
+                return false;
+            }
+
+            var headersVar = TokenUtils.FindTokenDataVariableByName(
+                SourceContainer.ContainerData,
+                "headers"
+            );
+
+            if (headersVar != null && headersVar.VariableType != "array")
+            {
+                Formater.RuntimeError("Headers must be an array", SourceContainer.ContainerToken);
                 return false;
             }
 
@@ -2553,7 +2628,8 @@ namespace BuckshotPlusPlus
             "if",
             "else",
             "elseif",
-            "source"
+            "source",
+            "kv"
         };
 
         public TokenDataContainer(Token myToken)

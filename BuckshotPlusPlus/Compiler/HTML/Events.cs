@@ -100,25 +100,42 @@ namespace BuckshotPlusPlus.Compiler.HTML
         {
             string compiledEvents = " ";
 
+            // Check if we even have event handlers before trying to process them
+            bool hasEvents = false;
             TokenDataContainer viewContainer = (TokenDataContainer)myToken.Data;
-            foreach (String name in _props)
+
+            // Quick pre-check for any event handlers
+            foreach (Token childToken in viewContainer.ContainerData)
             {
-                TokenDataVariable myJsEventVar = TokenUtils.FindTokenDataVariableByName(
-                    viewContainer.ContainerData,
-                    name
-                );
-
-                if (myJsEventVar != null)
+                if (childToken.Data is TokenDataVariable var && var.VariableName.StartsWith("on"))
                 {
-                    Token myJsEvent = TokenUtils.FindTokenByName(
-                        myToken.MyTokenizer.FileTokens,
-                        myJsEventVar.GetCompiledVariableData(serverSideTokens)
-                    );
+                    hasEvents = true;
+                    break;
+                }
+            }
 
-                    if (myJsEvent != null)
+            // Only process events if we found any
+            if (hasEvents)
+            {
+                foreach (Token childToken in viewContainer.ContainerData)
+                {
+                    if (childToken.Data is TokenDataVariable var && var.VariableName.StartsWith("on"))
                     {
-                        compiledEvents +=
-                            name + "=\"" + JS.Event.GetEventString(serverSideTokens,myJsEvent) + "\" ";
+                        if (_props.Contains(var.VariableName))
+                        {
+                            Token myJsEvent = TokenUtils.FindTokenByName(
+                                myToken.MyTokenizer.FileTokens,
+                                var.GetCompiledVariableData(serverSideTokens)
+                            );
+
+                            if (myJsEvent != null)
+                            {
+                                compiledEvents +=
+                                    var.VariableName + "=\"" +
+                                    JS.Event.GetEventString(serverSideTokens, myJsEvent) +
+                                    "\" ";
+                            }
+                        }
                     }
                 }
             }

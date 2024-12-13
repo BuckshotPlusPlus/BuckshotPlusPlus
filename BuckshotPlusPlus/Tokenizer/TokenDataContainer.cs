@@ -32,7 +32,8 @@ namespace BuckshotPlusPlus
             "if",
             "else",
             "elseif",
-            "source"
+            "source",
+            "kv"
         };
 
         public TokenDataContainer(Token myToken)
