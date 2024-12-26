@@ -1,6 +1,135 @@
 # BuckshotPlusPlus Project Documentation
 
 
+## Models
+
+### File: Models\GitAuth.cs
+
+```csharp
+﻿using MongoDB.Bson.Serialization.Attributes;
+
+namespace BuckshotPlusPlus.Models
+{
+    public class GitAuth
+    {
+        [BsonElement("Type")]
+        public string Type { get; set; } = "none";
+
+        [BsonElement("Username")]
+        public string Username { get; set; } = string.Empty;
+
+        [BsonElement("Token")]
+        public string Token { get; set; } = string.Empty;
+
+        [BsonElement("SshKey")]
+        public string SshKey { get; set; } = string.Empty;
+
+        [BsonElement("SshKeyPassphrase")]
+        public string SshKeyPassphrase { get; set; } = string.Empty;
+    }
+}
+```
+
+### File: Models\PageView.cs
+
+```csharp
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System;
+
+namespace BuckshotPlusPlus.Models;
+
+public class PageView
+{
+    [BsonId]
+    public ObjectId Id { get; set; }
+    public string TenantId { get; set; } = string.Empty;
+    public string Path { get; set; } = string.Empty;
+    public string UserAgent { get; set; } = string.Empty;
+    public string IpAddress { get; set; } = string.Empty;
+    public DateTime Timestamp { get; set; }
+    public string SessionId { get; set; } = string.Empty;
+    public string Country { get; set; } = string.Empty;
+    public string Region { get; set; } = string.Empty;
+}
+```
+
+### File: Models\Plan.cs
+
+```csharp
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+
+namespace BuckshotPlusPlus.Models;
+
+public class Plan
+{
+    [BsonId]
+    public ObjectId Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string StripeProductId { get; set; } = string.Empty;
+    public string StripePriceId { get; set; } = string.Empty;
+    public int MonthlyPageViews { get; set; }
+    public decimal MonthlyPrice { get; set; }
+    public decimal OverageRate { get; set; }
+}
+```
+
+### File: Models\Tenant.cs
+
+```csharp
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System;
+
+namespace BuckshotPlusPlus.Models
+{
+    public class Tenant
+    {
+        [BsonId]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public ObjectId Id { get; set; }
+
+        [BsonElement("domain")]
+        public string Domain { get; set; } = string.Empty;
+
+        [BsonElement("repoUrl")]
+        public string RepoUrl { get; set; } = string.Empty;
+
+        [BsonElement("branch")]
+        public string Branch { get; set; } = "main";
+
+        [BsonElement("entryFile")]
+        public string EntryFile { get; set; } = string.Empty;
+
+        [BsonElement("cacheKey")]
+        public string CacheKey { get; set; } = string.Empty;
+
+        [BsonElement("planId")]
+        public string PlanId { get; set; } = string.Empty;
+
+        [BsonElement("monthlyPageViewLimit")]
+        public int MonthlyPageViewLimit { get; set; }
+
+        [BsonElement("isActive")]
+        public bool IsActive { get; set; }
+
+        [BsonElement("auth")]
+        public GitAuth Auth { get; set; } = new GitAuth();
+
+        [BsonElement("stripeCustomerId")]
+        public string StripeCustomerId { get; set; } = string.Empty;
+
+        [BsonElement("lastUpdated")]
+        public DateTime LastUpdated { get; set; } = DateTime.UtcNow;
+
+        [BsonIgnore]
+        public Tokenizer? SiteTokenizer { get; set; }
+    }
+}
+```
+
+
 ## Project Files
 
 ### File: BuckshotPlusPlus.csproj
@@ -13,13 +142,578 @@
   </PropertyGroup>
   <ItemGroup>
 	  <PackageReference Include="Appwrite" Version="0.4.2" />
+	  <PackageReference Include="LibGit2Sharp" Version="0.27.2" />
 	  
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
+	  
+    <PackageReference Include="MongoDB.Driver" Version="2.23.1" />
     <PackageReference Include="MySql.Data" Version="8.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Serilog" Version="3.1.1" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="Spectre.Console" Version="0.46.0" />
+    <PackageReference Include="Stripe.net" Version="43.9.0" />
   </ItemGroup>
 </Project>
+```
+
+
+## Services
+
+### File: Services\GitService.cs
+
+```csharp
+﻿using LibGit2Sharp;
+using BuckshotPlusPlus.Models;
+using Serilog;
+using System.IO;
+using System.Threading.Tasks;
+using System;
+
+namespace BuckshotPlusPlus.Services
+{
+    public static class GitService
+    {
+        private static readonly ILogger _logger = new LoggerConfiguration()
+            .WriteTo.Console()
+            .WriteTo.File("logs/git.log", rollingInterval: RollingInterval.Day)
+            .CreateLogger();
+
+        public static async Task UpdateRepository(Tenant tenant, string siteDir)
+        {
+            try
+            {
+                // Try to safely clean up the directory first
+                if (Directory.Exists(siteDir))
+                {
+                    await SafeDeleteDirectory(siteDir);
+                }
+
+                // Create the directory
+                Directory.CreateDirectory(siteDir);
+
+                _logger.Information("Cloning repository for {Domain} into {SiteDir}", tenant.Domain, siteDir);
+
+                var options = new CloneOptions
+                {
+                    BranchName = tenant.Branch,
+                    CredentialsProvider = (_url, _user, _cred) => GetCredentials(tenant.Auth)
+                };
+
+                try
+                {
+                    Repository.Clone(tenant.RepoUrl, siteDir, options);
+                    _logger.Information("Successfully cloned repository for {Domain}", tenant.Domain);
+
+                    // Ensure write permissions on Linux/Unix
+                    if (!OperatingSystem.IsWindows())
+                    {
+                        await SetUnixPermissions(siteDir);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error(ex, "Failed to clone repository for {Domain}", tenant.Domain);
+                    throw new Exception($"Git clone failed: {ex.Message}", ex);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Git operation failed for {Domain}", tenant.Domain);
+                throw new Exception($"Git operation failed: {ex.Message}", ex);
+            }
+        }
+
+        private static async Task SafeDeleteDirectory(string path)
+        {
+            try
+            {
+                _logger.Debug("Attempting to delete directory: {Path}", path);
+
+                // Wait for up to 5 seconds for any file operations to complete
+                for (int i = 0; i < 5; i++)
+                {
+                    try
+                    {
+                        if (Directory.Exists(path))
+                        {
+                            // Reset file attributes for all files
+                            foreach (var file in Directory.GetFiles(path, "*", SearchOption.AllDirectories))
+                            {
+                                if (OperatingSystem.IsWindows())
+                                {
+                                    File.SetAttributes(file, FileAttributes.Normal);
+                                }
+                            }
+
+                            // Delete directory
+                            Directory.Delete(path, true);
+                            _logger.Debug("Successfully deleted directory: {Path}", path);
+                            return;
+                        }
+                        else
+                        {
+                            return; // Directory doesn't exist, no need to delete
+                        }
+                    }
+                    catch (UnauthorizedAccessException)
+                    {
+                        _logger.Warning("Access denied, retrying after delay... Attempt {Attempt}/5", i + 1);
+                        await Task.Delay(1000); // Wait 1 second before retry
+                    }
+                    catch (IOException)
+                    {
+                        _logger.Warning("IO Exception, retrying after delay... Attempt {Attempt}/5", i + 1);
+                        await Task.Delay(1000);
+                    }
+                }
+
+                throw new Exception($"Failed to delete directory after 5 attempts: {path}");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Failed to safely delete directory: {Path}", path);
+                throw;
+            }
+        }
+
+        private static async Task SetUnixPermissions(string path)
+        {
+            try
+            {
+                // Use chmod through bash to set permissions
+                var startInfo = new System.Diagnostics.ProcessStartInfo
+                {
+                    FileName = "chmod",
+                    Arguments = $"-R 755 {path}",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                var process = new System.Diagnostics.Process { StartInfo = startInfo };
+                process.Start();
+                await process.WaitForExitAsync();
+
+                if (process.ExitCode != 0)
+                {
+                    var error = await process.StandardError.ReadToEndAsync();
+                    _logger.Warning("Failed to set Unix permissions: {Error}", error);
+                }
+                else
+                {
+                    _logger.Debug("Successfully set Unix permissions for: {Path}", path);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Warning(ex, "Failed to set Unix permissions for {Path}", path);
+                // Don't throw - this is not critical
+            }
+        }
+
+        private static Credentials GetCredentials(GitAuth auth)
+        {
+            switch (auth.Type?.ToLower())
+            {
+                case "pat":
+                    return new UsernamePasswordCredentials
+                    {
+                        Username = auth.Username ?? "git",
+                        Password = auth.Token
+                    };
+
+                case "basic":
+                    return new UsernamePasswordCredentials
+                    {
+                        Username = auth.Username,
+                        Password = auth.Token
+                    };
+
+                default:
+                    _logger.Debug("No authentication provided, using anonymous access");
+                    return null;
+            }
+        }
+    }
+}
+```
+
+### File: Services\MongoDbService.cs
+
+```csharp
+﻿using MongoDB.Driver;
+using BuckshotPlusPlus.Models;
+using Serilog;
+using MongoDB.Bson;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System;
+using System.Linq;
+
+namespace BuckshotPlusPlus.Services
+{
+    public class MongoDbService
+    {
+        private readonly IMongoDatabase _database;
+        internal readonly IMongoCollection<Tenant> _tenants;
+        private readonly IMongoCollection<PageView> _pageViews;
+        private readonly ILogger _logger;
+
+        public MongoDbService(string connectionString)
+        {
+            _logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .WriteTo.File("logs/mongodb.log", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
+
+            try
+            {
+                var client = new MongoClient(connectionString);
+                _database = client.GetDatabase("BuckshotPlusPlus");
+                _tenants = _database.GetCollection<Tenant>("tenants");
+                _pageViews = _database.GetCollection<PageView>("pageViews");
+
+                _logger.Information("MongoDB connection established");
+                CreateIndexes();
+                LogDatabaseStats().Wait();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Failed to initialize MongoDB connection");
+                throw;
+            }
+        }
+
+        private void CreateIndexes()
+        {
+            try
+            {
+                var domainIndex = Builders<Tenant>.IndexKeys.Ascending(t => t.Domain);
+                _tenants.Indexes.CreateOne(new CreateIndexModel<Tenant>(
+                    domainIndex,
+                    new CreateIndexOptions { Unique = true }
+                ));
+
+                var pageViewIndexes = Builders<PageView>.IndexKeys
+                    .Ascending(p => p.TenantId)
+                    .Ascending(p => p.Timestamp);
+                _pageViews.Indexes.CreateOne(new CreateIndexModel<PageView>(pageViewIndexes));
+
+                _logger.Information("MongoDB indexes created successfully");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Failed to create MongoDB indexes");
+                // Don't throw - indexes might already exist
+            }
+        }
+
+        private async Task LogDatabaseStats()
+        {
+            try
+            {
+                var tenantsCount = await _tenants.CountDocumentsAsync(FilterDefinition<Tenant>.Empty);
+                var pageViewsCount = await _pageViews.CountDocumentsAsync(FilterDefinition<PageView>.Empty);
+
+                _logger.Information(
+                    "Database stats - Tenants: {TenantsCount}, PageViews: {PageViewsCount}",
+                    tenantsCount,
+                    pageViewsCount
+                );
+
+                var tenants = await GetAllTenants();
+                var domains = string.Join(", ", tenants.Select(t => t.Domain));
+                _logger.Information("Configured domains: {Domains}", domains);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Failed to log database stats");
+            }
+        }
+
+        public async Task<Tenant?> GetTenantByDomain(string domain)
+        {
+            try
+            {
+                _logger.Debug("Looking up tenant for domain: {Domain}", domain);
+
+                var filter = Builders<Tenant>.Filter.Regex(
+                    t => t.Domain,
+                    new BsonRegularExpression($"^{domain}$", "i")
+                ) & Builders<Tenant>.Filter.Eq(t => t.IsActive, true);
+
+                var tenant = await _tenants.Find(filter).FirstOrDefaultAsync();
+
+                if (tenant == null)
+                {
+                    _logger.Warning("No tenant found for domain: {Domain}", domain);
+                    return null;
+                }
+
+                _logger.Information("Found tenant {Id} for domain {Domain}", tenant.Id, domain);
+                return tenant;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error retrieving tenant for domain: {Domain}", domain);
+                throw;
+            }
+        }
+
+        public async Task<Tenant?> GetTenantById(ObjectId id)
+        {
+            try
+            {
+                return await _tenants.Find(t => t.Id == id).FirstOrDefaultAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error retrieving tenant by ID: {Id}", id);
+                throw;
+            }
+        }
+
+        public async Task TrackPageView(PageView pageView)
+        {
+            try
+            {
+                await _pageViews.InsertOneAsync(pageView);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error tracking page view");
+                throw;
+            }
+        }
+
+        public async Task<int> GetMonthlyPageViews(string tenantId)
+        {
+            try
+            {
+                var startOfMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
+                var filter = Builders<PageView>.Filter.And(
+                    Builders<PageView>.Filter.Eq(p => p.TenantId, tenantId),
+                    Builders<PageView>.Filter.Gte(p => p.Timestamp, startOfMonth)
+                );
+
+                return (int)await _pageViews.CountDocumentsAsync(filter);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error getting monthly page views for tenant: {TenantId}", tenantId);
+                throw;
+            }
+        }
+
+        public async Task<List<Tenant>> GetAllTenants()
+        {
+            try
+            {
+                return await _tenants.Find(_ => true).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error retrieving all tenants");
+                throw;
+            }
+        }
+
+        public async Task UpdateTenantLastUpdated(ObjectId id, DateTime lastUpdated)
+        {
+            try
+            {
+                var update = Builders<Tenant>.Update
+                    .Set(t => t.LastUpdated, lastUpdated);
+
+                await _tenants.UpdateOneAsync(t => t.Id == id, update);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error updating tenant last updated time: {Id}", id);
+                throw;
+            }
+        }
+
+        public async Task UpdateTenant(Tenant tenant)
+        {
+            try
+            {
+                var filter = Builders<Tenant>.Filter.Eq(t => t.Id, tenant.Id);
+                await _tenants.ReplaceOneAsync(filter, tenant);
+                _logger.Information("Updated tenant: {Domain}", tenant.Domain);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error updating tenant: {Domain}", tenant.Domain);
+                throw;
+            }
+        }
+
+        public async Task<string> GetTenantIdAsString(ObjectId id)
+        {
+            return id.ToString();
+        }
+
+        public ObjectId ConvertToObjectId(string id)
+        {
+            if (ObjectId.TryParse(id, out ObjectId objectId))
+            {
+                return objectId;
+            }
+            throw new ArgumentException($"Invalid ObjectId format: {id}");
+        }
+    }
+}
+```
+
+### File: Services\StripeService.cs
+
+```csharp
+﻿using Stripe;
+using BuckshotPlusPlus.Models;
+using Serilog;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System;
+
+namespace BuckshotPlusPlus.Services
+{
+    public class StripeService
+    {
+        private readonly MongoDbService _mongoDb;
+        private readonly ILogger _logger;
+
+        public StripeService(string apiKey, MongoDbService mongoDb)
+        {
+            StripeConfiguration.ApiKey = apiKey;
+            _mongoDb = mongoDb;
+            _logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .WriteTo.File("logs/stripe.log", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
+        }
+
+        public async Task CreateSubscription(Tenant tenant, string paymentMethodId)
+        {
+            try
+            {
+                var customerOptions = new CustomerCreateOptions
+                {
+                    PaymentMethod = paymentMethodId,
+                    Email = $"admin@{tenant.Domain}",
+                    InvoiceSettings = new CustomerInvoiceSettingsOptions
+                    {
+                        DefaultPaymentMethod = paymentMethodId,
+                    },
+                    Metadata = new Dictionary<string, string>
+                    {
+                        { "tenantId", tenant.Id.ToString() }
+                    }
+                };
+
+                var customerService = new CustomerService();
+                var customer = await customerService.CreateAsync(customerOptions);
+
+                var subscriptionOptions = new SubscriptionCreateOptions
+                {
+                    Customer = customer.Id,
+                    Items = new List<SubscriptionItemOptions>
+                    {
+                        new SubscriptionItemOptions
+                        {
+                            Price = tenant.PlanId,
+                        },
+                    },
+                    PaymentSettings = new SubscriptionPaymentSettingsOptions
+                    {
+                        PaymentMethodTypes = new List<string> { "card" },
+                    }
+                };
+
+                var subscriptionService = new SubscriptionService();
+                await subscriptionService.CreateAsync(subscriptionOptions);
+
+                // Update tenant with Stripe customer ID
+                var filter = Builders<Tenant>.Filter.Eq(t => t.Id, tenant.Id);
+                var update = Builders<Tenant>.Update
+                    .Set(t => t.StripeCustomerId, customer.Id);
+
+                await _mongoDb._tenants.UpdateOneAsync(filter, update);
+
+                _logger.Information("Created Stripe subscription for tenant: {Domain}", tenant.Domain);
+            }
+            catch (StripeException ex)
+            {
+                _logger.Error(ex, "Stripe error for tenant: {Domain}", tenant.Domain);
+                throw;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error creating subscription for tenant: {Domain}", tenant.Domain);
+                throw;
+            }
+        }
+
+        public async Task ProcessOverageCharges(ObjectId tenantId)
+        {
+            try
+            {
+                var tenant = await _mongoDb.GetTenantById(tenantId);
+                if (tenant == null || string.IsNullOrEmpty(tenant.StripeCustomerId))
+                {
+                    _logger.Warning("Cannot process overage charges - tenant not found or no Stripe customer: {Id}", tenantId);
+                    return;
+                }
+
+                var pageViews = await _mongoDb.GetMonthlyPageViews(tenantId.ToString());
+                if (pageViews <= tenant.MonthlyPageViewLimit)
+                {
+                    return;
+                }
+
+                var overage = pageViews - tenant.MonthlyPageViewLimit;
+                var overageRate = 0.001m; // $0.001 per extra page view
+                var amount = (long)(overage * overageRate * 100); // Convert to cents
+
+                var chargeOptions = new ChargeCreateOptions
+                {
+                    Amount = amount,
+                    Currency = "usd",
+                    Customer = tenant.StripeCustomerId,
+                    Description = $"Overage charges for {overage:N0} page views",
+                    Metadata = new Dictionary<string, string>
+                    {
+                        { "tenantId", tenantId.ToString() },
+                        { "pageViews", pageViews.ToString() },
+                        { "overage", overage.ToString() }
+                    }
+                };
+
+                var chargeService = new ChargeService();
+                await chargeService.CreateAsync(chargeOptions);
+
+                _logger.Information("Processed overage charges for tenant: {Domain}, Overage: {Overage}",
+                    tenant.Domain, overage);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error processing overage charges for tenant: {Id}", tenantId);
+                throw;
+            }
+        }
+
+        private async Task UpdateTenantStripeId(Tenant tenant, string stripeCustomerId)
+        {
+            tenant.StripeCustomerId = stripeCustomerId;
+            await _mongoDb.UpdateTenant(tenant);
+        }
+    }
+}
 ```
 
 
@@ -102,7 +796,7 @@ namespace BuckshotPlusPlus.Compiler.CSS
 {
     public class Properties
     {
-        static List<String> _props = new()
+        public static List<String> _props = new()
         {
             "align-content",
             "align-items",
@@ -645,25 +1339,42 @@ namespace BuckshotPlusPlus.Compiler.HTML
         {
             string compiledEvents = " ";
 
+            // Check if we even have event handlers before trying to process them
+            bool hasEvents = false;
             TokenDataContainer viewContainer = (TokenDataContainer)myToken.Data;
-            foreach (String name in _props)
+
+            // Quick pre-check for any event handlers
+            foreach (Token childToken in viewContainer.ContainerData)
             {
-                TokenDataVariable myJsEventVar = TokenUtils.FindTokenDataVariableByName(
-                    viewContainer.ContainerData,
-                    name
-                );
-
-                if (myJsEventVar != null)
+                if (childToken.Data is TokenDataVariable var && var.VariableName.StartsWith("on"))
                 {
-                    Token myJsEvent = TokenUtils.FindTokenByName(
-                        myToken.MyTokenizer.FileTokens,
-                        myJsEventVar.GetCompiledVariableData(serverSideTokens)
-                    );
+                    hasEvents = true;
+                    break;
+                }
+            }
 
-                    if (myJsEvent != null)
+            // Only process events if we found any
+            if (hasEvents)
+            {
+                foreach (Token childToken in viewContainer.ContainerData)
+                {
+                    if (childToken.Data is TokenDataVariable var && var.VariableName.StartsWith("on"))
                     {
-                        compiledEvents +=
-                            name + "=\"" + JS.Event.GetEventString(serverSideTokens,myJsEvent) + "\" ";
+                        if (_props.Contains(var.VariableName))
+                        {
+                            Token myJsEvent = TokenUtils.FindTokenByName(
+                                myToken.MyTokenizer.FileTokens,
+                                var.GetCompiledVariableData(serverSideTokens)
+                            );
+
+                            if (myJsEvent != null)
+                            {
+                                compiledEvents +=
+                                    var.VariableName + "=\"" +
+                                    JS.Event.GetEventString(serverSideTokens, myJsEvent) +
+                                    "\" ";
+                            }
+                        }
                     }
                 }
             }
@@ -687,53 +1398,61 @@ namespace BuckshotPlusPlus.Compiler.HTML
     {
         public static string CompileView(List<Token> serverSideTokens, Token myViewToken)
         {
-            TokenUtils.EditAllTokensOfContainer(serverSideTokens, myViewToken);
-
-            if (myViewToken.Data is not TokenDataContainer myContainer)
+            try
             {
-                Formater.TokenCriticalError("Invalid view token!", myViewToken);
+                TokenUtils.EditAllTokensOfContainer(serverSideTokens, myViewToken);
+
+                if (myViewToken?.Data is not TokenDataContainer myContainer)
+                {
+                    Formater.TokenCriticalError("Invalid view token!", myViewToken);
+                    return "";
+                }
+
+                var viewTypeToken = TokenUtils.FindTokenDataVariableByName(myContainer.ContainerData, "type");
+                string viewType = viewTypeToken?.GetCompiledVariableData(serverSideTokens) ?? "div";  // Default to div
+
+                string html = $"<{viewType} data-view=\"{myContainer.ContainerName}\"";
+
+                // Only check input-type for input elements
+                if (viewType == "input")
+                {
+                    var inputTypeToken = TokenUtils.FindTokenDataVariableByName(myContainer.ContainerData, "input-type");
+                    if (inputTypeToken != null)
+                    {
+                        html += $" type=\"{inputTypeToken.GetCompiledVariableData(serverSideTokens)}\"";
+                    }
+                }
+
+                // Add HTML attributes
+                string htmlAttributes = Attributes.GetHtmlAttributes(serverSideTokens, myViewToken);
+                if (!string.IsNullOrEmpty(htmlAttributes))
+                {
+                    html += $" {htmlAttributes}";
+                }
+
+                // Add events
+                string htmlEvents = Events.GetHtmlEvents(serverSideTokens, myViewToken);
+                if (!string.IsNullOrEmpty(htmlEvents))
+                {
+                    html += $" {htmlEvents}";
+                }
+
+                // Add CSS
+                string style = CSS.Properties.GetCssString(serverSideTokens, myViewToken);
+                html += !string.IsNullOrEmpty(style) ? $" style=\"{style}\">" : ">";
+
+                // Add content
+                var viewContent = TokenUtils.FindTokenDataVariableByName(myContainer.ContainerData, "content");
+                html += CompileContent(serverSideTokens, viewContent, myContainer);
+
+                return html + $"</{viewType}>";
+            }
+            catch (Exception ex)
+            {
+                Formater.RuntimeError($"Error compiling view: {ex.Message}", myViewToken);
+                Formater.DebugMessage($"Stack trace: {ex.StackTrace}");
                 return "";
             }
-
-            TokenDataVariable viewTypeToken = TokenUtils.FindTokenDataVariableByName(myContainer.ContainerData, "type");
-            TokenDataVariable inputTypeToken = TokenUtils.FindTokenDataVariableByName(myContainer.ContainerData, "input-type");
-
-            string viewType = viewTypeToken?.GetCompiledVariableData(serverSideTokens) ?? "not_found";
-
-            if (viewType == "not_found")
-            {
-                Formater.TokenCriticalError("Missing view type!", myContainer.ContainerToken);
-            }
-
-            TokenDataVariable viewContent = TokenUtils.FindTokenDataVariableByName(myContainer.ContainerData, "content");
-
-            string html = $"<{viewType} data-view=\"{myContainer.ContainerName}\"";
-
-            // Add input type if element is an input and input-type is specified
-            if (viewType == "input" && inputTypeToken != null)
-            {
-                html += $" type=\"{inputTypeToken.GetCompiledVariableData(serverSideTokens)}\"";
-            }
-
-            string htmlAttributes = Attributes.GetHtmlAttributes(serverSideTokens, myViewToken);
-
-            if (!string.IsNullOrEmpty(htmlAttributes))
-            {
-                html += $" {htmlAttributes}";
-            }
-
-            string htmlEvents = Events.GetHtmlEvents(serverSideTokens, myViewToken);
-            if (!string.IsNullOrEmpty(htmlEvents))
-            {
-                html += $" {htmlEvents}";
-            }
-
-            string style = CSS.Properties.GetCssString(serverSideTokens, myViewToken);
-            html += !string.IsNullOrEmpty(style) ? $" style=\"{style}\">" : ">";
-
-            html += CompileContent(serverSideTokens, viewContent, myContainer);
-
-            return html + $"</{viewType}>";
         }
 
         public static string CompileContent(List<Token> serverSideTokens, TokenDataVariable viewContent, TokenDataContainer myContainer)
@@ -743,33 +1462,46 @@ namespace BuckshotPlusPlus.Compiler.HTML
                 return "";
             }
 
-            switch (viewContent.VariableType)
+            try
             {
-                case "string":
-                case "multiple":
-                    return viewContent.GetCompiledVariableData(serverSideTokens);
+                switch (viewContent.VariableType)
+                {
+                    case "string":
+                    case "multiple":
+                        return viewContent.GetCompiledVariableData(serverSideTokens);
 
-                case "ref":
-                    Token foundToken = TokenUtils.FindTokenByName(serverSideTokens, viewContent.GetCompiledVariableData(serverSideTokens));
+                    case "ref":
+                        Token foundToken = TokenUtils.FindTokenByName(serverSideTokens, viewContent.GetCompiledVariableData(serverSideTokens));
+                        if (foundToken?.Data is TokenDataContainer)
+                        {
+                            return CompileView(serverSideTokens, foundToken);
+                        }
+                        return viewContent.GetCompiledVariableData(serverSideTokens, true);
 
-                    if (foundToken.Data is TokenDataContainer)
-                    {
-                        return CompileView(serverSideTokens, foundToken);
-                    }
+                    case "array":
+                        var result = new System.Text.StringBuilder();
+                        foreach (Token childViewToken in Analyzer.Array.GetArrayValues(viewContent.VariableToken))
+                        {
+                            if (childViewToken?.Data is TokenDataVariable childView)
+                            {
+                                var childToken = TokenUtils.FindTokenByName(serverSideTokens, childView.GetCompiledVariableData(serverSideTokens));
+                                if (childToken != null)
+                                {
+                                    result.Append(CompileView(serverSideTokens, childToken));
+                                }
+                            }
+                        }
+                        return result.ToString();
 
-                    return viewContent.GetCompiledVariableData(serverSideTokens, true);
-
-                case "array":
-                    string result = "";
-                    foreach (Token childViewToken in Analyzer.Array.GetArrayValues(viewContent.VariableToken))
-                    {
-                        TokenDataVariable childView = (TokenDataVariable)childViewToken.Data;
-                        result += CompileView(serverSideTokens, TokenUtils.FindTokenByName(serverSideTokens, childView.GetCompiledVariableData(serverSideTokens)));
-                    }
-                    return result;
-
-                default:
-                    return "";
+                    default:
+                        return "";
+                }
+            }
+            catch (Exception ex)
+            {
+                Formater.RuntimeError($"Error compiling content: {ex.Message}", viewContent?.VariableToken);
+                Formater.DebugMessage($"Stack trace: {ex.StackTrace}");
+                return "";
             }
         }
     }
@@ -1124,14 +1856,27 @@ namespace BuckshotPlusPlus
 
             foreach (var line in File.ReadAllLines(filePath))
             {
-                var parts = line.Split(
-                    '=',
-                    StringSplitOptions.RemoveEmptyEntries);
+                string part_0 = "";
+                string part_1 = "";
+                bool bIsFirstPart = true;
+                foreach (char c in line)
+                {
+                    if (c == '=' & bIsFirstPart) {
+                        bIsFirstPart = false;
+                        continue;
+                    }
 
-                if (parts.Length != 2)
-                    continue;
+                    if (bIsFirstPart)
+                    {
+                        part_0 += c;
+                        continue;
+                    }
 
-                Environment.SetEnvironmentVariable(parts[0], parts[1]);
+                    part_1 += c;
+                }
+
+                Console.WriteLine(part_0 + "=" + part_1);
+                Environment.SetEnvironmentVariable(part_0, part_1);
             }
         }
     }
@@ -1151,6 +1896,42 @@ namespace BuckshotPlusPlus
 {
     public static class Formater
     {
+        private static bool _debugEnabled = false;
+
+        private static string EscapeMarkup(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return text;
+            return text.Replace("[", "[[").Replace("]", "]]");
+        }
+
+        private static void SafeMarkup(string style, string message, bool newLine = true)
+        {
+            try
+            {
+                string safeMessage = EscapeMarkup(message);
+                if (newLine)
+                {
+                    AnsiConsole.MarkupLine($"[{style}]{safeMessage}[/]");
+                }
+                else
+                {
+                    AnsiConsole.Markup($"[{style}]{safeMessage}[/]");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in markup rendering: {ex.Message}");
+                Console.WriteLine($"Attempted to render: {message}");
+                Console.WriteLine($"Style was: {style}");
+            }
+        }
+
+        public static void EnableDebug()
+        {
+            _debugEnabled = true;
+            DebugMessage("Debug mode enabled");
+        }
+
         public struct SpecialCharacterToClean
         {
             public char Character;
@@ -1160,49 +1941,54 @@ namespace BuckshotPlusPlus
 
         public static string FormatFileData(string fileData)
         {
+            if (_debugEnabled) DebugMessage($"Formatting file data of length: {fileData.Length}");
+
             int i = 0;
             int spaceCount = 0;
             bool isQuote = false;
 
-            List<SpecialCharacterToClean> charactersToClean = new List<SpecialCharacterToClean>
+            List<SpecialCharacterToClean> charactersToClean = new()
             {
                 new() { Character = '+', CleanLeft = true, CleanRight = true },
                 new() { Character = ',', CleanLeft = true, CleanRight = true },
                 new() { Character = ':', CleanLeft = true, CleanRight = true }
             };
 
-            while (i < fileData.Length)
+            StringBuilder result = new(fileData);
+
+            while (i < result.Length)
             {
-                if (fileData[i] == '"')
-                {
+                if (result[i] == '"')
                     isQuote = !isQuote;
-                }
-                if ((fileData[i] == ' ' || fileData[i] == '\t') && isQuote == false)
+
+                if ((result[i] == ' ' || result[i] == '\t') && !isQuote)
                 {
-                    while (fileData[spaceCount + i] == ' ' || fileData[spaceCount + i] == '\t')
+                    spaceCount = 0;
+                    while ((i + spaceCount) < result.Length &&
+                           (result[i + spaceCount] == ' ' || result[i + spaceCount] == '\t'))
                     {
                         spaceCount++;
                     }
 
-                    if (i == 0)
+                    if (i == 0 || result[i - 1] == '\n')
                     {
-                        fileData = fileData.Remove(i, spaceCount);
-                    }
-                    else if (fileData[i - 1] == '\n')
-                    {
-                        fileData = fileData.Remove(i, spaceCount);
+                        result.Remove(i, spaceCount);
                     }
                     else
                     {
-                        foreach(SpecialCharacterToClean charToCLean in charactersToClean)
+                        foreach (var charToClean in charactersToClean)
                         {
-                            if (fileData[spaceCount + i] == charToCLean.Character && charToCLean.CleanLeft)
+                            if (i + spaceCount < result.Length &&
+                                result[i + spaceCount] == charToClean.Character &&
+                                charToClean.CleanLeft)
                             {
-                                fileData = fileData.Remove(i, spaceCount);
+                                result.Remove(i, spaceCount);
                             }
-                            else if (fileData[i - 1] == charToCLean.Character && charToCLean.CleanRight)
+                            else if (i > 0 &&
+                                     result[i - 1] == charToClean.Character &&
+                                     charToClean.CleanRight)
                             {
-                                fileData = fileData.Remove(i, spaceCount);
+                                result.Remove(i, spaceCount);
                                 i--;
                             }
                         }
@@ -1211,49 +1997,51 @@ namespace BuckshotPlusPlus
                 }
                 i++;
             }
-            return fileData;
+
+            return result.ToString();
         }
 
         public static string SafeRemoveSpacesFromString(string content)
         {
+            if (_debugEnabled) DebugMessage($"Removing spaces from: {content}");
+
             int i = 0;
             int spaceCount = 0;
             bool isQuote = false;
+            StringBuilder result = new(content);
 
-            while (i < content.Length)
+            while (i < result.Length)
             {
-                // Gérer les chaines de character
-                if (content[i] == '"')
+                if (result[i] == '"')
                 {
                     isQuote = !isQuote;
                 }
-                if ((content[i] == ' ' || content[i] == '\t') && isQuote == false)
+                if ((result[i] == ' ' || result[i] == '\t') && !isQuote)
                 {
-                    while (content[spaceCount + i] == ' ' || content[spaceCount + i] == '\t')
+                    spaceCount = 0;
+                    while ((i + spaceCount) < result.Length &&
+                           (result[i + spaceCount] == ' ' || result[i + spaceCount] == '\t'))
                     {
                         spaceCount++;
                     }
 
-                    if (i == 0)
+                    if (i == 0 || spaceCount > 0)
                     {
-                        content = content.Remove(i, spaceCount);
-                    }
-                    else
-                    {
-                        if (spaceCount > 0)
-                        {
-                            content = content.Remove(i, spaceCount);
-                        }
+                        result.Remove(i, spaceCount);
                     }
                     spaceCount = 0;
                 }
                 i++;
             }
-            return content;
+
+            var finalResult = result.ToString();
+            if (_debugEnabled) DebugMessage($"Space removal result: {finalResult}");
+            return finalResult;
         }
 
         public static bool SafeContains(string value, char c)
         {
+            if (_debugEnabled) DebugMessage($"Checking if '{value}' contains '{c}'");
             return StringHandler.SafeContains(value, c);
         }
 
@@ -1266,6 +2054,8 @@ namespace BuckshotPlusPlus
 
         public static UnsafeCharStruct IsUnsafeChar(string[] unsafeCharsList, char c)
         {
+            if (_debugEnabled) DebugMessage($"Checking unsafe char: {c}");
+
             UnsafeCharStruct unsafeCharValue = new UnsafeCharStruct();
             for (int i = 0; i < unsafeCharsList.Length; i++)
             {
@@ -1274,12 +2064,14 @@ namespace BuckshotPlusPlus
                 {
                     unsafeCharValue.IsFirstChar = true;
                     unsafeCharValue.IsUnsafeChar = true;
+                    if (_debugEnabled) DebugMessage($"Found unsafe first char at index {i}");
                     return unsafeCharValue;
                 }
                 else if (c == unsafeCharsList[i][1])
                 {
                     unsafeCharValue.IsFirstChar = false;
                     unsafeCharValue.IsUnsafeChar = true;
+                    if (_debugEnabled) DebugMessage($"Found unsafe second char at index {i}");
                     return unsafeCharValue;
                 }
             }
@@ -1289,65 +2081,86 @@ namespace BuckshotPlusPlus
 
         public static List<string> SafeSplit(string value, char c, bool onlyStrings = false)
         {
-            return StringHandler.SafeSplit(value, c);
+            if (_debugEnabled) DebugMessage($"Splitting: '{value}' on character: '{c}'");
+            var result = StringHandler.SafeSplit(value, c);
+            if (_debugEnabled) DebugMessage($"Split result: {string.Join(" | ", result)}");
+            return result;
         }
 
         public static void CriticalError(string error)
         {
-            AnsiConsole.Markup($"[maroon on default]Error : {error}[/]");
-
+            SafeMarkup("red bold", $"CRITICAL ERROR: {error}");
             Environment.Exit(-1);
         }
 
         public static void RuntimeError(string error, Token myToken)
         {
-            if(myToken == null)
+            if (myToken == null)
             {
-                AnsiConsole.Markup($"[maroon on default]Runtime error : {error}[/]");
+                SafeMarkup("maroon", $"Runtime error: {error}");
             }
             else
             {
-                AnsiConsole.Markup("[maroon on default]Runtime error : " +
-                error +
-                " in file : "
-                    + myToken.FileName
-                    + " at line : "
-                    + myToken.LineNumber
-                    + Environment.NewLine
-                    + "=> "
-                    + myToken.LineData + "[/]\n");
+                var message = new StringBuilder()
+                    .AppendLine($"Runtime error: {error}")
+                    .AppendLine($"File: {myToken.FileName}")
+                    .AppendLine($"Line: {myToken.LineNumber}")
+                    .AppendLine($"Content: {myToken.LineData}");
+
+                SafeMarkup("maroon", message.ToString());
             }
         }
 
         public static void Warn(string error)
         {
-            AnsiConsole.Markup($"[orange3 on default]Warning : {error}[/]");
-            AnsiConsole.Write("\n");
+            SafeMarkup("orange3", $"Warning: {error}");
         }
 
         public static void TokenCriticalError(string error, Token myToken)
         {
-            Console.WriteLine(error);
-            Console.WriteLine(myToken.FileName);
-            Console.WriteLine(myToken.LineNumber);
-            Console.WriteLine(myToken.LineData);
-            CriticalError($"{error.ToString()} in file {myToken.FileName} at line : {myToken.LineNumber.ToString()}\n=> {myToken.LineData}");
+            var message = new StringBuilder()
+                .AppendLine(error)
+                .AppendLine($"File: {myToken.FileName}")
+                .AppendLine($"Line: {myToken.LineNumber}")
+                .AppendLine($"Content: {myToken.LineData}");
+
+            CriticalError(message.ToString());
         }
 
         public static void DebugMessage(string msg)
         {
-            AnsiConsole.Markup($"[dodgerblue3 on default]Debug : {msg}[/]");
-            AnsiConsole.Write("\n");
+            SafeMarkup("dodgerblue3", $"Debug: {msg}");
+        }
+
+        public static void TraceMessage(string category, string msg)
+        {
+            if (_debugEnabled)
+            {
+                SafeMarkup("grey", $"[{category}] {msg}");
+            }
         }
 
         public static void SuccessMessage(string msg)
         {
-            AnsiConsole.Markup($"[green4 on default]Success : {msg}[/]");
-            AnsiConsole.Write("\n");
+            SafeMarkup("green4", $"Success: {msg}");
+        }
+
+        public static void DumpToken(Token token, string context = "")
+        {
+            if (!_debugEnabled) return;
+
+            var dump = new StringBuilder()
+                .AppendLine($"Token Dump {(context != "" ? $"({context})" : "")}")
+                .AppendLine($"  File: {token.FileName}")
+                .AppendLine($"  Line: {token.LineNumber}")
+                .AppendLine($"  Type: {token.Type}")
+                .AppendLine($"  Data Type: {token.Data?.GetType().Name}")
+                .AppendLine($"  Content: {token.LineData}");
+
+            TraceMessage("TOKEN", dump.ToString());
         }
     }
 }
-
 ```
 
 ### File: Logic\LogicTest.cs
@@ -1497,6 +2310,7 @@ BuckshotPlusPlus - A simple and efficient web development language
 
 Usage:
   bpp <file>              Run a BuckshotPlusPlus file (e.g., bpp main.bpp)
+  bpp -master             Start BPP in multi-tenant master server mode
   bpp export <file> <dir> Export your website to static files
   bpp merge <file>        Merge all includes into a single file
   bpp -h                  Show this help message
@@ -1504,21 +2318,23 @@ Usage:
 
 Examples:
   bpp main.bpp           Start server with main.bpp
+  bpp -master            Start multi-tenant master server
   bpp export main.bpp ./dist   Export website to ./dist directory
   bpp merge main.bpp     Create a merged version of your project
 
 Options:
   -h, --help            Show this help message
   -v, --version         Show version information
+  -master              Start in multi-tenant master server mode
 ");
         }
 
         private static void ShowVersion()
         {
-            Console.WriteLine("BuckshotPlusPlus v0.3.11");
+            Console.WriteLine("BuckshotPlusPlus v0.4.0");
         }
 
-        private static void Main(string[] args)
+        private static async Task Main(string[] args)
         {
             Console.WriteLine("Welcome to BuckshotPlusPlus!");
 
@@ -1540,6 +2356,12 @@ Options:
             if (arg == "-v" || arg == "--version")
             {
                 ShowVersion();
+                return;
+            }
+
+            if (arg == "-master")
+            {
+                await StartMasterServer();
                 return;
             }
 
@@ -1573,8 +2395,65 @@ Options:
                 return;
             }
 
-            string filePath = args[0];
+            // Regular BPP server startup
+            await StartRegularServer(args[0]);
+        }
 
+        private static async Task StartMasterServer()
+        {
+            try
+            {
+                // Load environment variables
+                var envPath = Path.Combine(Directory.GetCurrentDirectory(), ".env");
+                Console.WriteLine(envPath);
+                if (File.Exists(envPath))
+                {
+                    DotEnv.Load(envPath);
+                }
+
+                var mongoUri = Environment.GetEnvironmentVariable("MONGODB_URI");
+                var stripeKey = Environment.GetEnvironmentVariable("STRIPE_API_KEY");
+                var defaultHost = Environment.GetEnvironmentVariable("DEFAULT_HOST");
+
+                if (string.IsNullOrEmpty(mongoUri))
+                {
+                    Formater.CriticalError("MONGODB_URI not set in .env file");
+                    return;
+                }
+
+                if (string.IsNullOrEmpty(stripeKey))
+                {
+                    Formater.CriticalError("STRIPE_API_KEY not set in .env file");
+                    return;
+                }
+
+                defaultHost ??= "localhost";
+
+                // Create and start the multi-tenant server
+                var server = new MultiTenantServer(mongoUri, stripeKey, defaultHost);
+                server.Start();
+
+                Formater.SuccessMessage("Multi-tenant master server started successfully!");
+                Console.WriteLine("Press Ctrl+C to stop the server");
+
+                // Wait for shutdown signal
+                var cts = new CancellationTokenSource();
+                Console.CancelKeyPress += (s, e) =>
+                {
+                    e.Cancel = true;
+                    cts.Cancel();
+                };
+
+                await Task.Delay(-1, cts.Token);
+            }
+            catch (Exception ex)
+            {
+                Formater.CriticalError($"Error starting master server: {ex.Message}");
+            }
+        }
+
+        private static async Task StartRegularServer(string filePath)
+        {
             try
             {
                 // If file doesn't exist, try looking in the current working directory
@@ -1609,6 +2488,16 @@ Options:
 
                 WebServer.WebServer myWebServer = new WebServer.WebServer { };
                 myWebServer.Start(myTokenizer);
+
+                // Wait for Ctrl+C
+                var cts = new CancellationTokenSource();
+                Console.CancelKeyPress += (s, e) =>
+                {
+                    e.Cancel = true;
+                    cts.Cancel();
+                };
+
+                await Task.Delay(-1, cts.Token);
             }
             catch (Exception ex)
             {
@@ -2115,52 +3004,45 @@ namespace BuckshotPlusPlus.Source
 
         public override async Task<Token> FetchDataAsync()
         {
-            if (!ValidateConfiguration())
-            {
-                Formater.TokenCriticalError("Invalid HTTP source configuration", SourceContainer.ContainerToken);
-                return null;
-            }
-
             try
             {
+                if (!ValidateConfiguration())
+                {
+                    Formater.TokenCriticalError("Invalid HTTP source configuration", SourceContainer.ContainerToken);
+                    return null;
+                }
+
+                Formater.DebugMessage("Creating HTTP request...");
                 var request = new HttpRequestMessage(
                     GetHttpMethod(),
                     SourceParameters["url"]
                 );
 
-                AddHeaders(request);
+                Formater.DebugMessage($"URL: {request.RequestUri}");
+                Formater.DebugMessage($"Method: {request.Method}");
 
-                // Check for debug mode
-                var debugVar = TokenUtils.FindTokenDataVariableByName(
-                    SourceContainer.ContainerData,
-                    "debug"
-                );
-                bool isDebug = debugVar?.GetCompiledVariableData(new List<Token>()) == "true";
-
-                if (isDebug)
+                try
                 {
-                    Formater.DebugMessage($"Sending request to: {request.RequestUri}");
-                    Formater.DebugMessage("Headers:");
-                    foreach (var header in request.Headers)
-                    {
-                        Formater.DebugMessage($"{header.Key}: {string.Join(", ", header.Value)}");
-                    }
+                    AddHeaders(request);
+                }
+                catch (Exception ex)
+                {
+                    Formater.DebugMessage($"Error adding headers: {ex}");
+                    throw;
                 }
 
+                Formater.DebugMessage("Sending request...");
                 var response = await _httpClient.SendAsync(request);
 
-                if (isDebug)
-                {
-                    Formater.DebugMessage($"Response status: {response.StatusCode}");
-                }
-
+                Formater.DebugMessage($"Response status: {response.StatusCode}");
                 response.EnsureSuccessStatusCode();
 
                 var content = await response.Content.ReadAsStringAsync();
+                Formater.DebugMessage($"Response content length: {content?.Length ?? 0}");
 
-                if (isDebug)
+                if (string.IsNullOrEmpty(content))
                 {
-                    Formater.DebugMessage($"Response content: {content}");
+                    throw new Exception("Empty response from server");
                 }
 
                 return TransformResponse(content);
@@ -2173,6 +3055,7 @@ namespace BuckshotPlusPlus.Source
             catch (Exception ex)
             {
                 Formater.RuntimeError($"Error during request: {ex.Message}", SourceContainer.ContainerToken);
+                Formater.DebugMessage($"Stack trace: {ex.StackTrace}");
                 return null;
             }
         }
@@ -2197,97 +3080,141 @@ namespace BuckshotPlusPlus.Source
                 "headers"
             );
 
+            Formater.DebugMessage($"Headers variable found: {headersVar != null}");
             if (headersVar?.VariableType == "array")
             {
-                foreach (Token headerToken in Analyzer.Array.GetArrayValues(headersVar.VariableToken))
+                Formater.DebugMessage($"Headers array data: {headersVar.VariableData}");
+                var headerTokens = Analyzer.Array.GetArrayValues(headersVar.VariableToken);
+                Formater.DebugMessage($"Number of header tokens: {headerTokens.Count}");
+
+                foreach (Token headerToken in headerTokens)
                 {
-                    if (headerToken.Data is TokenDataVariable headerVar &&
-                        headerVar.VariableType == "ref")
+                    Formater.DebugMessage($"Processing header token: {headerToken.LineData}");
+                    if (headerToken.Data is TokenDataVariable headerVar)
                     {
-                        // Find the referenced kv object
-                        var kvToken = TokenUtils.FindTokenByName(
-                            SourceContainer.ContainerToken.MyTokenizer.FileTokens,
-                            headerVar.GetCompiledVariableData(new List<Token>())
-                        );
-
-                        if (kvToken?.Data is TokenDataContainer kvContainer &&
-                            kvContainer.ContainerType == "kv")
+                        Formater.DebugMessage($"Header variable type: {headerVar.VariableType}");
+                        if (headerVar.VariableType == "ref")
                         {
-                            var keyVar = TokenUtils.FindTokenDataVariableByName(
-                                kvContainer.ContainerData,
-                                "key"
-                            );
-                            var valueVar = TokenUtils.FindTokenDataVariableByName(
-                                kvContainer.ContainerData,
-                                "value"
+                            var refName = headerVar.VariableData;
+                            Formater.DebugMessage($"Looking for referenced token: {refName}");
+
+                            var refToken = TokenUtils.FindTokenByName(
+                                SourceContainer.ContainerToken.MyTokenizer.FileTokens,
+                                refName
                             );
 
-                            if (keyVar != null && valueVar != null)
+                            if (refToken == null)
                             {
-                                string headerName = keyVar.GetCompiledVariableData(new List<Token>());
-                                string headerValue = valueVar.GetCompiledVariableData(new List<Token>());
+                                Formater.RuntimeError($"Referenced header token not found: {refName}", headerToken);
+                                continue;
+                            }
+
+                            if (refToken.Data is TokenDataContainer kvContainer)
+                            {
+                                Formater.DebugMessage($"Found KV container: {kvContainer.ContainerName}");
+                                var key = TokenUtils.FindTokenDataVariableByName(kvContainer.ContainerData, "key");
+                                var value = TokenUtils.FindTokenDataVariableByName(kvContainer.ContainerData, "value");
+
+                                if (key == null || value == null)
+                                {
+                                    Formater.RuntimeError("Invalid KV container - missing key or value", refToken);
+                                    continue;
+                                }
+
+                                var headerName = key.GetCompiledVariableData(new List<Token>());
+                                var headerValue = value.GetCompiledVariableData(new List<Token>());
 
                                 // Remove quotes if present
-                                if (headerName.StartsWith("\"") && headerName.EndsWith("\""))
-                                    headerName = headerName.Substring(1, headerName.Length - 2);
-                                if (headerValue.StartsWith("\"") && headerValue.EndsWith("\""))
-                                    headerValue = headerValue.Substring(1, headerValue.Length - 2);
+                                headerName = headerName.Trim('"');
+                                headerValue = headerValue.Trim('"');
 
-                                try
+                                Formater.DebugMessage($"Adding header: {headerName}: {headerValue}");
+                                if (!request.Headers.TryAddWithoutValidation(headerName, headerValue))
                                 {
-                                    if (request.Headers.TryAddWithoutValidation(headerName, headerValue))
-                                    {
-                                        Formater.DebugMessage($"Successfully added header: {headerName}: {headerValue}");
-                                    }
-                                    else
-                                    {
-                                        Formater.RuntimeError($"Failed to add header: {headerName}", SourceContainer.ContainerToken);
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    Formater.RuntimeError($"Error adding header {headerName}: {ex.Message}", SourceContainer.ContainerToken);
+                                    Formater.RuntimeError($"Failed to add header: {headerName}", headerToken);
                                 }
                             }
                             else
                             {
-                                Formater.RuntimeError($"Invalid kv object format for header: {headerVar.VariableData}", headerToken);
+                                Formater.RuntimeError($"Referenced token is not a KV container: {refName}", headerToken);
                             }
-                        }
-                        else
-                        {
-                            Formater.RuntimeError($"Invalid or missing kv object: {headerVar.VariableData}", headerToken);
                         }
                     }
                 }
+            }
+            else
+            {
+                Formater.DebugMessage("No headers found or headers is not an array");
             }
         }
 
         protected override Token TransformResponse(object rawResponse)
         {
             if (rawResponse is not string stringResponse)
+            {
+                Formater.DebugMessage("Invalid response type - not a string");
                 return null;
+            }
 
             try
             {
+                Formater.DebugMessage("Parsing JSON response...");
                 var jsonData = JObject.Parse(stringResponse);
                 var dataLines = new List<string>();
 
-                // Create a flat data structure from JSON
+                // Create individual variable tokens
+                var containerData = new List<Token>();
                 FlattenJson("", jsonData, dataLines);
 
-                string tokenData = $"data {SourceContainer.ContainerName}_data {{\n{string.Join("\n", dataLines)}\n}}";
+                foreach (var line in dataLines)
+                {
+                    var parts = line.Split('=', 2);
+                    if (parts.Length == 2)
+                    {
+                        var varToken = new Token(
+                            SourceContainer.ContainerToken.FileName,
+                            $"{parts[0].Trim()} = {parts[1].Trim()}",
+                            SourceContainer.ContainerToken.LineNumber,
+                            SourceTokenizer
+                        );
+                        containerData.Add(varToken);
+                    }
+                }
 
-                return new Token(
+                // Create the data container
+                string containerName = $"{SourceContainer.ContainerName}_data";
+                string tokenData = $"data {containerName} {{\n{string.Join("\n", dataLines)}\n}}";
+
+                var containerToken = new Token(
                     SourceContainer.ContainerToken.FileName,
                     tokenData,
                     SourceContainer.ContainerToken.LineNumber,
                     SourceTokenizer
                 );
+
+                if (containerToken.Data is TokenDataContainer container)
+                {
+                    // Add all variable tokens to the container
+                    container.ContainerData.AddRange(containerData);
+                    SourceContainer.ContainerData.Add(containerToken);
+
+                    // Add to global tokens
+                    if (SourceTokenizer.FileTokens != null)
+                    {
+                        SourceTokenizer.FileTokens.Add(containerToken);
+                        foreach (var varToken in containerData)
+                        {
+                            SourceTokenizer.FileTokens.Add(varToken);
+                        }
+                    }
+                }
+
+                return containerToken;
             }
             catch (JsonException ex)
             {
                 Formater.RuntimeError($"Failed to parse JSON response: {ex.Message}", SourceContainer.ContainerToken);
+                Formater.DebugMessage($"Raw response: {stringResponse}");
                 return null;
             }
         }
@@ -2299,11 +3226,15 @@ namespace BuckshotPlusPlus.Source
                 case JTokenType.Object:
                     foreach (var prop in (token as JObject).Properties())
                     {
-                        FlattenJson(
-                            string.IsNullOrEmpty(prefix) ? prop.Name : $"{prefix}_{prop.Name}",
-                            prop.Value,
-                            dataLines
-                        );
+                        string name = string.IsNullOrEmpty(prefix) ? prop.Name : $"{prefix}_{prop.Name}";
+                        if (prop.Value.Type == JTokenType.Object)
+                        {
+                            FlattenJson(name, prop.Value, dataLines);
+                        }
+                        else
+                        {
+                            dataLines.Add($"{name} = {FormatJsonValue(prop.Value)}");
+                        }
                     }
                     break;
 
@@ -2312,41 +3243,51 @@ namespace BuckshotPlusPlus.Source
                     break;
 
                 default:
-                    dataLines.Add($"{prefix} = {FormatJsonValue(token)}");
+                    if (!string.IsNullOrEmpty(prefix))
+                    {
+                        dataLines.Add($"{prefix} = {FormatJsonValue(token)}");
+                    }
                     break;
             }
         }
 
         private string FormatJsonValue(JToken token)
         {
-            return token.Type == JTokenType.String ? $"\"{token}\"" : token.ToString();
+            switch (token.Type)
+            {
+                case JTokenType.String:
+                    return $"\"{token.ToString().Replace("\"", "\\\"")}\"";
+                case JTokenType.Date:
+                    return $"\"{token.ToObject<DateTime>():dd/MM/yyyy HH:mm:ss}\"";
+                case JTokenType.Boolean:
+                    return token.ToObject<bool>().ToString().ToLower();
+                case JTokenType.Integer:
+                case JTokenType.Float:
+                    return token.ToString();
+                case JTokenType.Null:
+                    return "\"\"";
+                default:
+                    return $"\"{token}\"";
+            }
         }
 
         public override bool ValidateConfiguration()
         {
+            Formater.DebugMessage("Validating HTTP source configuration...");
+
             if (!SourceParameters.ContainsKey("url"))
             {
                 Formater.RuntimeError("HTTP source must specify a url", SourceContainer.ContainerToken);
                 return false;
             }
 
-            if (!Uri.TryCreate(SourceParameters["url"], UriKind.Absolute, out _))
+            if (!Uri.TryCreate(SourceParameters["url"], UriKind.Absolute, out var uri))
             {
                 Formater.RuntimeError("Invalid URL format", SourceContainer.ContainerToken);
                 return false;
             }
 
-            var headersVar = TokenUtils.FindTokenDataVariableByName(
-                SourceContainer.ContainerData,
-                "headers"
-            );
-
-            if (headersVar != null && headersVar.VariableType != "array")
-            {
-                Formater.RuntimeError("Headers must be an array", SourceContainer.ContainerToken);
-                return false;
-            }
-
+            Formater.DebugMessage($"Configuration valid. URL: {uri}");
             return true;
         }
     }
@@ -2373,6 +3314,9 @@ namespace BuckshotPlusPlus
 
         public static bool SafeContains(string input, char searchChar)
         {
+            // Add null check
+            if (string.IsNullOrEmpty(input)) return false;
+
             var state = StringParseState.Normal;
 
             for (int i = 0; i < input.Length; i++)
@@ -3725,6 +4669,9 @@ namespace BuckshotPlusPlus
 
         public static Token FindTokenByName(List<Token> myTokenList, string tokenName, bool returnParent = false)
         {
+            // Skip debug for common property types
+            bool shouldLog = ShouldLogTokenSearch(tokenName);
+
             string[] subTokenNames = tokenName.Split('.');
             int remain = subTokenNames.Length;
             foreach (string localTokenName in subTokenNames)
@@ -3732,14 +4679,16 @@ namespace BuckshotPlusPlus
                 remain--;
                 foreach (Token myToken in myTokenList)
                 {
-                    if (myToken.Data.GetType() == typeof(TokenDataVariable))
+                    if (myToken?.Data == null) continue;
+
+                    if (myToken.Data is TokenDataVariable)
                     {
                         TokenDataVariable myVar = (TokenDataVariable)myToken.Data;
                         if (myVar.VariableName == localTokenName)
                         {
                             if (remain > 0)
                             {
-                                Formater.TokenCriticalError("Not a container!", myToken);
+                                if (shouldLog) Formater.TokenCriticalError("Not a container!", myToken);
                             }
                             else
                             {
@@ -3757,14 +4706,45 @@ namespace BuckshotPlusPlus
                                 myTokenList = myContainer.ContainerData;
                                 break;
                             }
-
                             return myToken;
                         }
                     }
                 }
             }
 
+            // Only log if it's a token we care about debugging
+            if (shouldLog)
+            {
+                Formater.DebugMessage($"Token not found: {tokenName}");
+            }
             return null;
+        }
+
+        private static bool ShouldLogTokenSearch(string tokenName)
+        {
+            // Don't log CSS properties
+            if (Compiler.CSS.Properties._props.Contains(tokenName))
+                return false;
+
+            // Don't log common HTML attributes
+            var commonAttrs = new[] {
+        "type", "content", "style", "class", "id", "href", "src",
+        "title", "alt", "width", "height", "name", "value", "target",
+        "method", "action"
+    };
+            if (commonAttrs.Contains(tokenName))
+                return false;
+
+            // Don't log event handlers
+            if (tokenName.StartsWith("on"))
+                return false;
+
+            // Only log specific types of tokens
+            bool isSourceData = tokenName.Contains("_data");
+            bool isKvPair = tokenName.Equals("key") || tokenName.Equals("value");
+            bool isHeader = tokenName.Equals("headers");
+
+            return isSourceData || isKvPair || isHeader;
         }
 
         public static bool EditTokenData(List<Token> myTokenList, Token myToken)
@@ -3854,22 +4834,40 @@ namespace BuckshotPlusPlus
             //Formater.SuccessMessage($"It took {stopwatch.ElapsedMilliseconds} ms to run EditAllTokensOfContainer of container {PageTokenDataContainer.ContainerName}");
         }
 
-        public static TokenDataVariable FindTokenDataVariableByName(
-            List<Token> myTokenList,
-            string tokenName
-        )
+        public static TokenDataVariable FindTokenDataVariableByName(List<Token> myTokenList, string tokenName)
         {
+            // Only debug log for source data or non-style/attribute lookups
+            bool shouldLog = tokenName.Contains("_data") ||
+                            (!IsStyleProperty(tokenName) && !IsHtmlAttribute(tokenName));
+
             Token foundToken = FindTokenByName(myTokenList, tokenName);
             if (foundToken != null)
             {
-                if (foundToken.Data.GetType() == typeof(TokenDataVariable))
+                if (foundToken.Data is TokenDataVariable myVar)
                 {
-                    TokenDataVariable myVar = (TokenDataVariable)foundToken.Data;
                     return myVar;
                 }
             }
+            else if (shouldLog)
+            {
+                Formater.DebugMessage($"Token not found: {tokenName}");
+            }
 
             return null;
+        }
+
+        // Helper methods to identify token types
+        private static bool IsStyleProperty(string name)
+        {
+            // List of common CSS properties to avoid logging
+            return Compiler.CSS.Properties._props.Contains(name);
+        }
+
+        private static bool IsHtmlAttribute(string name)
+        {
+            // List of common HTML attributes to avoid logging
+            var htmlAttrs = new[] { "type", "content", "style", "class", "id", "href", "src" };
+            return htmlAttrs.Contains(name);
         }
 
         public static TokenDataVariable TryResolveSourceReference(
@@ -4002,6 +5000,41 @@ namespace BuckshotPlusPlus
 
 ```
 
+### File: WebServer\Extensions\DictionaryExtensions.cs
+
+```csharp
+﻿using System;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
+
+namespace BuckshotPlusPlus.WebServer.Extensions
+{
+    public static class DictionaryExtensions
+    {
+        public static async Task<TValue> GetOrAddAsync<TKey, TValue>(
+    this ConcurrentDictionary<TKey, TValue> dictionary,
+    TKey key,
+    Func<TKey, Task<TValue>> valueFactory) where TValue : class
+        {
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+
+            if (dictionary.TryGetValue(key, out TValue value) && value != null)
+            {
+                return value;
+            }
+
+            value = await valueFactory(key);
+            if (value != null)
+            {
+                dictionary.TryAdd(key, value);
+            }
+            return value;
+        }
+    }
+}
+```
+
 ### File: WebServer\MetaData.cs
 
 ```csharp
@@ -4022,6 +5055,328 @@ namespace BuckshotPlusPlus.WebServer
     }
 }
 
+```
+
+### File: WebServer\MultiTenantServer.cs
+
+```csharp
+﻿using System.Net;
+using System.Text;
+using Serilog;
+using BuckshotPlusPlus.Services;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using System;
+
+namespace BuckshotPlusPlus.WebServer
+{
+    public class MultiTenantServer
+    {
+        private HttpListener _listener;
+        private readonly TenantManager _tenantManager;
+        private readonly MongoDbService _mongoDb;
+        private readonly StripeService _stripe;
+        private readonly ILogger _logger;
+        private readonly string _defaultHost;
+        private bool _isRunning;
+        private Tokenizer _defaultTokenizer;
+
+        public MultiTenantServer(string mongoConnectionString, string stripeApiKey, string defaultHost)
+        {
+            _mongoDb = new MongoDbService(mongoConnectionString);
+            _stripe = new StripeService(stripeApiKey, _mongoDb);
+            _logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                .WriteTo.File("logs/bpp.log", rollingInterval: RollingInterval.Day)
+                .CreateLogger();
+            _tenantManager = new TenantManager(_mongoDb, _stripe, _logger);
+            _defaultHost = defaultHost;
+        }
+
+        public void Start()
+        {
+            if (_isRunning) return;
+
+            var port = Environment.GetEnvironmentVariable("BPP_PORT") ?? "8080";
+            var bindingAttempts = new[]
+            {
+                $"http://*:{port}/",
+                $"http://+:{port}/",
+                $"http://localhost:{port}/",
+                $"http://127.0.0.1:{port}/"
+            };
+
+            Exception lastException = null;
+            bool started = false;
+
+            // Load default site if configured
+            try
+            {
+                var defaultSitePath = Environment.GetEnvironmentVariable("DEFAULT_SITE_PATH");
+                if (!string.IsNullOrEmpty(defaultSitePath))
+                {
+                    _defaultTokenizer = new Tokenizer(defaultSitePath);
+                    _logger.Information("Loaded default site from {Path}", defaultSitePath);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Failed to load default site");
+            }
+
+            foreach (var prefix in bindingAttempts)
+            {
+                try
+                {
+                    _listener = new HttpListener();
+                    _listener.Prefixes.Add(prefix);
+                    _listener.Start();
+                    _isRunning = true;
+                    started = true;
+
+                    _logger.Information("Server started successfully on {Prefix}", prefix);
+                    if (prefix.Contains("localhost") || prefix.Contains("127.0.0.1"))
+                    {
+                        _logger.Warning("Server is bound to localhost only. To bind to all interfaces, run as administrator.");
+                    }
+
+                    _ = HandleConnections();
+                    break;
+                }
+                catch (HttpListenerException ex)
+                {
+                    lastException = ex;
+                    _logger.Debug($"Failed to bind to {prefix}: {ex.Message}");
+                    try { _listener?.Close(); } catch { }
+                }
+                catch (Exception ex)
+                {
+                    lastException = ex;
+                    _logger.Error(ex, "Unexpected error while starting server on {Prefix}", prefix);
+                    try { _listener?.Close(); } catch { }
+                }
+            }
+
+            if (!started)
+            {
+                var message = "Failed to start server on any interface.";
+                if (lastException != null)
+                {
+                    message += $"\nLast error: {lastException.Message}";
+                    if (lastException is HttpListenerException && lastException.Message.Contains("Access"))
+                    {
+                        message += "\nTry:\n" +
+                            "1. Run as administrator, or\n" +
+                            "2. Use the command: netsh http add urlacl url=http://*:8080/ user=YOUR_USERNAME";
+                    }
+                }
+                throw new Exception(message);
+            }
+        }
+
+        private async Task HandleConnections()
+        {
+            while (_isRunning)
+            {
+                try
+                {
+                    var context = await _listener.GetContextAsync();
+                    _ = ProcessRequestAsync(context);
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error(ex, "Error handling connection");
+                }
+            }
+        }
+
+        private async Task ProcessRequestAsync(HttpListenerContext context)
+        {
+            try
+            {
+                var req = context.Request;
+                var resp = context.Response;
+                var domain = req.Url.Host.ToLower();
+
+                // Handle health check
+                if (req.Url.PathAndQuery == "/health")
+                {
+                    await SendResponse(resp, "OK", "text/plain", 200);
+                    return;
+                }
+
+                // Get tenant-specific tokenizer
+                try
+                {
+                    var siteTokenizer = await _tenantManager.GetTenantTokenizer(domain, req);
+                    if (siteTokenizer == null)
+                    {
+                        // If no tenant found and no default tokenizer, return 404
+                        if (_defaultTokenizer == null || domain != "localhost")
+                        {
+                            await SendResponse(resp, "Site not found", "text/plain", 404);
+                            return;
+                        }
+                        // Use default tokenizer for localhost if no tenant configured
+                        siteTokenizer = _defaultTokenizer;
+                    }
+
+                    // Handle the request based on the path
+                    if (req.Url.AbsolutePath.EndsWith(".ico"))
+                    {
+                        await HandleFaviconRequest(req, resp, siteTokenizer);
+                    }
+                    else if (req.Url.AbsolutePath.StartsWith("/source/"))
+                    {
+                        await HandleSourceRequest(req, resp, siteTokenizer);
+                    }
+                    else
+                    {
+                        await HandlePageRequest(req, resp, siteTokenizer);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error(ex, "Error processing request for {Domain}", domain);
+                    await SendResponse(resp, "Error processing request", "text/plain", 500);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Unhandled error processing request");
+                try
+                {
+                    await SendResponse(context.Response, "Internal Server Error", "text/plain", 500);
+                }
+                catch
+                {
+                    // Ignore errors in error handling
+                }
+            }
+        }
+
+        private async Task HandlePageRequest(HttpListenerRequest req, HttpListenerResponse resp, Tokenizer siteTokenizer)
+        {
+            var path = req.Url.AbsolutePath;
+            var pageName = path == "/" ? "index" : path.TrimStart('/');
+            var pageToken = siteTokenizer.PagesTokens.FirstOrDefault(t =>
+                ((TokenDataContainer)t.Data).ContainerName == pageName);
+
+            if (pageToken == null)
+            {
+                await SendResponse(resp, "Page not found", "text/plain", 404);
+                return;
+            }
+
+            var html = Page.RenderWebPage(siteTokenizer.FileTokens, pageToken);
+            await SendResponse(resp, html, "text/html", 200);
+        }
+
+        private async Task HandleFaviconRequest(HttpListenerRequest req, HttpListenerResponse resp, Tokenizer siteTokenizer)
+        {
+            try
+            {
+                var iconPath = Path.Combine(siteTokenizer.RelativePath, req.Url.AbsolutePath.TrimStart('/'));
+                if (File.Exists(iconPath))
+                {
+                    var iconData = await File.ReadAllBytesAsync(iconPath);
+                    resp.ContentType = "image/x-icon";
+                    resp.ContentLength64 = iconData.Length;
+                    await resp.OutputStream.WriteAsync(iconData);
+                }
+                else
+                {
+                    await SendResponse(resp, "Favicon not found", "text/plain", 404);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error handling favicon request");
+                await SendResponse(resp, "Error processing favicon", "text/plain", 500);
+            }
+        }
+
+        private async Task HandleSourceRequest(HttpListenerRequest req, HttpListenerResponse resp, Tokenizer siteTokenizer)
+        {
+            try
+            {
+                var sourceName = req.Url.AbsolutePath.Split('/').Last();
+                var sourceData = TokenUtils.FindTokenByName(siteTokenizer.FileTokens, sourceName);
+
+                if (sourceData?.Data is TokenDataContainer container && container.ContainerType == "source")
+                {
+                    var data = await Source.BaseSource.CreateSource(container, siteTokenizer)?.FetchDataAsync();
+                    if (data != null)
+                    {
+                        var jsonResponse = Newtonsoft.Json.JsonConvert.SerializeObject(new { success = true, data });
+                        await SendResponse(resp, jsonResponse, "application/json", 200);
+                        return;
+                    }
+                }
+
+                await SendResponse(resp,
+                    Newtonsoft.Json.JsonConvert.SerializeObject(new { success = false, error = "Source not found" }),
+                    "application/json",
+                    404);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error handling source request");
+                await SendResponse(resp,
+                    Newtonsoft.Json.JsonConvert.SerializeObject(new { success = false, error = ex.Message }),
+                    "application/json",
+                    500);
+            }
+        }
+
+        private async Task SendResponse(HttpListenerResponse resp, string content, string contentType, int statusCode)
+        {
+            try
+            {
+                resp.StatusCode = statusCode;
+                resp.ContentType = contentType;
+                if (contentType == "application/json")
+                {
+                    resp.AddHeader("Access-Control-Allow-Origin", "*");
+                    resp.AddHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+                    resp.AddHeader("Access-Control-Allow-Headers", "Content-Type");
+                }
+                var buffer = Encoding.UTF8.GetBytes(content);
+                resp.ContentLength64 = buffer.Length;
+                await resp.OutputStream.WriteAsync(buffer);
+            }
+            finally
+            {
+                try
+                {
+                    resp.Close();
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error(ex, "Error closing response stream");
+                }
+            }
+        }
+
+        public void Stop()
+        {
+            if (!_isRunning) return;
+
+            _isRunning = false;
+            try
+            {
+                _listener.Stop();
+                _listener.Close();
+                _logger.Information("Server stopped");
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error stopping server");
+            }
+        }
+    }
+}
 ```
 
 ### File: WebServer\Page.cs
@@ -4308,6 +5663,203 @@ namespace BuckshotPlusPlus.WebServer
 }
 ```
 
+### File: WebServer\TenantManager.cs
+
+```csharp
+﻿using System.Collections.Concurrent;
+using BuckshotPlusPlus.Models;
+using BuckshotPlusPlus.Services;
+using Serilog;
+using BuckshotPlusPlus.WebServer.Extensions;
+using System.Net;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using System.IO;
+using System.Threading.Tasks;
+using System;
+
+namespace BuckshotPlusPlus.WebServer
+{
+    public class TenantManager
+    {
+        private readonly ConcurrentDictionary<string, Tenant> _tenantCache;
+        private readonly MongoDbService _mongoDb;
+        private readonly StripeService _stripe;
+        private readonly string _sitesBasePath;
+        private readonly ILogger _logger;
+
+        public TenantManager(MongoDbService mongoDb, StripeService stripe, ILogger logger)
+        {
+            _mongoDb = mongoDb;
+            _stripe = stripe;
+            _logger = logger;
+            _tenantCache = new ConcurrentDictionary<string, Tenant>();
+            _sitesBasePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "sites");
+            Directory.CreateDirectory(_sitesBasePath);
+            StartCacheCleanupTimer();
+        }
+
+        public async Task<Tokenizer> GetTenantTokenizer(string domain, HttpListenerRequest request)
+        {
+            try
+            {
+                // Get tenant from cache or database
+                var tenant = await _tenantCache.GetOrAddAsync(domain, async (d) =>
+                {
+                    try
+                    {
+                        var t = await _mongoDb.GetTenantByDomain(d);
+                        if (t != null)
+                        {
+                            _logger.Information("Found tenant configuration for domain: {Domain}", d);
+                            t.LastUpdated = DateTime.MinValue; // Force update on first load
+                            return t;
+                        }
+                        _logger.Warning("No tenant configuration found for domain: {Domain}", d);
+                        return null;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error(ex, "Error retrieving tenant for domain: {Domain}", d);
+                        return null;
+                    }
+                });
+
+                if (tenant == null)
+                {
+                    _logger.Warning("No tenant found for domain: {Domain}", domain);
+                    return null;
+                }
+
+                // Track page view
+                await TrackPageView(tenant, request);
+
+                // Check if we need to update the site
+                var siteDir = Path.Combine(_sitesBasePath, tenant.CacheKey);
+                bool needsUpdate = !Directory.Exists(siteDir) ||
+                                 (DateTime.UtcNow - tenant.LastUpdated).TotalMinutes > 5;
+
+                if (needsUpdate)
+                {
+                    _logger.Information("Updating site for domain: {Domain}", domain);
+                    await UpdateSite(tenant, siteDir);
+                }
+
+                // Return cached tokenizer if available and up to date
+                if (tenant.SiteTokenizer != null && !needsUpdate)
+                {
+                    return tenant.SiteTokenizer;
+                }
+
+                // Create new tokenizer
+                var entryFile = Path.Combine(siteDir, tenant.EntryFile);
+                if (!File.Exists(entryFile))
+                {
+                    _logger.Error("Entry file not found: {EntryFile} for domain: {Domain}", entryFile, domain);
+                    return null;
+                }
+
+                _logger.Information("Creating new tokenizer for domain: {Domain}", domain);
+                tenant.SiteTokenizer = new Tokenizer(entryFile);
+                tenant.LastUpdated = DateTime.UtcNow;
+
+                var update = Builders<Tenant>.Update
+                    .Set(t => t.LastUpdated, tenant.LastUpdated);
+                await _mongoDb._tenants.UpdateOneAsync(t => t.Id == tenant.Id, update);
+
+                return tenant.SiteTokenizer;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error getting tenant tokenizer for domain: {Domain}", domain);
+                throw;
+            }
+        }
+
+        private async Task TrackPageView(Tenant tenant, HttpListenerRequest request)
+        {
+            try
+            {
+                var pageView = new PageView
+                {
+                    TenantId = tenant.Id.ToString(),
+                    Path = request.Url.PathAndQuery,
+                    UserAgent = request.UserAgent ?? "Unknown",
+                    IpAddress = request.RemoteEndPoint.Address.ToString(),
+                    Timestamp = DateTime.UtcNow,
+                    SessionId = request.Cookies["bpp_session_id"]?.Value ?? Guid.NewGuid().ToString(),
+                    Country = request.Headers["CF-IPCountry"] ?? "Unknown",
+                    Region = request.Headers["CF-Region"] ?? "Unknown"
+                };
+
+                await _mongoDb.TrackPageView(pageView);
+
+                // Check if we need to process overage charges
+                var monthlyViews = await _mongoDb.GetMonthlyPageViews(tenant.Id.ToString());
+                if (monthlyViews > tenant.MonthlyPageViewLimit)
+                {
+                    try
+                    {
+                        await _stripe.ProcessOverageCharges(tenant.Id);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Error(ex, "Error processing overage charges for tenant: {Domain}", tenant.Domain);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error tracking page view for tenant: {Domain}", tenant.Domain);
+                // Don't throw - we don't want to break the site over analytics
+            }
+        }
+
+        private async Task UpdateSite(Tenant tenant, string siteDir)
+        {
+            try
+            {
+                _logger.Information("Starting repository update for: {Domain}", tenant.Domain);
+                await GitService.UpdateRepository(tenant, siteDir);
+
+                // Update the timestamp
+                tenant.LastUpdated = DateTime.UtcNow;
+
+                // Use filters and update definitions explicitly
+                var filter = Builders<Tenant>.Filter.Eq(t => t.Id, tenant.Id);
+                var update = Builders<Tenant>.Update
+                    .Set("lastUpdated", tenant.LastUpdated);
+
+                await _mongoDb._tenants.UpdateOneAsync(filter, update);
+                _logger.Information("Successfully updated site for: {Domain}", tenant.Domain);
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex, "Error updating site for tenant: {Domain}", tenant.Domain);
+                throw;
+            }
+        }
+
+        private void StartCacheCleanupTimer()
+        {
+            var timer = new System.Timers.Timer(TimeSpan.FromHours(1).TotalMilliseconds);
+            timer.Elapsed += async (s, e) =>
+            {
+                foreach (var tenant in _tenantCache)
+                {
+                    if ((DateTime.UtcNow - tenant.Value.LastUpdated).TotalHours > 24)
+                    {
+                        _tenantCache.TryRemove(tenant.Key, out _);
+                        _logger.Information("Removed expired cache entry for domain: {Domain}", tenant.Key);
+                    }
+                }
+            };
+            timer.Start();
+        }
+    }
+}
+```
+
 ### File: WebServer\WebServer.cs
 
 ```csharp
@@ -4545,7 +6097,9 @@ namespace BuckshotPlusPlus.WebServer
 
 ### File Count by Type
 
+- Models: 4
 - Project Files: 1
-- Source Files: 33
+- Services: 3
+- Source Files: 36
 
-Total files processed: 34
+Total files processed: 44

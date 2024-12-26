@@ -12,14 +12,27 @@ namespace BuckshotPlusPlus
 
             foreach (var line in File.ReadAllLines(filePath))
             {
-                var parts = line.Split(
-                    '=',
-                    StringSplitOptions.RemoveEmptyEntries);
+                string part_0 = "";
+                string part_1 = "";
+                bool bIsFirstPart = true;
+                foreach (char c in line)
+                {
+                    if (c == '=' & bIsFirstPart) {
+                        bIsFirstPart = false;
+                        continue;
+                    }
 
-                if (parts.Length != 2)
-                    continue;
+                    if (bIsFirstPart)
+                    {
+                        part_0 += c;
+                        continue;
+                    }
 
-                Environment.SetEnvironmentVariable(parts[0], parts[1]);
+                    part_1 += c;
+                }
+
+                Console.WriteLine(part_0 + "=" + part_1);
+                Environment.SetEnvironmentVariable(part_0, part_1);
             }
         }
     }
