@@ -20,6 +20,22 @@
 
 ![Downloads](https://img.shields.io/github/downloads/BuckshotPlusPlus/BuckshotPlusPlus/total) ![Contributors](https://img.shields.io/github/contributors/BuckshotPlusPlus/BuckshotPlusPlus?color=dark-green) ![Forks](https://img.shields.io/github/forks/BuckshotPlusPlus/BuckshotPlusPlus?style=social) ![Stargazers](https://img.shields.io/github/stars/BuckshotPlusPlus/BuckshotPlusPlus?style=social) ![Issues](https://img.shields.io/github/issues/BuckshotPlusPlus/BuckshotPlusPlus) ![License](https://img.shields.io/github/license/BuckshotPlusPlus/BuckshotPlusPlus)
 
+## 🎁 Free Hosting Offer!
+
+Get your BPP projects hosted for free, forever! Includes:
+- Custom domain support
+- Automatic HTTPS
+- Global CDN
+- Automatic deploys from GitHub
+
+To claim your free hosting, either:
+- Email: iwantfreehosting@bpplang.com
+- Discord: victorsgameventure
+
+Just send your:
+1. Desired domain name
+2. GitHub repo link (works with private repos - just include a token)
+
 ## 🚀 About BuckshotPlusPlus
 
 BuckshotPlusPlus (BPP) is a modern web development language designed to make web development simpler and more efficient. It combines the power of component-based architecture with a clean, intuitive syntax to help you build websites faster.
