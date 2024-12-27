@@ -257,6 +257,7 @@ jobs:
           const path = require('path');
           const os = require('os');
           const https = require('https');
+          const StreamZip = require('node-stream-zip');
 
           const platform = os.platform();
           const arch = os.arch();
@@ -346,8 +347,9 @@ jobs:
           };
 
           const extractZip = async (zipPath, destDir) => {
-            const { extract } = require('node-stream-zip');
-            await extract(zipPath, destDir);
+            const zip = new StreamZip.async({ file: zipPath });
+            await zip.extract(null, destDir);
+            await zip.close();
           };
 
           const main = async () => {
