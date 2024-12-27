@@ -208,7 +208,7 @@ jobs:
 
           const getBinaryDir = () => {
               const platformDir = `${platform}-${arch}`;
-              return path.join(__dirname, '..', 'lib', 'binaries', platformDir);
+              return path.join(__dirname, '..', 'lib', 'binaries', platformDir, platformDir);
           };
 
           const binaryDir = getBinaryDir();
