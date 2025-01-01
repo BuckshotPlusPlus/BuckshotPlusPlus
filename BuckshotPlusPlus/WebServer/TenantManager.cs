@@ -175,8 +175,8 @@ namespace BuckshotPlusPlus.WebServer
             await updateLock.WaitAsync();
             try
             {
-                var currentHash = await GetCurrentCommitHash(siteDir);
-                var latestHash = await GetLatestCommitHash(tenant);
+                var currentHash = GetCurrentCommitHash(siteDir);
+                var latestHash = GetLatestCommitHash(tenant);
 
                 if (currentHash != latestHash)
                 {
@@ -199,7 +199,7 @@ namespace BuckshotPlusPlus.WebServer
             }
         }
 
-        private async Task<string> GetCurrentCommitHash(string repoPath)
+        private string GetCurrentCommitHash(string repoPath)
         {
             try
             {
@@ -218,7 +218,7 @@ namespace BuckshotPlusPlus.WebServer
             }
         }
 
-        private async Task<string> GetLatestCommitHash(Tenant tenant)
+        private string GetLatestCommitHash(Tenant tenant)
         {
             try
             {
@@ -323,7 +323,7 @@ namespace BuckshotPlusPlus.WebServer
         private void StartCacheCleanupTimer()
         {
             var timer = new System.Timers.Timer(_cacheExpiration.TotalMilliseconds / 2);
-            timer.Elapsed += async (s, e) =>
+            timer.Elapsed += (s, e) =>
             {
                 try
                 {

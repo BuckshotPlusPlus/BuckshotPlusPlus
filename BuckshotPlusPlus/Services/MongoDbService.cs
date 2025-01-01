@@ -206,7 +206,7 @@ namespace BuckshotPlusPlus.Services
             }
         }
 
-        public async Task<string> GetTenantIdAsString(ObjectId id)
+        public string GetTenantIdAsString(ObjectId id)
         {
             return id.ToString();
         }
