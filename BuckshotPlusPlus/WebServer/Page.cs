@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace BuckshotPlusPlus.WebServer
 {
@@ -32,7 +31,7 @@ namespace BuckshotPlusPlus.WebServer
                 false
             );
 
-            string page = (String)_basicPage.Clone();
+            string page = _basicPage;
             if (myPageTitle != null)
             {
                 page += myPageTitle.GetCompiledVariableData(serverSideTokens);
@@ -59,7 +58,6 @@ namespace BuckshotPlusPlus.WebServer
                         );
 
                         string metaArgs = "";
-
                         foreach(Token metaVarToken in meta.ContainerData)
                         {
                             TokenDataVariable localMetaVar = (TokenDataVariable)metaVarToken.Data;
@@ -70,7 +68,6 @@ namespace BuckshotPlusPlus.WebServer
 
                         page += "<meta " + metaArgs + ">";
                     }
-                    //Page += $"<script src=\"{ArrayVar.VariableData}\">";
                 }
             }
 
@@ -122,10 +119,7 @@ namespace BuckshotPlusPlus.WebServer
                 page += customHead.VariableData;
             }
 
-            
-
             page += "</head>";
-
             if (myPageBody != null)
             {
                 page += Compiler.HTML.View.CompileContent(serverSideTokens, myPageBody, myPageContainer);
