@@ -79,7 +79,7 @@ namespace BuckshotPlusPlus
         private static bool ShouldLogTokenSearch(string tokenName)
         {
             // Don't log CSS properties
-            if (Compiler.CSS.Properties._props.Contains(tokenName))
+            if (Compiler.CSS.Properties.props.Contains(tokenName))
                 return false;
 
             // Don't log common HTML attributes
@@ -216,7 +216,7 @@ namespace BuckshotPlusPlus
         private static bool IsStyleProperty(string name)
         {
             // List of common CSS properties to avoid logging
-            return Compiler.CSS.Properties._props.Contains(name);
+            return Compiler.CSS.Properties.props.Contains(name);
         }
 
         private static bool IsHtmlAttribute(string name)
