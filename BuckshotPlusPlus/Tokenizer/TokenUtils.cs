@@ -141,13 +141,9 @@ namespace BuckshotPlusPlus
 
         public static void EditAllTokensOfContainer(List<Token> fileTokens,Token myContainer)
         {
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-
             TokenDataContainer pageTokenDataContainer = (TokenDataContainer)myContainer.Data;
             if (pageTokenDataContainer == null)
             {
-                stopwatch.Stop();
                 Formater.TokenCriticalError("The provided token is not a container!", myContainer);
             }
             else
@@ -185,9 +181,6 @@ namespace BuckshotPlusPlus
                     
                 }
             }
-
-            stopwatch.Stop();
-            //Formater.SuccessMessage($"It took {stopwatch.ElapsedMilliseconds} ms to run EditAllTokensOfContainer of container {PageTokenDataContainer.ContainerName}");
         }
 
         public static TokenDataVariable FindTokenDataVariableByName(List<Token> myTokenList, string tokenName)
