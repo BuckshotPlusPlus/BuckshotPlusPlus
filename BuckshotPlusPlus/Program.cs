@@ -223,40 +223,16 @@ Options:
             return myTokenizer;
         }
 
-        public static void DeleteDirectory(string targetDir)
-        {
-            if (!Directory.Exists(targetDir))
-                return;
-
-            string[] files = Directory.GetFiles(targetDir);
-            string[] dirs = Directory.GetDirectories(targetDir);
-
-            foreach (string file in files)
-            {
-                File.SetAttributes(file, FileAttributes.Normal);
-                File.Delete(file);
-            }
-
-            foreach (string dir in dirs)
-            {
-                DeleteDirectory(dir);
-            }
-
-            Directory.Delete(targetDir, false);
-        }
-
         public static void ExportWebsite(string filePath, string exportDirectory)
         {
             // For now export directory is absolute only
             Tokenizer myTokenizer = CompileMainFile(filePath);
-
             if (Path.Exists(exportDirectory))
             {
-                DeleteDirectory(exportDirectory);
+                Directory.Delete(exportDirectory, true);
             }
 
             Directory.CreateDirectory(exportDirectory);
-
             foreach (Token pageToken in myTokenizer.PagesTokens)
             {
                 TokenDataContainer myPageData = (TokenDataContainer)pageToken.Data;
@@ -264,8 +240,9 @@ Options:
                 var icon = TokenUtils.FindTokenByName(myPageData.ContainerData, "icon");
                 if (icon != null)
                 {
-                    var data = icon.Data;
-                    var fileName = ((data as TokenDataVariable)!).VariableData;
+                    var data = icon.Data as TokenDataVariable;
+                    var fileName = data.VariableData;
+
                     string icoPath = Path.Combine(filePath, @"..\" + fileName);
                     File.WriteAllBytes(exportDirectory + "/" + fileName, File.ReadAllBytes(icoPath));
                 }
