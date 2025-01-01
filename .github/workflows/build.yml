@@ -14,12 +14,12 @@ jobs:
 
       - uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: "7.0"
+          dotnet-version: "8.0"
 
       - uses: actions/setup-node@v3
         with:
-          node-version: '18'
-          registry-url: 'https://registry.npmjs.org'
+          node-version: "18"
+          registry-url: "https://registry.npmjs.org"
 
       # Build for each platform including ARM64
       - name: Build Windows x64
@@ -46,14 +46,14 @@ jobs:
           mkdir -p release-assets/linux-arm64
           mkdir -p release-assets/darwin-x64
           mkdir -p release-assets/darwin-arm64
-          
+
           # Copy binaries to release asset directories
-          cp -r BuckshotPlusPlus/bin/Release/net7.0/win-x64/publish/* release-assets/win32-x64/
-          cp -r BuckshotPlusPlus/bin/Release/net7.0/linux-x64/publish/* release-assets/linux-x64/
-          cp -r BuckshotPlusPlus/bin/Release/net7.0/linux-arm64/publish/* release-assets/linux-arm64/
-          cp -r BuckshotPlusPlus/bin/Release/net7.0/osx-x64/publish/* release-assets/darwin-x64/
-          cp -r BuckshotPlusPlus/bin/Release/net7.0/osx-arm64/publish/* release-assets/darwin-arm64/
-          
+          cp -r BuckshotPlusPlus/bin/Release/net8.0/win-x64/publish/* release-assets/win32-x64/
+          cp -r BuckshotPlusPlus/bin/Release/net8.0/linux-x64/publish/* release-assets/linux-x64/
+          cp -r BuckshotPlusPlus/bin/Release/net8.0/linux-arm64/publish/* release-assets/linux-arm64/
+          cp -r BuckshotPlusPlus/bin/Release/net8.0/osx-x64/publish/* release-assets/darwin-x64/
+          cp -r BuckshotPlusPlus/bin/Release/net8.0/osx-arm64/publish/* release-assets/darwin-arm64/
+
           # Create ZIP files for each platform
           cd release-assets
           zip -r ../windows-x64.zip win32-x64/*

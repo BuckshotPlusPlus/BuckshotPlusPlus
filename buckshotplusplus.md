@@ -1,6 +1,5 @@
 # BuckshotPlusPlus Project Documentation
 
-
 ## Models
 
 ### File: Models\GitAuth.cs
@@ -129,7 +128,6 @@ namespace BuckshotPlusPlus.Models
 }
 ```
 
-
 ## Project Files
 
 ### File: BuckshotPlusPlus.csproj
@@ -138,14 +136,14 @@ namespace BuckshotPlusPlus.Models
 ﻿<Project Sdk="Microsoft.NET.Sdk;Microsoft.NET.Sdk.Publish">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
 	  <PackageReference Include="Appwrite" Version="0.4.2" />
 	  <PackageReference Include="LibGit2Sharp" Version="0.27.2" />
-	  
+
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
-	  
+
     <PackageReference Include="MongoDB.Driver" Version="2.23.1" />
     <PackageReference Include="MySql.Data" Version="8.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
@@ -157,7 +155,6 @@ namespace BuckshotPlusPlus.Models
   </ItemGroup>
 </Project>
 ```
-
 
 ## Services
 
@@ -716,7 +713,6 @@ namespace BuckshotPlusPlus.Services
 }
 ```
 
-
 ## Source Files
 
 ### File: Analytics\AnalyticTimedEvent.cs
@@ -1000,7 +996,7 @@ namespace BuckshotPlusPlus.Compiler.CSS
         {
             string compiledCss = "";
             TokenDataContainer viewContainer = (TokenDataContainer)myToken.Data;
-            
+
             foreach (String name in _props)
             {
                 TokenDataVariable myCssProp = TokenUtils.FindTokenDataVariableByName(
@@ -1056,7 +1052,7 @@ namespace BuckshotPlusPlus.Compiler.CSS
             {
                 result[i] = char.ToUpper(result[i][0]) + result[i].Substring(1);
             }
-            
+
             return String.Join("", result);
         }
     }
@@ -1083,14 +1079,14 @@ namespace BuckshotPlusPlus.Compiler.HTML
             ("title", false),
             ("lang", false),
             ("dir", false),
-            
+
             // Link and navigation
             ("href", false),
             ("target", false),
             ("rel", false),
             ("download", false),
             ("hreflang", false),
-            
+
             // Form attributes
             ("action", false),
             ("method", false),
@@ -1107,7 +1103,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
             ("accept", false),
             ("autocomplete", false),
             ("enctype", false),
-            
+
             // Media attributes
             ("src", false),
             ("alt", false),
@@ -1119,13 +1115,13 @@ namespace BuckshotPlusPlus.Compiler.HTML
             ("muted", true),
             ("preload", false),
             ("poster", false),
-            
+
             // Table attributes
             ("colspan", false),
             ("rowspan", false),
             ("headers", false),
             ("scope", false),
-            
+
             // Form state attributes
             ("disabled", true),
             ("checked", true),
@@ -1133,7 +1129,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
             ("readonly", true),
             ("required", true),
             ("multiple", true),
-            
+
             // ARIA accessibility
             ("role", false),
             ("aria-label", false),
@@ -1146,50 +1142,50 @@ namespace BuckshotPlusPlus.Compiler.HTML
             ("aria-current", false),
             ("aria-disabled", false),
             ("aria-selected", false),
-            
+
             // Data attributes
             ("data-*", false),
-            
+
             // Meta information
             ("content", false),
             ("http-equiv", false),
             ("charset", false),
-            
+
             // Draggable functionality
             ("draggable", false),
             ("dropzone", false),
-            
+
             // Interactive attributes
             ("contenteditable", false),
             ("spellcheck", false),
             ("tabindex", false),
-            
+
             // Frame/iframe attributes
             ("sandbox", false),
             ("srcdoc", false),
             ("frameborder", false),
             ("allowfullscreen", true),
             ("loading", false),
-            
+
             // List attributes
             ("start", false),
             ("reversed", true),
-            
+
             // Script attributes
             ("async", true),
             ("defer", true),
             ("integrity", false),
             ("crossorigin", false),
-            
+
             // Form validation
             ("novalidate", true),
             ("formnovalidate", true),
             ("autocapitalize", false),
             ("inputmode", false),
-            
+
             // Security
             ("referrerpolicy", false),
-            
+
             // Misc attributes
             ("translate", false),
             ("hidden", true),
@@ -1201,7 +1197,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
         {
             string compiledAtributes = "";
             TokenDataContainer viewContainer = (TokenDataContainer)myToken.Data;
-            
+
             foreach ((String name, bool withoutValue) in _props)
             {
                 TokenDataVariable myHtmlAttribute = TokenUtils.TryFindTokenDataVariableValueByName(
@@ -1209,7 +1205,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
                     viewContainer.ContainerData,
                     name
                 );
-                
+
                 if (myHtmlAttribute != null)
                 {
                     if ( withoutValue )
@@ -1226,7 +1222,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
                     }
                 }
             }
-            
+
             return compiledAtributes;
         }
     }
@@ -1762,7 +1758,7 @@ namespace BuckshotPlusPlus
         public Dictionary<string, string> DatabaseParameters { get; set; }
         public Tokenizer MyTokenizer { get; set; }
 
-        public BaseDatabase(Dictionary<string, string> parameters, Tokenizer myTokenizer) { 
+        public BaseDatabase(Dictionary<string, string> parameters, Tokenizer myTokenizer) {
             DatabaseParameters = parameters;
             this.MyTokenizer = myTokenizer;
         }
@@ -2189,7 +2185,7 @@ namespace BuckshotPlusPlus
             string[] values = logicTestString.Split(LogicTestType);
             LeftValue = values[0];
             LeftValueType = TokenDataVariable.FindVariableType(LeftValue, myToken);
-            
+
             RightValue = values[1];
             RightValueType = TokenDataVariable.FindVariableType(RightValue, myToken);
 
@@ -2278,7 +2274,7 @@ namespace BuckshotPlusPlus
                             return localLogicTestType;
                         }
                     }
-                    
+
                 }
             }
 
@@ -3610,7 +3606,7 @@ namespace BuckshotPlusPlus
                         }
 
                         // CHECK AND STORE CONTAINER TYPE (OBJECT, FUNCTION)
-                        
+
                         foreach (string containerType in SupportedContainerTypes)
                         {
                             if (myArgs[0] == containerType)
@@ -3620,14 +3616,14 @@ namespace BuckshotPlusPlus
                                     this.ContainerType = "logic";
                                     myToken.Type = this.ContainerType;
                                     ContainerMetaData = new TokenDataLogic(myToken);
-                                    
+
                                 }
                                 else
                                 {
                                     this.ContainerType = containerType;
                                     myToken.Type = this.ContainerType;
                                 }
-                                
+
                             }
                         }
                         if (this.ContainerType == "")
@@ -3728,7 +3724,7 @@ namespace BuckshotPlusPlus
                                     previousToken
                                 );
 
-                            
+
                             AddChildToContainerData(ContainerData, newContainerToken);
                             break;
                         }
@@ -3791,7 +3787,7 @@ namespace BuckshotPlusPlus
                     containerData,
                     TokenUtils.GetTokenName(newChild)
                 );
-                
+
                 if (foundToken != null)
                 {
                     containerData.Remove(foundToken);
@@ -3804,7 +3800,7 @@ namespace BuckshotPlusPlus
         public static bool IsTokenDataContainer(Token myToken)
         {
             string localType = Formater.SafeSplit(myToken.LineData, ' ')[0];
-            
+
             foreach (string type in SupportedContainerTypes)
             {
                 if (localType == type)
@@ -3818,7 +3814,7 @@ namespace BuckshotPlusPlus
                     {
                         return false;
                     }
-                    
+
                 }
             }
 
@@ -3849,7 +3845,7 @@ namespace BuckshotPlusPlus
             this.FuncName = GetFunctionCallName(myToken.LineData, myToken);
             this.FuncArgs = GetFunctionArgs(myToken.LineData, myToken);
         }
-        
+
 
         public static bool IsTokenDataFunctionCall(Token myToken)
         {
@@ -3968,7 +3964,7 @@ namespace BuckshotPlusPlus
                 {
                     myToken.PreviousToken.NextToken = myToken;
                 }
-                
+
             }
         }
 
@@ -4028,7 +4024,7 @@ namespace BuckshotPlusPlus
                 {
                     LastLogicTestResult = false;
                 }
-                
+
             }else if(LogicType == "else")
             {
                 Token previousToken = ParentToken.PreviousToken;
@@ -4046,7 +4042,7 @@ namespace BuckshotPlusPlus
                     }
                 }else { LastLogicTestResult = false; }
             }
-            
+
             return LastLogicTestResult;
         }
     }
@@ -4284,7 +4280,7 @@ using File = System.IO.File;
 namespace BuckshotPlusPlus
 {
     // TokenData is the main class for all tokens
-    public abstract class TokenData { 
+    public abstract class TokenData {
     }
 
     public enum LineType
@@ -4569,7 +4565,7 @@ namespace BuckshotPlusPlus
                                     {
                                         continue;
                                     }
-                                    
+
                                     if (lineData[^1] == 13)
                                     {
                                         lineData = lineData.Substring(0, lineData.Length - 1);
@@ -4826,7 +4822,7 @@ namespace BuckshotPlusPlus
 
                         }
                     }
-                    
+
                 }
             }
 
@@ -5505,7 +5501,7 @@ namespace BuckshotPlusPlus.WebServer
                 page += customHead.VariableData;
             }
 
-            
+
 
             page += "</head>";
 
@@ -5571,7 +5567,7 @@ namespace BuckshotPlusPlus.WebServer
             // Save the XML document to a file
             doc.Save(myTokenizer.RelativePath + "/sitemap.xml");
         }
-        
+
         /// <summary>
         /// Generates an XML sitemap from a list of Tokens.
         /// </summary>
@@ -5579,7 +5575,7 @@ namespace BuckshotPlusPlus.WebServer
         public static void GenerateSitemapFromTokens(Tokenizer myTokenizer)
         {
             List<string> urls = new List<string>();
-            
+
             foreach (Token token in myTokenizer.FileTokens)
             {
                 if (token.Data.GetType() == typeof(TokenDataContainer))
@@ -5595,7 +5591,7 @@ namespace BuckshotPlusPlus.WebServer
                         {
                             envBaseUrl = "http://localhost:8080";
                         }
-                        
+
                         if (pageName == "index")
                         {
                             urls.Add( envBaseUrl + "/");
@@ -5604,11 +5600,11 @@ namespace BuckshotPlusPlus.WebServer
                         {
                             urls.Add(envBaseUrl+"/" + pageName);
                         }
-                        
+
                     }
                 }
             }
-            
+
             GenerateSitemap(myTokenizer, urls);
         }
     }
@@ -5881,12 +5877,12 @@ namespace BuckshotPlusPlus.WebServer
         public HttpListener Listener;
         public int RequestCount = 0;
         public bool RunServer = true;
-        
+
 
         public async Task HandleIncomingConnections(Tokenizer myTokenizer)
         {
             UserSessionManager userSessions = new UserSessionManager();
-            
+
             SitemapGenerator.GenerateSitemapFromTokens(myTokenizer);
 
             // While a user hasn't visited the `shutdown` url, keep on handling requests
@@ -5898,7 +5894,7 @@ namespace BuckshotPlusPlus.WebServer
                 // Peel out the requests and response objects
                 HttpListenerRequest req = ctx.Request;
                 HttpListenerResponse resp = ctx.Response;
-                
+
 
                 string absolutePath = req.Url!.AbsolutePath;
 
@@ -6072,8 +6068,8 @@ namespace BuckshotPlusPlus.WebServer
                 Listener.Prefixes.Add(url);
                 Listener.Start();
                 Formater.SuccessMessage($"Listening for connections on {url}");
-                
-                
+
+
                 // Handle requests
                 Task listenTask = HandleIncomingConnections(myTokenizer);
                 listenTask.GetAwaiter().GetResult();
@@ -6091,7 +6087,6 @@ namespace BuckshotPlusPlus.WebServer
 }
 
 ```
-
 
 ## Project Summary
 
