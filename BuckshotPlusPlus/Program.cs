@@ -46,13 +46,13 @@ Options:
 
             if (args.Length == 0)
             {
-                ShowHelp();
                 Formater.CriticalError("No input file provided. Use -h for help.");
                 return;
             }
 
             // Handle command line arguments
-            string arg = args[0].ToLower();
+            string path = args[0];
+            string arg = path.ToLower();
             if (arg == "-h" || arg == "--help")
             {
                 ShowHelp();
@@ -65,7 +65,7 @@ Options:
                 return;
             }
 
-            if (arg == "-master")
+            if (arg == "-m" || arg == "--master")
             {
                 await StartMasterServer();
                 return;
@@ -102,7 +102,7 @@ Options:
             }
 
             // Regular BPP server startup
-            await StartRegularServer(args[0]);
+            await StartRegularServer(path);
         }
 
         private static async Task StartMasterServer()
