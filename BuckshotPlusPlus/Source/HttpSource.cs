@@ -11,7 +11,7 @@ namespace BuckshotPlusPlus.Source
     public class HttpSource : BaseSource
     {
         private readonly HttpClient _httpClient;
-        private const int DEFAULT_TIMEOUT = 30;
+        private const int DEFAULT_TIMEOUT = 30; // TODO: Configure timeout
 
         public HttpSource(TokenDataContainer container, Tokenizer tokenizer) : base(container, tokenizer)
         {

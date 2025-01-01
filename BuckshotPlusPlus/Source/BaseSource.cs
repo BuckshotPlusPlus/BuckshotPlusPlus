@@ -12,7 +12,7 @@ namespace BuckshotPlusPlus.Source
 
         protected BaseSource(TokenDataContainer container, Tokenizer tokenizer)
         {
-            SourceParameters = new Dictionary<string, string>();
+            SourceParameters = [];
             SourceContainer = container;
             SourceTokenizer = tokenizer;
 

@@ -216,7 +216,7 @@ Options:
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            Tokenizer myTokenizer = new Tokenizer(filePath);
+            Tokenizer myTokenizer = new(filePath);
 
             stopwatch.Stop();
             Formater.SuccessMessage($"Successfully compiled in {stopwatch.ElapsedMilliseconds} ms");
