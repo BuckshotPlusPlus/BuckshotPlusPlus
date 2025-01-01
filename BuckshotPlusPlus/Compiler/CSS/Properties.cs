@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace BuckshotPlusPlus.Compiler.CSS
 {
     public class Properties
     {
-        public static List<String> _props = new()
-        {
+        public static List<string> props = [
             "align-content",
             "align-items",
             "align-self",
@@ -203,19 +201,20 @@ namespace BuckshotPlusPlus.Compiler.CSS
             "word-wrap",
             "writing-mode",
             "z-index"
-        };
+        ];
 
         public static string GetCssString(List<Token> serverSideTokens, Token myToken)
         {
             string compiledCss = "";
             TokenDataContainer viewContainer = (TokenDataContainer)myToken.Data;
             
-            foreach (String name in _props)
+            foreach (string name in props)
             {
                 TokenDataVariable myCssProp = TokenUtils.FindTokenDataVariableByName(
                     viewContainer.ContainerData,
                     name
                 );
+
                 if (myCssProp != null)
                 {
                     if (myCssProp.VariableType == "ref" && myCssProp.RefData != null)
@@ -234,27 +233,31 @@ namespace BuckshotPlusPlus.Compiler.CSS
                     }
                 }
             }
+
             TokenDataVariable myFloatProp = TokenUtils.FindTokenDataVariableByName(
                 viewContainer.ContainerData,
                 "float"
             );
+
             if (myFloatProp != null)
             {
                 compiledCss += "float:" + myFloatProp.GetCompiledVariableData(serverSideTokens) + ";";
             }
+
             return compiledCss;
         }
 
         public static bool IsCssProp(Token myToken)
         {
             TokenDataVariable myVar = (TokenDataVariable)myToken.Data;
-            foreach (String prop in _props)
+            foreach (string prop in props)
             {
                 if (myVar.VariableName == prop)
                 {
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -263,10 +266,10 @@ namespace BuckshotPlusPlus.Compiler.CSS
             string[] result = name.Split('-');
             for (int i = 1; i < result.Length; i++)
             {
-                result[i] = char.ToUpper(result[i][0]) + result[i].Substring(1);
+                result[i] = char.ToUpper(result[i][0]) + result[i][1..];
             }
             
-            return String.Join("", result);
+            return string.Join("", result);
         }
     }
 }

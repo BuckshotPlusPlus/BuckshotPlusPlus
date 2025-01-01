@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace BuckshotPlusPlus.Compiler.HTML
 {
     class Events
     {
-        static List<String> _props = new()
-        {
+        static List<string> props = [
             // Window Events
             "onafterprint",
             "onbeforeprint",
@@ -94,7 +92,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
 
             // Misc Events
             "ontoggle"
-        };
+        ];
 
         public static string GetHtmlEvents(List<Token> serverSideTokens, Token myToken)
         {
@@ -121,7 +119,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
                 {
                     if (childToken.Data is TokenDataVariable var && var.VariableName.StartsWith("on"))
                     {
-                        if (_props.Contains(var.VariableName))
+                        if (props.Contains(var.VariableName))
                         {
                             Token myJsEvent = TokenUtils.FindTokenByName(
                                 myToken.MyTokenizer.FileTokens,

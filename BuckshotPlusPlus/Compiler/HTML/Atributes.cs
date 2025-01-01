@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace BuckshotPlusPlus.Compiler.HTML
 {
     public class Attributes
     {
-        static List<(String, Boolean)> _props = new()
-        {
+        static List<(string, bool)> props = [
             // Core attributes
             ("id", false),
             ("class", false),
@@ -126,14 +124,14 @@ namespace BuckshotPlusPlus.Compiler.HTML
             ("hidden", true),
             ("cite", false),
             ("datetime", false)
-        };
+        ];
 
         public static string GetHtmlAttributes(List<Token> serverSideTokens,Token myToken)
         {
             string compiledAtributes = "";
             TokenDataContainer viewContainer = (TokenDataContainer)myToken.Data;
             
-            foreach ((String name, bool withoutValue) in _props)
+            foreach ((string name, bool withoutValue) in props)
             {
                 TokenDataVariable myHtmlAttribute = TokenUtils.TryFindTokenDataVariableValueByName(
                     serverSideTokens,
