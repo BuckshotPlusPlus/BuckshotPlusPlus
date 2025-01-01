@@ -184,7 +184,7 @@ namespace BuckshotPlusPlus.WebServer
             resp.Close();
         }
 
-        public void Start(Tokenizer myTokenizer, string localIp = "*")
+        public void Start(Tokenizer myTokenizer, string localIp = "127.0.0.1")
         {
             // Create a Http server and start listening for incoming connections
 
