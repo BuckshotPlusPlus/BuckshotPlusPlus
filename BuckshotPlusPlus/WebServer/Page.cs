@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace BuckshotPlusPlus.WebServer
 {
@@ -57,14 +58,10 @@ namespace BuckshotPlusPlus.WebServer
                             arrayVar.VariableData
                         );
 
-                        string metaArgs = "";
-                        foreach(Token metaVarToken in meta.ContainerData)
-                        {
-                            TokenDataVariable localMetaVar = (TokenDataVariable)metaVarToken.Data;
-                            metaArgs += " " + localMetaVar.VariableName + "=" + '"';
-                            metaArgs += localMetaVar.GetCompiledVariableData(serverSideTokens, true);
-                            metaArgs += '"';
-                        }
+                        string metaArgs = string.Join(" ", meta.ContainerData.Select(n => {
+                            TokenDataVariable localMetaVar = (TokenDataVariable)n.Data;
+                            return localMetaVar.VariableName + "=" + '"' +  localMetaVar.GetCompiledVariableData(serverSideTokens, true) + '"';
+                        }));
 
                         page += "<meta " + metaArgs + ">";
                     }
