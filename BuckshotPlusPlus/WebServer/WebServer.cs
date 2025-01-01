@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using BuckshotPlusPlus.Security;
 
@@ -14,18 +13,15 @@ namespace BuckshotPlusPlus.WebServer
     internal class WebServer
     {
         public HttpListener Listener;
-        public int RequestCount = 0;
-        public bool RunServer = true;
-        
 
         public async Task HandleIncomingConnections(Tokenizer myTokenizer)
         {
-            UserSessionManager userSessions = new UserSessionManager();
+            UserSessionManager userSessions = new();
             
             SitemapGenerator.GenerateSitemapFromTokens(myTokenizer);
 
             // While a user hasn't visited the `shutdown` url, keep on handling requests
-            while (RunServer)
+            while (true)
             {
                 // Will wait here until we hear from a connection
                 HttpListenerContext ctx = await Listener.GetContextAsync();
@@ -33,10 +29,8 @@ namespace BuckshotPlusPlus.WebServer
                 // Peel out the requests and response objects
                 HttpListenerRequest req = ctx.Request;
                 HttpListenerResponse resp = ctx.Response;
-                
 
                 string absolutePath = req.Url!.AbsolutePath;
-
                 if (absolutePath.StartsWith("/source/"))
                 {
                     await HandleSourceRequest(ctx, myTokenizer);
@@ -45,6 +39,8 @@ namespace BuckshotPlusPlus.WebServer
 
                 if (absolutePath.Contains(".ico"))
                 {
+                    // TODO: put file in cache
+
                     string path = "." + absolutePath;
                     if (File.Exists(path))
                     {
@@ -85,18 +81,14 @@ namespace BuckshotPlusPlus.WebServer
 
                                     string clientIp = ctx.Request.RemoteEndPoint.ToString();
 
-                                    List<Token> serverSideTokenList = new List<Token>();
-
-                                    serverSideTokenList.AddRange(myTokenizer.FileTokens);
+                                    List<Token> serverSideTokenList = [.. myTokenizer.FileTokens];
 
                                     UserSession foundUserSession = userSessions.AddOrUpdateUserSession(req, resp);
-
                                     foundUserSession.AddUrl(req.Url.AbsolutePath);
 
                                     serverSideTokenList.Add(foundUserSession.GetToken(myTokenizer));
 
                                     // Write the response info
-                                    string disableSubmit = !RunServer ? "disabled" : "";
                                     string pageData = Page.RenderWebPage(serverSideTokenList, myToken);
 
                                     byte[] data = Encoding.UTF8.GetBytes(
@@ -110,8 +102,6 @@ namespace BuckshotPlusPlus.WebServer
                                     // Write out to the response stream (asynchronously), then close it
                                     await resp.OutputStream.WriteAsync(data, 0, data.Length);
 
-
-
                                     resp.Close();
 
                                     stopwatch.Stop();
@@ -123,12 +113,10 @@ namespace BuckshotPlusPlus.WebServer
 
                     if (!pageFound)
                     {
-                        string disableSubmit = !RunServer ? "disabled" : "";
-                        string pageData = "404 not found";
-
                         byte[] data = Encoding.UTF8.GetBytes(
-                            pageData
+                            "404 not found"
                         );
+
                         resp.ContentType = "text";
                         resp.ContentEncoding = Encoding.UTF8;
                         resp.ContentLength64 = data.LongLength;
@@ -173,7 +161,7 @@ namespace BuckshotPlusPlus.WebServer
                             data = responseData
                         });
 
-                        byte[] buffer = System.Text.Encoding.UTF8.GetBytes(jsonResponse);
+                        byte[] buffer = Encoding.UTF8.GetBytes(jsonResponse);
                         resp.ContentType = "application/json";
                         resp.ContentLength64 = buffer.Length;
                         await resp.OutputStream.WriteAsync(buffer, 0, buffer.Length);
@@ -189,7 +177,7 @@ namespace BuckshotPlusPlus.WebServer
                 success = false,
                 error = "Source not found or failed to fetch data"
             });
-            byte[] errorBuffer = System.Text.Encoding.UTF8.GetBytes(errorResponse);
+            byte[] errorBuffer = Encoding.UTF8.GetBytes(errorResponse);
             resp.ContentType = "application/json";
             resp.ContentLength64 = errorBuffer.Length;
             await resp.OutputStream.WriteAsync(errorBuffer, 0, errorBuffer.Length);
@@ -206,8 +194,8 @@ namespace BuckshotPlusPlus.WebServer
                 Listener = new HttpListener();
                 Listener.Prefixes.Add(url);
                 Listener.Start();
+
                 Formater.SuccessMessage($"Listening for connections on {url}");
-                
                 
                 // Handle requests
                 Task listenTask = HandleIncomingConnections(myTokenizer);

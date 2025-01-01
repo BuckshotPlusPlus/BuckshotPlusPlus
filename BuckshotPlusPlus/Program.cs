@@ -111,7 +111,6 @@ Options:
             {
                 // Load environment variables
                 var envPath = Path.Combine(Directory.GetCurrentDirectory(), ".env");
-                Console.WriteLine(envPath);
                 if (File.Exists(envPath))
                 {
                     DotEnv.Load(envPath);
@@ -192,7 +191,7 @@ Options:
                     DotEnv.Load(dotenv);
                 }
 
-                WebServer.WebServer myWebServer = new WebServer.WebServer { };
+                WebServer.WebServer myWebServer = new() { };
                 myWebServer.Start(myTokenizer);
 
                 // Wait for Ctrl+C
@@ -200,6 +199,7 @@ Options:
                 Console.CancelKeyPress += (s, e) =>
                 {
                     e.Cancel = true;
+
                     cts.Cancel();
                 };
 
