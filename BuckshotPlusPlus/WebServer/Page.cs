@@ -5,7 +5,8 @@ namespace BuckshotPlusPlus.WebServer
 {
     internal class Page
     {
-        static string _basicPage = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF - 8\"> <meta http-equiv=\"X - UA - Compatible\" content =\"IE = edge\" > <meta name=\"viewport\" content =\"width=device-width, height=device-height, initial-scale=1.0, user-scalable=yes\" ><title>";
+        // TODO: hardcoded things
+        static string _basicPage = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>";
 
         public static string RenderWebPage(List<Token> serverSideTokens, Token myPage)
         {
