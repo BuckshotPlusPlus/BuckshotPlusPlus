@@ -43,6 +43,7 @@ namespace BuckshotPlusPlus.Models
         [BsonElement("lastUpdated")]
         public DateTime LastUpdated { get; set; } = DateTime.UtcNow;
 
+        #nullable enable
         [BsonIgnore]
         public Tokenizer? SiteTokenizer { get; set; }
     }

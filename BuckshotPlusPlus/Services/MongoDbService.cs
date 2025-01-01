@@ -88,6 +88,7 @@ namespace BuckshotPlusPlus.Services
             }
         }
 
+        #nullable enable
         public async Task<Tenant?> GetTenantByDomain(string domain)
         {
             try
@@ -129,6 +130,7 @@ namespace BuckshotPlusPlus.Services
                 throw;
             }
         }
+        #nullable disable
 
         public async Task TrackPageView(PageView pageView)
         {
