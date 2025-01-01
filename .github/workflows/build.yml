@@ -48,11 +48,11 @@ jobs:
           mkdir -p release-assets/darwin-arm64
 
           # Copy binaries to release asset directories
-          cp -r BuckshotPlusPlus/bin/Release/net8.0/win-x64/publish/* release-assets/win32-x64/
-          cp -r BuckshotPlusPlus/bin/Release/net8.0/linux-x64/publish/* release-assets/linux-x64/
-          cp -r BuckshotPlusPlus/bin/Release/net8.0/linux-arm64/publish/* release-assets/linux-arm64/
-          cp -r BuckshotPlusPlus/bin/Release/net8.0/osx-x64/publish/* release-assets/darwin-x64/
-          cp -r BuckshotPlusPlus/bin/Release/net8.0/osx-arm64/publish/* release-assets/darwin-arm64/
+          cp -r BuckshotPlusPlus/bin/Release/net9.0/win-x64/publish/* release-assets/win32-x64/
+          cp -r BuckshotPlusPlus/bin/Release/net9.0/linux-x64/publish/* release-assets/linux-x64/
+          cp -r BuckshotPlusPlus/bin/Release/net9.0/linux-arm64/publish/* release-assets/linux-arm64/
+          cp -r BuckshotPlusPlus/bin/Release/net9.0/osx-x64/publish/* release-assets/darwin-x64/
+          cp -r BuckshotPlusPlus/bin/Release/net9.0/osx-arm64/publish/* release-assets/darwin-arm64/
 
           # Create ZIP files for each platform
           cd release-assets

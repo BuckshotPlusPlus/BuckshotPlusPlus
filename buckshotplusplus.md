@@ -136,7 +136,7 @@ namespace BuckshotPlusPlus.Models
 ﻿<Project Sdk="Microsoft.NET.Sdk;Microsoft.NET.Sdk.Publish">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
 	  <PackageReference Include="Appwrite" Version="0.4.2" />
