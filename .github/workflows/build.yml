@@ -427,6 +427,15 @@ jobs:
           overwrite: true
           file_glob: true
 
+      # Publish to npm
+      - name: Publish to npm
+        run: |
+          cd bpp
+          npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+
   build-and-push-docker:
     name: Build and Push Docker Image
     needs: build-all
@@ -463,11 +472,3 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-  # Publish to npm
-  - name: Publish to npm
-    run: |
-      cd bpp
-      npm publish
-    env:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
