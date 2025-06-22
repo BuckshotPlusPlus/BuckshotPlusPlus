@@ -14,11 +14,11 @@ jobs:
 
       - uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: "8.0"
+          dotnet-version: "9.0"
 
       - uses: actions/setup-node@v3
         with:
-          node-version: "18"
+          node-version: "22"
           registry-url: "https://registry.npmjs.org"
 
       # Build for each platform including ARM64
