@@ -16,7 +16,6 @@ BuckshotPlusPlus - A simple and efficient web development language
 
 Usage:
   bpp <file>              Run a BuckshotPlusPlus file (e.g., bpp main.bpp)
-  bpp -master             Start BPP in multi-tenant master server mode
   bpp export <file> <dir> Export your website to static files
   bpp merge <file>        Merge all includes into a single file
   bpp -h                  Show this help message
@@ -24,14 +23,12 @@ Usage:
 
 Examples:
   bpp main.bpp           Start server with main.bpp
-  bpp -master            Start multi-tenant master server
   bpp export main.bpp ./dist   Export website to ./dist directory
   bpp merge main.bpp     Create a merged version of your project
 
 Options:
   -h, --help            Show this help message
   -v, --version         Show version information
-  -master              Start in multi-tenant master server mode
 ");
         }
 
@@ -62,12 +59,6 @@ Options:
             if (arg == "-v" || arg == "--version")
             {
                 ShowVersion();
-                return;
-            }
-
-            if (arg == "-m" || arg == "--master")
-            {
-                await StartMasterServer();
                 return;
             }
 
@@ -103,58 +94,6 @@ Options:
 
             // Regular BPP server startup
             await StartRegularServer(path);
-        }
-
-        private static async Task StartMasterServer()
-        {
-            try
-            {
-                // Load environment variables
-                var envPath = Path.Combine(Directory.GetCurrentDirectory(), ".env");
-                if (File.Exists(envPath))
-                {
-                    DotEnv.Load(envPath);
-                }
-
-                var mongoUri = Environment.GetEnvironmentVariable("MONGODB_URI");
-                var stripeKey = Environment.GetEnvironmentVariable("STRIPE_API_KEY");
-                var defaultHost = Environment.GetEnvironmentVariable("DEFAULT_HOST");
-
-                if (string.IsNullOrEmpty(mongoUri))
-                {
-                    Formater.CriticalError("MONGODB_URI not set in .env file");
-                    return;
-                }
-
-                if (string.IsNullOrEmpty(stripeKey))
-                {
-                    Formater.CriticalError("STRIPE_API_KEY not set in .env file");
-                    return;
-                }
-
-                defaultHost ??= "localhost";
-
-                // Create and start the multi-tenant server
-                var server = new MultiTenantServer(mongoUri, stripeKey, defaultHost);
-                server.Start();
-
-                Formater.SuccessMessage("Multi-tenant master server started successfully!");
-                Console.WriteLine("Press Ctrl+C to stop the server");
-
-                // Wait for shutdown signal
-                var cts = new CancellationTokenSource();
-                Console.CancelKeyPress += (s, e) =>
-                {
-                    e.Cancel = true;
-                    cts.Cancel();
-                };
-
-                await Task.Delay(-1, cts.Token);
-            }
-            catch (Exception ex)
-            {
-                Formater.CriticalError($"Error starting master server: {ex.Message}");
-            }
         }
 
         private static async Task StartRegularServer(string filePath)
