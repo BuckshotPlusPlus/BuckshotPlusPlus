@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace BuckshotPlusPlus
@@ -105,6 +105,10 @@ namespace BuckshotPlusPlus
             // Trim the value first
             value = value.Trim();
 
+            // Check for view call first
+            if (ParameterParser.IsViewCall(value))
+                return "viewcall";
+
             // Check for array first
             if (value.StartsWith("[") && value.EndsWith("]"))
                 return "array";
@@ -144,7 +148,14 @@ namespace BuckshotPlusPlus
 
         public string GetCompiledVariableData(List<Token> fileTokens, bool compileRef = false)
         {
-            if (this.VariableType == "multiple")
+            // Handle view calls
+            if (this.VariableType == "viewcall")
+            {
+                var (viewName, arguments) = ParameterParser.ParseViewCall(this.VariableData);
+                var viewCall = new TokenDataViewCall(viewName, arguments, this.VariableToken);
+                return viewCall.CompileViewCall(fileTokens);
+            }
+            else if (this.VariableType == "multiple")
             {
                 List<string> variables = Formater.SafeSplit(this.VariableData, '+');
                 string result = "";

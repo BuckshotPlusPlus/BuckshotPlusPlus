@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace BuckshotPlusPlus.Compiler.HTML
@@ -79,11 +79,22 @@ namespace BuckshotPlusPlus.Compiler.HTML
                     case "multiple":
                         return viewContent.GetCompiledVariableData(serverSideTokens);
 
+                    case "viewcall":
+                        // Handle view calls directly
+                        return viewContent.GetCompiledVariableData(serverSideTokens);
+
                     case "ref":
                         Token foundToken = TokenUtils.FindTokenByName(serverSideTokens, viewContent.GetCompiledVariableData(serverSideTokens));
                         if (foundToken?.Data is TokenDataContainer)
                         {
                             return CompileView(serverSideTokens, foundToken);
+                        }
+                        // If it's a parameterized view, handle it
+                        else if (foundToken?.Data is TokenDataParameterizedView parameterizedView)
+                        {
+                            // This handles the case where a view is referenced directly without parameters
+                            var viewCall = new TokenDataViewCall(parameterizedView.ViewName, new List<string>(), viewContent.VariableToken);
+                            return viewCall.CompileViewCall(serverSideTokens);
                         }
                         return viewContent.GetCompiledVariableData(serverSideTokens, true);
 
@@ -93,10 +104,18 @@ namespace BuckshotPlusPlus.Compiler.HTML
                         {
                             if (childViewToken?.Data is TokenDataVariable childView)
                             {
-                                var childToken = TokenUtils.FindTokenByName(serverSideTokens, childView.GetCompiledVariableData(serverSideTokens));
-                                if (childToken != null)
+                                if (childView.VariableType == "viewcall")
                                 {
-                                    result.Append(CompileView(serverSideTokens, childToken));
+                                    // Handle direct view calls in arrays
+                                    result.Append(childView.GetCompiledVariableData(serverSideTokens));
+                                }
+                                else
+                                {
+                                    var childToken = TokenUtils.FindTokenByName(serverSideTokens, childView.GetCompiledVariableData(serverSideTokens));
+                                    if (childToken != null)
+                                    {
+                                        result.Append(CompileView(serverSideTokens, childToken));
+                                    }
                                 }
                             }
                         }

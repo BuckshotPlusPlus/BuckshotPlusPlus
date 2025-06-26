@@ -17,7 +17,8 @@ namespace BuckshotPlusPlus
         Comment,
         Variable,
         Include,
-        Empty
+        Empty,
+        ParameterizedView
     }
 
     public struct UnprocessedLine
@@ -111,6 +112,106 @@ namespace BuckshotPlusPlus
             return filePath;
         }
 
+        private void ProcessParameterizedViewLine(ProcessedLine processedLine, List<string> fileLines, ref int currentLineNumber, string fileName)
+        {
+            var (viewName, parameters) = ParameterParser.ParseParameterizedViewDefinition(processedLine.LineData);
+            
+            if (string.IsNullOrEmpty(viewName))
+            {
+                Formater.RuntimeError($"Invalid parameterized view syntax at line {processedLine.CurrentLine}", null);
+                return;
+            }
+            
+            Formater.DebugMessage($"Processing parameterized view '{viewName}' with {parameters.Count} parameters at line {processedLine.CurrentLine}");
+
+            // Read the view content (similar to container processing)
+            var viewContent = new List<Token>();
+            int startLine = currentLineNumber;
+            int braceCount = 1; // We already have the opening brace
+            currentLineNumber++;
+            
+            // Process the view's content tokens
+            while (currentLineNumber < fileLines.Count && braceCount > 0)
+            {
+                string currentLine = fileLines[currentLineNumber].Trim();
+                
+                // Update brace count
+                braceCount += currentLine.Count(c => c == '{');
+                braceCount -= currentLine.Count(c => c == '}');
+                
+                if (braceCount == 0)
+                {
+                    currentLineNumber++;
+                    break;
+                }
+                
+                // Process the current line
+                var nextProcessedLine = ProcessLineData(new UnprocessedLine(fileLines, currentLineNumber));
+                
+                // Skip empty lines and comments
+                if (nextProcessedLine.LineType != LineType.Empty && 
+                    nextProcessedLine.LineType != LineType.Comment)
+                {
+                    // For container lines, we need to process them as containers
+                    if (nextProcessedLine.LineType == LineType.Container && nextProcessedLine.ContainerData != null)
+                    {
+                        // Create a container token for the content
+                        var containerToken = new Token(
+                            fileName,
+                            nextProcessedLine.LineData,
+                            currentLineNumber,
+                            this
+                        );
+                        
+                        // Set the container data
+                        containerToken.Data = new TokenDataContainer(containerToken);
+                        viewContent.Add(containerToken);
+                    }
+                    else if (nextProcessedLine.LineType == LineType.Variable)
+                    {
+                        // Process as a regular variable
+                        var contentToken = new Token(
+                            fileName, 
+                            nextProcessedLine.LineData, 
+                            currentLineNumber, 
+                            this,
+                            null,
+                            null
+                        );
+                        
+                        if (contentToken != null && contentToken.Data != null)
+                        {
+                            viewContent.Add(contentToken);
+                        }
+                    }
+                }
+                
+                currentLineNumber++;
+            }
+
+            // Create the parameterized view token
+            var token = new Token(
+                fileName: fileName,
+                lineData: $"view {viewName}({string.Join(", ", parameters)})",
+                lineNumber: startLine,
+                myTokenizer: this,
+                parent: null,
+                previousToken: null
+            );
+            
+            try
+            {
+                // Set the token data
+                token.Data = new TokenDataParameterizedView(viewName, parameters, viewContent, token);
+                FileTokens.Add(token);
+                Formater.DebugMessage($"Successfully created parameterized view '{viewName}' with {viewContent.Count} content tokens");
+            }
+            catch (Exception ex)
+            {
+                Formater.RuntimeError($"Failed to create parameterized view '{viewName}': {ex.Message}", token);
+            }
+        }
+
         public void AnalyzeFileData(string fileName, string fileData)
         {
             if (UnprocessedFileDataDictionary.ContainsKey(fileName))
@@ -133,54 +234,59 @@ namespace BuckshotPlusPlus
 
                     switch (currentLine.LineType)
                     {
-                            case LineType.Include:
-                            {
-                                string includePath = Formater.SafeSplit(currentLine.LineData, ' ')[1];
-                                includePath = GetIncludeValue(includePath);
+                        case LineType.ParameterizedView:
+                            Formater.DebugMessage($"Found parameterized view definition at line {currentLineNumber}");
+                            ProcessParameterizedViewLine(currentLine, myFileLines, ref currentLineNumber, fileName);
+                            // Skip the lines that were processed by ProcessParameterizedViewLine
+                            currentLineNumber--; // Decrement because the loop will increment it
+                            break;
+                        case LineType.Include:
+                        {
+                            string includePath = Formater.SafeSplit(currentLine.LineData, ' ')[1];
+                            includePath = GetIncludeValue(includePath);
 
-                                if (IsHttp(includePath))
-                                {
-                                    IncludeFile(
+                            if (IsHttp(includePath))
+                            {
+                                IncludeFile(
+                                    includePath.Substring(
+                                        1,
+                                        includePath.Length - 2
+                                    )
+                                );
+                            }
+                            else
+                            {
+                                IncludeFile(
+                                    Path.Combine(
+                                        RelativePath,
                                         includePath.Substring(
                                             1,
                                             includePath.Length - 2
                                         )
-                                    );
-                                }
-                                else
-                                {
-                                    IncludeFile(
-                                        Path.Combine(
-                                            RelativePath,
-                                            includePath.Substring(
-                                                1,
-                                                includePath.Length - 2
-                                            )
-                                        )
-                                    );
-                                }
-                                break;
+                                    )
+                                );
                             }
-                            case LineType.Container:
-                            {
-                                AddContainerToken(fileName, currentLine.ContainerData, currentLineNumber);
-                                break;
-                            }
-                            case LineType.Variable:
-                            {
-                                Token myNewToken = new Token(fileName, currentLine.LineData, currentLineNumber, this);
+                            break;
+                        }
+                        case LineType.Container:
+                        {
+                            AddContainerToken(fileName, currentLine.ContainerData, currentLineNumber);
+                            break;
+                        }
+                        case LineType.Variable:
+                        {
+                            Token myNewToken = new Token(fileName, currentLine.LineData, currentLineNumber, this);
 
-                                if (!TokenUtils.SafeEditTokenData(currentLine.LineData, FileTokens, myNewToken))
-                                {
-                                    FileTokens.Add(myNewToken);
-                                }
-                                break;
+                            if (!TokenUtils.SafeEditTokenData(currentLine.LineData, FileTokens, myNewToken))
+                            {
+                                FileTokens.Add(myNewToken);
                             }
+                            break;
+                        }
                         case LineType.Empty:
                             break;
-                            case LineType.Comment: {
-                                break;
-                            }
+                        case LineType.Comment:
+                            break;
                     }
 
                 }
@@ -242,6 +348,14 @@ namespace BuckshotPlusPlus
                 {
                     return new ProcessedLine(currentLineNumber + 1, LineType.Empty, lineData);
                 }
+            }
+            
+            // Check for parameterized view definition
+            string trimmedLine = lineData.Trim();
+            if (ParameterParser.IsParameterizedView(trimmedLine))
+            {
+                Formater.DebugMessage($"Found potential parameterized view: {trimmedLine}");
+                return new ProcessedLine(currentLineNumber, LineType.ParameterizedView, trimmedLine);
             }
             
             if (lineData.Length >= 2)
