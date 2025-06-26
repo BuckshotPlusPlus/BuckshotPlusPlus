@@ -1,10 +1,31 @@
-// Testing new comment system
-view HelloWorld(title){
-    content = title
-    type = "h1"
-    color = "Pink"
+// Views are reusable objects/components drawn on the web page
+data Colors{
+    Primary = "White"
+    Secondary = "Black"
 }
 
+view Title{
+    // Attributes are properties of the view
+    content = "This is a title"
+    // You can use any valid html tag
+    type = "h1"
+    // You can use any valid css parameters
+    color = Colors.Primary
+    background-color = Colors.Secondary
+}
+
+view SubTitle:Title{
+    content = "This is a subtitle"
+    type = "h2"
+}
+
+// Parameterized view
+view HelloWorld:Title(title){
+    content = title
+}
+
+Colors.Primary = "Blue"
+
 page index{
-    body = HelloWorld("Hello World with a parameterized view")
+    body = [Title,SubTitle,HelloWorld("Hello World with a parameterized view")]
 }
