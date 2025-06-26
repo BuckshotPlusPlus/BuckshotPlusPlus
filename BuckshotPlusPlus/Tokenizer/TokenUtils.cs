@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -20,6 +20,53 @@ namespace BuckshotPlusPlus
                 return myContainer.ContainerName;
             }
 
+            return null;
+        }
+
+        public static TokenDataParameterizedView FindParameterizedView(List<Token> tokens, string viewName)
+        {
+            if (tokens == null || string.IsNullOrEmpty(viewName))
+            {
+                return null;
+            }
+
+            foreach (var token in tokens)
+            {
+                // Check for parameterized view
+                if (token?.Data is TokenDataParameterizedView paramView && 
+                    string.Equals(paramView.ViewName, viewName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return paramView;
+                }
+                
+                // Check for regular view (TokenDataContainer with ContainerType "view")
+                if (token?.Data is TokenDataContainer container)
+                {
+                    if (container.ContainerType == "view" && 
+                        string.Equals(container.ContainerName, viewName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Convert the regular view to a parameterized view with no parameters
+                        return new TokenDataParameterizedView(
+                            container.ContainerName,
+                            null, // No parent view
+                            new List<string>(), // No parameters
+                            container.ContainerData,
+                            token
+                        );
+                    }
+                    
+                    // Recursively search in container data
+                    if (container.ContainerData != null)
+                    {
+                        var foundInContainer = FindParameterizedView(container.ContainerData, viewName);
+                        if (foundInContainer != null)
+                        {
+                            return foundInContainer;
+                        }
+                    }
+                }
+            }
+            
             return null;
         }
 

@@ -114,7 +114,7 @@ namespace BuckshotPlusPlus
 
         private void ProcessParameterizedViewLine(ProcessedLine processedLine, List<string> fileLines, ref int currentLineNumber, string fileName)
         {
-            var (viewName, parameters) = ParameterParser.ParseParameterizedViewDefinition(processedLine.LineData);
+            var (viewName, parentViewName, parameters) = ParameterParser.ParseParameterizedViewDefinition(processedLine.LineData);
             
             if (string.IsNullOrEmpty(viewName))
             {
@@ -122,7 +122,7 @@ namespace BuckshotPlusPlus
                 return;
             }
             
-            Formater.DebugMessage($"Processing parameterized view '{viewName}' with {parameters.Count} parameters at line {processedLine.CurrentLine}");
+            Formater.DebugMessage($"Processing parameterized view '{viewName}'{(parentViewName != null ? $" inheriting from '{parentViewName}'" : "")} with {parameters.Count} parameters at line {processedLine.CurrentLine}");
 
             // Read the view content (similar to container processing)
             var viewContent = new List<Token>();
@@ -201,10 +201,10 @@ namespace BuckshotPlusPlus
             
             try
             {
-                // Set the token data
-                token.Data = new TokenDataParameterizedView(viewName, parameters, viewContent, token);
+                // Set the token data with parent view support
+                token.Data = new TokenDataParameterizedView(viewName, parentViewName, parameters, viewContent, token, FileTokens);
                 FileTokens.Add(token);
-                Formater.DebugMessage($"Successfully created parameterized view '{viewName}' with {viewContent.Count} content tokens");
+                Formater.DebugMessage($"Successfully created parameterized view '{viewName}'{(parentViewName != null ? $" inheriting from '{parentViewName}'" : "")} with {viewContent.Count} content tokens");
             }
             catch (Exception ex)
             {

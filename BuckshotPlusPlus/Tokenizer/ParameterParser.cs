@@ -8,8 +8,8 @@ namespace BuckshotPlusPlus
         public static bool IsParameterizedView(string lineData)
         {
             // Matches: view ViewName(param1, param2, ...) {
-            // Or: view ViewName(param1, param2, ...)
-            string pattern = @"^view\s+\w+\s*\([^)]*\)\s*(\{\s*)?$";
+            // Or: view ViewName:Parent(param1, param2, ...) {
+            string pattern = @"^view\s+\w+(\s*:\s*\w+)?\s*\([^)]*\)\s*(\{\s*)?$";
             return Regex.IsMatch(lineData.Trim(), pattern);
         }
 
@@ -19,31 +19,39 @@ namespace BuckshotPlusPlus
             return Regex.IsMatch(variableData.Trim(), @"^\w+\s*\([^)]*\)\s*$");
         }
 
-        public static (string viewName, List<string> parameters) ParseParameterizedViewDefinition(string lineData)
+        public static (string viewName, string parentViewName, List<string> parameters) ParseParameterizedViewDefinition(string lineData)
         {
-            // Extract view name and parameters from: view ViewName(param1, param2, ...) {
-            // Or: view ViewName(param1, param2, ...)
-            var match = Regex.Match(lineData.Trim(), @"^view\s+(\w+)\s*\(([^)]*)\)\s*(\{\s*)?$");
+            // Extract view name, parent view name, and parameters from: 
+            // view ViewName:ParentView(param1, param2, ...) {
+            // or view ViewName(param1, param2, ...) {
+            var match = Regex.Match(lineData.Trim(), 
+                @"^view\s+(\w+)(?:\s*:\s*(\w+))?\s*\(([^)]*)\)\s*(\{\s*)?$");
             
             if (!match.Success)
             {
                 Formater.DebugMessage($"Failed to parse parameterized view definition: {lineData}");
-                return (null, new List<string>());
+                return (null, null, new List<string>());
             }
 
-            string viewName = match.Groups[1].Value;
-            string parametersString = match.Groups[2].Value.Trim();
+            string viewName = match.Groups[1].Value.Trim();
+            string parentViewName = match.Groups[2].Success ? match.Groups[2].Value.Trim() : null;
+            string parametersString = match.Groups[3].Value.Trim();
 
             var parameters = new List<string>();
             if (!string.IsNullOrEmpty(parametersString))
             {
                 foreach (var param in parametersString.Split(','))
                 {
-                    parameters.Add(param.Trim());
+                    string trimmedParam = param.Trim();
+                    if (!string.IsNullOrEmpty(trimmedParam))
+                    {
+                        parameters.Add(trimmedParam);
+                    }
                 }
             }
 
-            return (viewName, parameters);
+
+            return (viewName, parentViewName, parameters);
         }
 
 

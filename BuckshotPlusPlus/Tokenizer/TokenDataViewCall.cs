@@ -29,16 +29,15 @@ namespace BuckshotPlusPlus
                 Formater.DebugMessage($"Looking for parameterized view '{ViewName}' with {Arguments.Count} arguments");
 
                 // Find the parameterized view definition
-                var parameterizedView = FindParameterizedView(fileTokens, ViewName);
-                if (parameterizedView == null)
+                var paramView = FindParameterizedView(fileTokens, ViewName);
+                if (paramView == null)
                 {
-                    Formater.RuntimeError($"Parameterized view '{ViewName}' not found", ViewCallToken);
-                    return "";
+                    // The error is already logged in FindParameterizedView
+                    return string.Empty;
                 }
 
-
                 // Instantiate the view with arguments
-                var viewInstance = parameterizedView.InstantiateView(Arguments, fileTokens);
+                var viewInstance = paramView.InstantiateView(Arguments, fileTokens);
                 if (viewInstance == null)
                 {
                     Formater.RuntimeError($"Failed to instantiate view '{ViewName}'", ViewCallToken);
@@ -95,35 +94,18 @@ namespace BuckshotPlusPlus
                 return null;
             }
 
-            // First, search in the current scope
-            foreach (var token in fileTokens)
+            // Use the TokenUtils helper method to find the parameterized view
+            var paramView = TokenUtils.FindParameterizedView(fileTokens, viewName);
+            
+            if (paramView != null)
             {
-                if (token?.Data is TokenDataParameterizedView paramView)
-                {
-                    Formater.DebugMessage($"Found parameterized view '{paramView.ViewName}' (looking for '{viewName}')");
-                    
-                    if (string.Equals(paramView.ViewName, viewName, StringComparison.OrdinalIgnoreCase))
-                    {
-                        Formater.DebugMessage($"Matched parameterized view '{viewName}'");
-                        return paramView;
-                    }
-                }
-                
-                // If this is a container, search in its tokens
-                if (token?.Data is TokenDataContainer container && container.ContainerData != null)
-                {
-                    Formater.DebugMessage($"Searching in container '{container.ContainerName}' for view '{viewName}'");
-                    var foundInContainer = FindParameterizedView(container.ContainerData, viewName);
-                    if (foundInContainer != null)
-                    {
-                        Formater.DebugMessage($"Found view '{viewName}' in container '{container.ContainerName}'");
-                        return foundInContainer;
-                    }
-                }
+                Formater.DebugMessage($"Found parameterized view '{paramView.ViewName}'");
+                return paramView;
             }
             
-            Formater.DebugMessage($"Could not find parameterized view '{viewName}' in current scope");
-            
+            string errorMessage = $"View '{viewName}' not found in current scope";
+            Formater.DebugMessage(errorMessage);
+            Formater.TokenCriticalError(errorMessage, ViewCallToken);
             return null;
         }
     }

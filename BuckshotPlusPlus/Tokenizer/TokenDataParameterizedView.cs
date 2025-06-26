@@ -7,11 +7,13 @@ namespace BuckshotPlusPlus
     public class TokenDataParameterizedView : TokenData
     {
         public string ViewName { get; set; }
+        public string ParentViewName { get; set; }
         public List<string> Parameters { get; set; }
         public List<Token> ViewContent { get; set; }
         public Token ViewToken { get; set; }
+        public TokenDataParameterizedView ParentView { get; private set; }
 
-        public TokenDataParameterizedView(string viewName, List<string> parameters, List<Token> content, Token token)
+        public TokenDataParameterizedView(string viewName, string parentViewName, List<string> parameters, List<Token> content, Token token, List<Token> serverSideTokens = null)
         {
             if (string.IsNullOrWhiteSpace(viewName))
             {
@@ -19,12 +21,36 @@ namespace BuckshotPlusPlus
             }
             
             ViewName = viewName.Trim();
+            ParentViewName = parentViewName?.Trim();
             Parameters = parameters ?? new List<string>();
             ViewContent = content ?? new List<Token>();
             ViewToken = token ?? throw new ArgumentNullException(nameof(token));
             
-            // Log view creation for debugging
-            Formater.DebugMessage($"Created parameterized view '{ViewName}' with {Parameters.Count} parameters");
+            // Try to find the parent view in the server tokens
+            if (!string.IsNullOrEmpty(parentViewName))
+            {
+                ParentView = TokenUtils.FindParameterizedView(serverSideTokens, parentViewName);
+                if (ParentView == null)
+                {
+                    Formater.TokenCriticalError($"Parent view '{parentViewName}' not found for view '{ViewName}'", ViewToken);
+                }
+                else
+                {
+                    Formater.DebugMessage($"View '{ViewName}' inherits from '{ParentViewName}' with {Parameters.Count} parameters");
+                    
+                    // Merge parent parameters with child parameters
+                    if (ParentView.Parameters.Count > 0)
+                    {
+                        var allParameters = new List<string>(ParentView.Parameters);
+                        allParameters.AddRange(Parameters);
+                        Parameters = allParameters;
+                    }
+                }
+            }
+            else
+            {
+                Formater.DebugMessage($"Created parameterized view '{ViewName}' with {Parameters.Count} parameters");
+            }
         }
 
         public TokenDataContainer InstantiateView(List<string> arguments, List<Token> serverSideTokens)
@@ -48,18 +74,45 @@ namespace BuckshotPlusPlus
                 string uniqueInstanceId = Guid.NewGuid().ToString("N")[..8]; // Short GUID
                 string uniqueInstanceName = $"{ViewName}_instance_{uniqueInstanceId}";
 
-                // Create a list to hold the instantiated content
+                // Process each token in the view content
                 var instantiatedContent = new List<Token>();
 
-                // Process each token in the view content
+                // Create a dictionary to store the variables from parent and child views
+                var viewVariables = new Dictionary<string, Token>();
+
+                // First, process parent view content if this view inherits from another
+                if (ParentView != null)
+                {
+                    Formater.DebugMessage($"Including content from parent view '{ParentView.ViewName}' in view '{ViewName}'");
+                    
+                    // Only pass arguments to the parent if it expects parameters
+                    var parentArguments = ParentView.Parameters.Count > 0 ? arguments : new List<string>();
+                    var parentContent = ParentView.InstantiateView(parentArguments, serverSideTokens)?.ContainerData;
+                    
+                    if (parentContent != null)
+                    {
+                        // Add parent's content first, but don't add to instantiatedContent yet
+                        foreach (var token in parentContent)
+                        {
+                            if (token?.Data is TokenDataVariable varData)
+                            {
+                                viewVariables[varData.VariableName] = token;
+                            }
+                        }
+                    }
+                }
+
+
+                // Process current view's content, which will override parent's content
                 foreach (var token in ViewContent)
                 {
                     try
                     {
                         var clonedToken = CloneTokenWithParameterSubstitution(token, arguments, serverSideTokens);
-                        if (clonedToken != null)
+                        if (clonedToken != null && clonedToken.Data is TokenDataVariable varData)
                         {
-                            instantiatedContent.Add(clonedToken);
+                            // Store or update the variable in our dictionary
+                            viewVariables[varData.VariableName] = clonedToken;
                         }
                     }
                     catch (Exception ex)
@@ -80,11 +133,14 @@ namespace BuckshotPlusPlus
                     previousToken: null
                 );
                 
+                // Add all variables to the final content
+                var finalContent = new List<Token>(viewVariables.Values);
+                
                 // Create a custom container that will handle the view content
                 var viewContainer = new TokenDataContainer(viewInstanceToken)
                 {
-                    // Add the instantiated content directly to the container
-                    ContainerData = instantiatedContent
+                    // Add all variables to the container
+                    ContainerData = finalContent
                 };
                 
                 // Set the container name to indicate it's a view instance
