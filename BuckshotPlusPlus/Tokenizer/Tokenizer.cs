@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -222,15 +222,35 @@ namespace BuckshotPlusPlus
 
         public static ProcessedLine ProcessLineData(UnprocessedLine uLine)
         {
-
             string lineData = uLine.Lines[uLine.CurrentLine];
             int currentLineNumber = uLine.CurrentLine;
+            
+            // Handle // comments first
+            int commentIndex = lineData.IndexOf("//");
+            if (commentIndex >= 0)
+            {
+                if (commentIndex == 0)
+                {
+                    // Pure comment line
+                    return new ProcessedLine(currentLineNumber + 1, LineType.Comment, lineData);
+                }
+                // Strip comment from end of line
+                lineData = lineData.Substring(0, commentIndex).TrimEnd();
+                
+                // If line is empty after stripping comment, treat as empty line
+                if (string.IsNullOrWhiteSpace(lineData))
+                {
+                    return new ProcessedLine(currentLineNumber + 1, LineType.Empty, lineData);
+                }
+            }
+            
             if (lineData.Length >= 2)
             {
 
                 if (lineData.Length > 3)
                 {
-                    if (lineData[0] + "" + lineData[1] + lineData[2] == "###")
+                    // Handle block comments (###)
+                if (lineData.Length > 2 && lineData[0] + "" + lineData[1] + lineData[2] == "###")
                     {
                         while (currentLineNumber < uLine.Lines.Count)
                         {
@@ -250,6 +270,7 @@ namespace BuckshotPlusPlus
                     }
                 }
 
+                // Handle single-line comments (##)
                 if (lineData[0] + "" + lineData[1] == "##")
                 {
                     currentLineNumber++;

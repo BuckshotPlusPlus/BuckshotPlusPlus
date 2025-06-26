@@ -1,0 +1,10 @@
+// Testing new comment system
+view HelloWorld{
+    content = "Hello World"
+    type = "h1"
+    color = "Pink"
+}
+
+page index{
+    body = HelloWorld
+}

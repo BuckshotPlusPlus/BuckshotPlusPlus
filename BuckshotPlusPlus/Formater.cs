@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Spectre.Console;
@@ -54,6 +54,38 @@ namespace BuckshotPlusPlus
         {
             if (_debugEnabled) DebugMessage($"Formatting file data of length: {fileData.Length}");
 
+            // First handle // comments
+            StringBuilder result = new StringBuilder();
+            string[] lines = fileData.Split('\n');
+            
+            foreach (string line in lines)
+            {
+                string processedLine = line.Trim();
+                
+                // Handle // comments
+                int commentIndex = processedLine.IndexOf("//");
+                if (commentIndex >= 0)
+                {
+                    if (commentIndex == 0)
+                    {
+                        // Skip pure comment lines
+                        continue;
+                    }
+                    else
+                    {
+                        // Strip comment from end of line
+                        processedLine = processedLine.Substring(0, commentIndex).TrimEnd();
+                    }
+                }
+                
+                if (!string.IsNullOrWhiteSpace(processedLine))
+                {
+                    result.AppendLine(processedLine);
+                }
+            }
+            
+            // Then process the rest of the formatting
+            string cleanedData = result.ToString();
             int i = 0;
             int spaceCount = 0;
             bool isQuote = false;
@@ -65,7 +97,7 @@ namespace BuckshotPlusPlus
                 new() { Character = ':', CleanLeft = true, CleanRight = true }
             };
 
-            StringBuilder result = new(fileData);
+            result = new StringBuilder(cleanedData);
 
             while (i < result.Length)
             {
@@ -109,7 +141,19 @@ namespace BuckshotPlusPlus
                 i++;
             }
 
-            return result.ToString();
+            return result.ToString().TrimEnd();
+        }
+
+        public static string StripComments(string line)
+        {
+            if (string.IsNullOrEmpty(line)) return line;
+            
+            int commentIndex = line.IndexOf("//");
+            if (commentIndex >= 0)
+            {
+                return line.Substring(0, commentIndex).TrimEnd();
+            }
+            return line;
         }
 
         public static string SafeRemoveSpacesFromString(string content)
@@ -153,7 +197,7 @@ namespace BuckshotPlusPlus
         public static bool SafeContains(string value, char c)
         {
             if (_debugEnabled) DebugMessage($"Checking if '{value}' contains '{c}'");
-            return StringHandler.SafeContains(value, c);
+            return StringHandler.SafeContains(StripComments(value), c);
         }
 
         public struct UnsafeCharStruct
@@ -193,7 +237,7 @@ namespace BuckshotPlusPlus
         public static List<string> SafeSplit(string value, char c, bool onlyStrings = false)
         {
             if (_debugEnabled) DebugMessage($"Splitting: '{value}' on character: '{c}'");
-            var result = StringHandler.SafeSplit(value, c);
+            var result = StringHandler.SafeSplit(StripComments(value), c);
             if (_debugEnabled) DebugMessage($"Split result: {string.Join(" | ", result)}");
             return result;
         }
