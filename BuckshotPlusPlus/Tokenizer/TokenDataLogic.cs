@@ -68,11 +68,7 @@ namespace BuckshotPlusPlus
             TokenDataContainer parentTokenDataContainer = (TokenDataContainer)ParentToken.Data;
             foreach (Token localToken in parentTokenDataContainer.ContainerData)
             {
-                if (localToken.Type == "edit")
-                {
-                    TokenUtils.EditTokenData(tokenList, localToken);
-                }
-
+                TokenUtils.EditTokenData(tokenList, localToken);
             }
             LastLogicTestResult = true;
         }

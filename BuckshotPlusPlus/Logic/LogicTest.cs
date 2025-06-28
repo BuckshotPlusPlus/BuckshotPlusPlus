@@ -31,10 +31,10 @@ namespace BuckshotPlusPlus
         {
             if(LeftValueType == "ref")
             {
-                Token foundToken = TokenUtils.FindTokenByName(tokenList, LeftValue);
-                if(foundToken != null)
+                Token foundTokenGlobal = TokenUtils.FindTokenByName(tokenList, LeftValue);
+                if(foundTokenGlobal != null)
                 {
-                    TokenDataVariable foundVar = (TokenDataVariable)foundToken.Data;
+                    TokenDataVariable foundVar = (TokenDataVariable)foundTokenGlobal.Data;
                     LeftValue = foundVar.VariableData;
                     LeftValueType = foundVar.VariableType;
                     if(LeftValueType == "string")
@@ -42,6 +42,8 @@ namespace BuckshotPlusPlus
                         LeftValue = '"' + LeftValue + "\"";
                     }
                 }
+                
+                
             }
             if(RightValueType == "ref")
             {

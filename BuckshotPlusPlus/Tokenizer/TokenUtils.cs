@@ -153,7 +153,40 @@ namespace BuckshotPlusPlus
         public static bool EditTokenData(List<Token> myTokenList, Token myToken)
         {
             TokenDataVariable var = (TokenDataVariable)myToken.Data;
-            Token tokenToEdit = FindTokenByName(myTokenList, var.VariableName);
+
+            TokenDataContainer NearestViewParent = myToken.Parent;
+
+            while (NearestViewParent != null)
+            {
+                try
+                {
+                    if (NearestViewParent.ContainerType == "view")
+                    {
+                        break;
+                    }
+                }
+                catch (Exception e)
+                {
+                }
+                NearestViewParent = NearestViewParent.ContainerToken.Parent;
+            }
+            Token tokenToEdit = null;
+            try
+            {
+                if (NearestViewParent != null)
+                {
+                    tokenToEdit = FindTokenByName(NearestViewParent.ContainerData, var.VariableName);
+                }
+            }
+            catch (Exception e)
+            {
+                Formater.DebugMessage(e.Message);
+            }
+            if (tokenToEdit == null)
+            {
+                tokenToEdit = FindTokenByName(myTokenList, var.VariableName);
+            }
+            
             if(tokenToEdit == null)
             {
                 Token parentToken = FindTokenByName(myTokenList, var.VariableName, true);

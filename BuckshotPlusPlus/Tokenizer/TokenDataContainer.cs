@@ -184,7 +184,7 @@ namespace BuckshotPlusPlus
                                     String.Join('\n', currentLine.ContainerData),
                                     currentLineNumber,
                                     myToken.MyTokenizer,
-                                    null,
+                                    this,
                                     previousToken
                                 );
 

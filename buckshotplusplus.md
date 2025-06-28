@@ -1,132 +1,5 @@
 # BuckshotPlusPlus Project Documentation
 
-## Models
-
-### File: Models\GitAuth.cs
-
-```csharp
-﻿using MongoDB.Bson.Serialization.Attributes;
-
-namespace BuckshotPlusPlus.Models
-{
-    public class GitAuth
-    {
-        [BsonElement("Type")]
-        public string Type { get; set; } = "none";
-
-        [BsonElement("Username")]
-        public string Username { get; set; } = string.Empty;
-
-        [BsonElement("Token")]
-        public string Token { get; set; } = string.Empty;
-
-        [BsonElement("SshKey")]
-        public string SshKey { get; set; } = string.Empty;
-
-        [BsonElement("SshKeyPassphrase")]
-        public string SshKeyPassphrase { get; set; } = string.Empty;
-    }
-}
-```
-
-### File: Models\PageView.cs
-
-```csharp
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using System;
-
-namespace BuckshotPlusPlus.Models;
-
-public class PageView
-{
-    [BsonId]
-    public ObjectId Id { get; set; }
-    public string TenantId { get; set; } = string.Empty;
-    public string Path { get; set; } = string.Empty;
-    public string UserAgent { get; set; } = string.Empty;
-    public string IpAddress { get; set; } = string.Empty;
-    public DateTime Timestamp { get; set; }
-    public string SessionId { get; set; } = string.Empty;
-    public string Country { get; set; } = string.Empty;
-    public string Region { get; set; } = string.Empty;
-}
-```
-
-### File: Models\Plan.cs
-
-```csharp
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-
-namespace BuckshotPlusPlus.Models;
-
-public class Plan
-{
-    [BsonId]
-    public ObjectId Id { get; set; }
-    public string Name { get; set; } = string.Empty;
-    public string StripeProductId { get; set; } = string.Empty;
-    public string StripePriceId { get; set; } = string.Empty;
-    public int MonthlyPageViews { get; set; }
-    public decimal MonthlyPrice { get; set; }
-    public decimal OverageRate { get; set; }
-}
-```
-
-### File: Models\Tenant.cs
-
-```csharp
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using System;
-
-namespace BuckshotPlusPlus.Models
-{
-    public class Tenant
-    {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public ObjectId Id { get; set; }
-
-        [BsonElement("domain")]
-        public string Domain { get; set; } = string.Empty;
-
-        [BsonElement("repoUrl")]
-        public string RepoUrl { get; set; } = string.Empty;
-
-        [BsonElement("branch")]
-        public string Branch { get; set; } = "main";
-
-        [BsonElement("entryFile")]
-        public string EntryFile { get; set; } = string.Empty;
-
-        [BsonElement("cacheKey")]
-        public string CacheKey { get; set; } = string.Empty;
-
-        [BsonElement("planId")]
-        public string PlanId { get; set; } = string.Empty;
-
-        [BsonElement("monthlyPageViewLimit")]
-        public int MonthlyPageViewLimit { get; set; }
-
-        [BsonElement("isActive")]
-        public bool IsActive { get; set; }
-
-        [BsonElement("auth")]
-        public GitAuth Auth { get; set; } = new GitAuth();
-
-        [BsonElement("stripeCustomerId")]
-        public string StripeCustomerId { get; set; } = string.Empty;
-
-        [BsonElement("lastUpdated")]
-        public DateTime LastUpdated { get; set; } = DateTime.UtcNow;
-
-        [BsonIgnore]
-        public Tokenizer? SiteTokenizer { get; set; }
-    }
-}
-```
 
 ## Project Files
 
@@ -141,9 +14,9 @@ namespace BuckshotPlusPlus.Models
   <ItemGroup>
 	  <PackageReference Include="Appwrite" Version="0.4.2" />
 	  <PackageReference Include="LibGit2Sharp" Version="0.27.2" />
-
+	  
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
-
+	  
     <PackageReference Include="MongoDB.Driver" Version="2.23.1" />
     <PackageReference Include="MySql.Data" Version="8.1.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
@@ -156,562 +29,6 @@ namespace BuckshotPlusPlus.Models
 </Project>
 ```
 
-## Services
-
-### File: Services\GitService.cs
-
-```csharp
-﻿using LibGit2Sharp;
-using BuckshotPlusPlus.Models;
-using Serilog;
-using System.IO;
-using System.Threading.Tasks;
-using System;
-
-namespace BuckshotPlusPlus.Services
-{
-    public static class GitService
-    {
-        private static readonly ILogger _logger = new LoggerConfiguration()
-            .WriteTo.Console()
-            .WriteTo.File("logs/git.log", rollingInterval: RollingInterval.Day)
-            .CreateLogger();
-
-        public static async Task UpdateRepository(Tenant tenant, string siteDir)
-        {
-            try
-            {
-                // Try to safely clean up the directory first
-                if (Directory.Exists(siteDir))
-                {
-                    await SafeDeleteDirectory(siteDir);
-                }
-
-                // Create the directory
-                Directory.CreateDirectory(siteDir);
-
-                _logger.Information("Cloning repository for {Domain} into {SiteDir}", tenant.Domain, siteDir);
-
-                var options = new CloneOptions
-                {
-                    BranchName = tenant.Branch,
-                    CredentialsProvider = (_url, _user, _cred) => GetCredentials(tenant.Auth)
-                };
-
-                try
-                {
-                    Repository.Clone(tenant.RepoUrl, siteDir, options);
-                    _logger.Information("Successfully cloned repository for {Domain}", tenant.Domain);
-
-                    // Ensure write permissions on Linux/Unix
-                    if (!OperatingSystem.IsWindows())
-                    {
-                        await SetUnixPermissions(siteDir);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.Error(ex, "Failed to clone repository for {Domain}", tenant.Domain);
-                    throw new Exception($"Git clone failed: {ex.Message}", ex);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Git operation failed for {Domain}", tenant.Domain);
-                throw new Exception($"Git operation failed: {ex.Message}", ex);
-            }
-        }
-
-        private static async Task SafeDeleteDirectory(string path)
-        {
-            try
-            {
-                _logger.Debug("Attempting to delete directory: {Path}", path);
-
-                // Wait for up to 5 seconds for any file operations to complete
-                for (int i = 0; i < 5; i++)
-                {
-                    try
-                    {
-                        if (Directory.Exists(path))
-                        {
-                            // Reset file attributes for all files
-                            foreach (var file in Directory.GetFiles(path, "*", SearchOption.AllDirectories))
-                            {
-                                if (OperatingSystem.IsWindows())
-                                {
-                                    File.SetAttributes(file, FileAttributes.Normal);
-                                }
-                            }
-
-                            // Delete directory
-                            Directory.Delete(path, true);
-                            _logger.Debug("Successfully deleted directory: {Path}", path);
-                            return;
-                        }
-                        else
-                        {
-                            return; // Directory doesn't exist, no need to delete
-                        }
-                    }
-                    catch (UnauthorizedAccessException)
-                    {
-                        _logger.Warning("Access denied, retrying after delay... Attempt {Attempt}/5", i + 1);
-                        await Task.Delay(1000); // Wait 1 second before retry
-                    }
-                    catch (IOException)
-                    {
-                        _logger.Warning("IO Exception, retrying after delay... Attempt {Attempt}/5", i + 1);
-                        await Task.Delay(1000);
-                    }
-                }
-
-                throw new Exception($"Failed to delete directory after 5 attempts: {path}");
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Failed to safely delete directory: {Path}", path);
-                throw;
-            }
-        }
-
-        private static async Task SetUnixPermissions(string path)
-        {
-            try
-            {
-                // Use chmod through bash to set permissions
-                var startInfo = new System.Diagnostics.ProcessStartInfo
-                {
-                    FileName = "chmod",
-                    Arguments = $"-R 755 {path}",
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
-                    CreateNoWindow = true
-                };
-
-                var process = new System.Diagnostics.Process { StartInfo = startInfo };
-                process.Start();
-                await process.WaitForExitAsync();
-
-                if (process.ExitCode != 0)
-                {
-                    var error = await process.StandardError.ReadToEndAsync();
-                    _logger.Warning("Failed to set Unix permissions: {Error}", error);
-                }
-                else
-                {
-                    _logger.Debug("Successfully set Unix permissions for: {Path}", path);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Warning(ex, "Failed to set Unix permissions for {Path}", path);
-                // Don't throw - this is not critical
-            }
-        }
-
-        private static Credentials GetCredentials(GitAuth auth)
-        {
-            switch (auth.Type?.ToLower())
-            {
-                case "pat":
-                    return new UsernamePasswordCredentials
-                    {
-                        Username = auth.Username ?? "git",
-                        Password = auth.Token
-                    };
-
-                case "basic":
-                    return new UsernamePasswordCredentials
-                    {
-                        Username = auth.Username,
-                        Password = auth.Token
-                    };
-
-                default:
-                    _logger.Debug("No authentication provided, using anonymous access");
-                    return null;
-            }
-        }
-    }
-}
-```
-
-### File: Services\MongoDbService.cs
-
-```csharp
-﻿using MongoDB.Driver;
-using BuckshotPlusPlus.Models;
-using Serilog;
-using MongoDB.Bson;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
-using System.Linq;
-
-namespace BuckshotPlusPlus.Services
-{
-    public class MongoDbService
-    {
-        private readonly IMongoDatabase _database;
-        internal readonly IMongoCollection<Tenant> _tenants;
-        private readonly IMongoCollection<PageView> _pageViews;
-        private readonly ILogger _logger;
-
-        public MongoDbService(string connectionString)
-        {
-            _logger = new LoggerConfiguration()
-                .WriteTo.Console()
-                .WriteTo.File("logs/mongodb.log", rollingInterval: RollingInterval.Day)
-                .CreateLogger();
-
-            try
-            {
-                var client = new MongoClient(connectionString);
-                _database = client.GetDatabase("BuckshotPlusPlus");
-                _tenants = _database.GetCollection<Tenant>("tenants");
-                _pageViews = _database.GetCollection<PageView>("pageViews");
-
-                _logger.Information("MongoDB connection established");
-                CreateIndexes();
-                LogDatabaseStats().Wait();
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Failed to initialize MongoDB connection");
-                throw;
-            }
-        }
-
-        private void CreateIndexes()
-        {
-            try
-            {
-                var domainIndex = Builders<Tenant>.IndexKeys.Ascending(t => t.Domain);
-                _tenants.Indexes.CreateOne(new CreateIndexModel<Tenant>(
-                    domainIndex,
-                    new CreateIndexOptions { Unique = true }
-                ));
-
-                var pageViewIndexes = Builders<PageView>.IndexKeys
-                    .Ascending(p => p.TenantId)
-                    .Ascending(p => p.Timestamp);
-                _pageViews.Indexes.CreateOne(new CreateIndexModel<PageView>(pageViewIndexes));
-
-                _logger.Information("MongoDB indexes created successfully");
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Failed to create MongoDB indexes");
-                // Don't throw - indexes might already exist
-            }
-        }
-
-        private async Task LogDatabaseStats()
-        {
-            try
-            {
-                var tenantsCount = await _tenants.CountDocumentsAsync(FilterDefinition<Tenant>.Empty);
-                var pageViewsCount = await _pageViews.CountDocumentsAsync(FilterDefinition<PageView>.Empty);
-
-                _logger.Information(
-                    "Database stats - Tenants: {TenantsCount}, PageViews: {PageViewsCount}",
-                    tenantsCount,
-                    pageViewsCount
-                );
-
-                var tenants = await GetAllTenants();
-                var domains = string.Join(", ", tenants.Select(t => t.Domain));
-                _logger.Information("Configured domains: {Domains}", domains);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Failed to log database stats");
-            }
-        }
-
-        public async Task<Tenant?> GetTenantByDomain(string domain)
-        {
-            try
-            {
-                _logger.Debug("Looking up tenant for domain: {Domain}", domain);
-
-                var filter = Builders<Tenant>.Filter.Regex(
-                    t => t.Domain,
-                    new BsonRegularExpression($"^{domain}$", "i")
-                ) & Builders<Tenant>.Filter.Eq(t => t.IsActive, true);
-
-                var tenant = await _tenants.Find(filter).FirstOrDefaultAsync();
-
-                if (tenant == null)
-                {
-                    _logger.Warning("No tenant found for domain: {Domain}", domain);
-                    return null;
-                }
-
-                _logger.Information("Found tenant {Id} for domain {Domain}", tenant.Id, domain);
-                return tenant;
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error retrieving tenant for domain: {Domain}", domain);
-                throw;
-            }
-        }
-
-        public async Task<Tenant?> GetTenantById(ObjectId id)
-        {
-            try
-            {
-                return await _tenants.Find(t => t.Id == id).FirstOrDefaultAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error retrieving tenant by ID: {Id}", id);
-                throw;
-            }
-        }
-
-        public async Task TrackPageView(PageView pageView)
-        {
-            try
-            {
-                await _pageViews.InsertOneAsync(pageView);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error tracking page view");
-                throw;
-            }
-        }
-
-        public async Task<int> GetMonthlyPageViews(string tenantId)
-        {
-            try
-            {
-                var startOfMonth = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, 1);
-                var filter = Builders<PageView>.Filter.And(
-                    Builders<PageView>.Filter.Eq(p => p.TenantId, tenantId),
-                    Builders<PageView>.Filter.Gte(p => p.Timestamp, startOfMonth)
-                );
-
-                return (int)await _pageViews.CountDocumentsAsync(filter);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting monthly page views for tenant: {TenantId}", tenantId);
-                throw;
-            }
-        }
-
-        public async Task<List<Tenant>> GetAllTenants()
-        {
-            try
-            {
-                return await _tenants.Find(_ => true).ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error retrieving all tenants");
-                throw;
-            }
-        }
-
-        public async Task UpdateTenantLastUpdated(ObjectId id, DateTime lastUpdated)
-        {
-            try
-            {
-                var update = Builders<Tenant>.Update
-                    .Set(t => t.LastUpdated, lastUpdated);
-
-                await _tenants.UpdateOneAsync(t => t.Id == id, update);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error updating tenant last updated time: {Id}", id);
-                throw;
-            }
-        }
-
-        public async Task UpdateTenant(Tenant tenant)
-        {
-            try
-            {
-                var filter = Builders<Tenant>.Filter.Eq(t => t.Id, tenant.Id);
-                await _tenants.ReplaceOneAsync(filter, tenant);
-                _logger.Information("Updated tenant: {Domain}", tenant.Domain);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error updating tenant: {Domain}", tenant.Domain);
-                throw;
-            }
-        }
-
-        public async Task<string> GetTenantIdAsString(ObjectId id)
-        {
-            return id.ToString();
-        }
-
-        public ObjectId ConvertToObjectId(string id)
-        {
-            if (ObjectId.TryParse(id, out ObjectId objectId))
-            {
-                return objectId;
-            }
-            throw new ArgumentException($"Invalid ObjectId format: {id}");
-        }
-    }
-}
-```
-
-### File: Services\StripeService.cs
-
-```csharp
-﻿using Stripe;
-using BuckshotPlusPlus.Models;
-using Serilog;
-using MongoDB.Bson;
-using MongoDB.Driver;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
-
-namespace BuckshotPlusPlus.Services
-{
-    public class StripeService
-    {
-        private readonly MongoDbService _mongoDb;
-        private readonly ILogger _logger;
-
-        public StripeService(string apiKey, MongoDbService mongoDb)
-        {
-            StripeConfiguration.ApiKey = apiKey;
-            _mongoDb = mongoDb;
-            _logger = new LoggerConfiguration()
-                .WriteTo.Console()
-                .WriteTo.File("logs/stripe.log", rollingInterval: RollingInterval.Day)
-                .CreateLogger();
-        }
-
-        public async Task CreateSubscription(Tenant tenant, string paymentMethodId)
-        {
-            try
-            {
-                var customerOptions = new CustomerCreateOptions
-                {
-                    PaymentMethod = paymentMethodId,
-                    Email = $"admin@{tenant.Domain}",
-                    InvoiceSettings = new CustomerInvoiceSettingsOptions
-                    {
-                        DefaultPaymentMethod = paymentMethodId,
-                    },
-                    Metadata = new Dictionary<string, string>
-                    {
-                        { "tenantId", tenant.Id.ToString() }
-                    }
-                };
-
-                var customerService = new CustomerService();
-                var customer = await customerService.CreateAsync(customerOptions);
-
-                var subscriptionOptions = new SubscriptionCreateOptions
-                {
-                    Customer = customer.Id,
-                    Items = new List<SubscriptionItemOptions>
-                    {
-                        new SubscriptionItemOptions
-                        {
-                            Price = tenant.PlanId,
-                        },
-                    },
-                    PaymentSettings = new SubscriptionPaymentSettingsOptions
-                    {
-                        PaymentMethodTypes = new List<string> { "card" },
-                    }
-                };
-
-                var subscriptionService = new SubscriptionService();
-                await subscriptionService.CreateAsync(subscriptionOptions);
-
-                // Update tenant with Stripe customer ID
-                var filter = Builders<Tenant>.Filter.Eq(t => t.Id, tenant.Id);
-                var update = Builders<Tenant>.Update
-                    .Set(t => t.StripeCustomerId, customer.Id);
-
-                await _mongoDb._tenants.UpdateOneAsync(filter, update);
-
-                _logger.Information("Created Stripe subscription for tenant: {Domain}", tenant.Domain);
-            }
-            catch (StripeException ex)
-            {
-                _logger.Error(ex, "Stripe error for tenant: {Domain}", tenant.Domain);
-                throw;
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error creating subscription for tenant: {Domain}", tenant.Domain);
-                throw;
-            }
-        }
-
-        public async Task ProcessOverageCharges(ObjectId tenantId)
-        {
-            try
-            {
-                var tenant = await _mongoDb.GetTenantById(tenantId);
-                if (tenant == null || string.IsNullOrEmpty(tenant.StripeCustomerId))
-                {
-                    _logger.Warning("Cannot process overage charges - tenant not found or no Stripe customer: {Id}", tenantId);
-                    return;
-                }
-
-                var pageViews = await _mongoDb.GetMonthlyPageViews(tenantId.ToString());
-                if (pageViews <= tenant.MonthlyPageViewLimit)
-                {
-                    return;
-                }
-
-                var overage = pageViews - tenant.MonthlyPageViewLimit;
-                var overageRate = 0.001m; // $0.001 per extra page view
-                var amount = (long)(overage * overageRate * 100); // Convert to cents
-
-                var chargeOptions = new ChargeCreateOptions
-                {
-                    Amount = amount,
-                    Currency = "usd",
-                    Customer = tenant.StripeCustomerId,
-                    Description = $"Overage charges for {overage:N0} page views",
-                    Metadata = new Dictionary<string, string>
-                    {
-                        { "tenantId", tenantId.ToString() },
-                        { "pageViews", pageViews.ToString() },
-                        { "overage", overage.ToString() }
-                    }
-                };
-
-                var chargeService = new ChargeService();
-                await chargeService.CreateAsync(chargeOptions);
-
-                _logger.Information("Processed overage charges for tenant: {Domain}, Overage: {Overage}",
-                    tenant.Domain, overage);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error processing overage charges for tenant: {Id}", tenantId);
-                throw;
-            }
-        }
-
-        private async Task UpdateTenantStripeId(Tenant tenant, string stripeCustomerId)
-        {
-            tenant.StripeCustomerId = stripeCustomerId;
-            await _mongoDb.UpdateTenant(tenant);
-        }
-    }
-}
-```
 
 ## Source Files
 
@@ -785,15 +102,13 @@ namespace BuckshotPlusPlus.Analyzer
 ### File: Compiler\CSS\Properties.cs
 
 ```csharp
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace BuckshotPlusPlus.Compiler.CSS
 {
     public class Properties
     {
-        public static List<String> _props = new()
-        {
+        public static List<string> props = [
             "align-content",
             "align-items",
             "align-self",
@@ -990,19 +305,20 @@ namespace BuckshotPlusPlus.Compiler.CSS
             "word-wrap",
             "writing-mode",
             "z-index"
-        };
+        ];
 
         public static string GetCssString(List<Token> serverSideTokens, Token myToken)
         {
             string compiledCss = "";
             TokenDataContainer viewContainer = (TokenDataContainer)myToken.Data;
-
-            foreach (String name in _props)
+            
+            foreach (string name in props)
             {
                 TokenDataVariable myCssProp = TokenUtils.FindTokenDataVariableByName(
                     viewContainer.ContainerData,
                     name
                 );
+
                 if (myCssProp != null)
                 {
                     if (myCssProp.VariableType == "ref" && myCssProp.RefData != null)
@@ -1021,27 +337,31 @@ namespace BuckshotPlusPlus.Compiler.CSS
                     }
                 }
             }
+
             TokenDataVariable myFloatProp = TokenUtils.FindTokenDataVariableByName(
                 viewContainer.ContainerData,
                 "float"
             );
+
             if (myFloatProp != null)
             {
                 compiledCss += "float:" + myFloatProp.GetCompiledVariableData(serverSideTokens) + ";";
             }
+
             return compiledCss;
         }
 
         public static bool IsCssProp(Token myToken)
         {
             TokenDataVariable myVar = (TokenDataVariable)myToken.Data;
-            foreach (String prop in _props)
+            foreach (string prop in props)
             {
                 if (myVar.VariableName == prop)
                 {
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -1050,10 +370,10 @@ namespace BuckshotPlusPlus.Compiler.CSS
             string[] result = name.Split('-');
             for (int i = 1; i < result.Length; i++)
             {
-                result[i] = char.ToUpper(result[i][0]) + result[i].Substring(1);
+                result[i] = char.ToUpper(result[i][0]) + result[i][1..];
             }
-
-            return String.Join("", result);
+            
+            return string.Join("", result);
         }
     }
 }
@@ -1063,15 +383,13 @@ namespace BuckshotPlusPlus.Compiler.CSS
 ### File: Compiler\HTML\Atributes.cs
 
 ```csharp
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace BuckshotPlusPlus.Compiler.HTML
 {
     public class Attributes
     {
-        static List<(String, Boolean)> _props = new()
-        {
+        static List<(string, bool)> props = [
             // Core attributes
             ("id", false),
             ("class", false),
@@ -1079,14 +397,14 @@ namespace BuckshotPlusPlus.Compiler.HTML
             ("title", false),
             ("lang", false),
             ("dir", false),
-
+            
             // Link and navigation
             ("href", false),
             ("target", false),
             ("rel", false),
             ("download", false),
             ("hreflang", false),
-
+            
             // Form attributes
             ("action", false),
             ("method", false),
@@ -1103,7 +421,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
             ("accept", false),
             ("autocomplete", false),
             ("enctype", false),
-
+            
             // Media attributes
             ("src", false),
             ("alt", false),
@@ -1115,13 +433,13 @@ namespace BuckshotPlusPlus.Compiler.HTML
             ("muted", true),
             ("preload", false),
             ("poster", false),
-
+            
             // Table attributes
             ("colspan", false),
             ("rowspan", false),
             ("headers", false),
             ("scope", false),
-
+            
             // Form state attributes
             ("disabled", true),
             ("checked", true),
@@ -1129,7 +447,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
             ("readonly", true),
             ("required", true),
             ("multiple", true),
-
+            
             // ARIA accessibility
             ("role", false),
             ("aria-label", false),
@@ -1142,70 +460,70 @@ namespace BuckshotPlusPlus.Compiler.HTML
             ("aria-current", false),
             ("aria-disabled", false),
             ("aria-selected", false),
-
+            
             // Data attributes
             ("data-*", false),
-
+            
             // Meta information
             ("content", false),
             ("http-equiv", false),
             ("charset", false),
-
+            
             // Draggable functionality
             ("draggable", false),
             ("dropzone", false),
-
+            
             // Interactive attributes
             ("contenteditable", false),
             ("spellcheck", false),
             ("tabindex", false),
-
+            
             // Frame/iframe attributes
             ("sandbox", false),
             ("srcdoc", false),
             ("frameborder", false),
             ("allowfullscreen", true),
             ("loading", false),
-
+            
             // List attributes
             ("start", false),
             ("reversed", true),
-
+            
             // Script attributes
             ("async", true),
             ("defer", true),
             ("integrity", false),
             ("crossorigin", false),
-
+            
             // Form validation
             ("novalidate", true),
             ("formnovalidate", true),
             ("autocapitalize", false),
             ("inputmode", false),
-
+            
             // Security
             ("referrerpolicy", false),
-
+            
             // Misc attributes
             ("translate", false),
             ("hidden", true),
             ("cite", false),
             ("datetime", false)
-        };
+        ];
 
         public static string GetHtmlAttributes(List<Token> serverSideTokens,Token myToken)
         {
             string compiledAtributes = "";
             TokenDataContainer viewContainer = (TokenDataContainer)myToken.Data;
-
-            foreach ((String name, bool withoutValue) in _props)
+            
+            foreach ((string name, bool withoutValue) in props)
             {
                 TokenDataVariable myHtmlAttribute = TokenUtils.TryFindTokenDataVariableValueByName(
                     serverSideTokens,
                     viewContainer.ContainerData,
                     name
                 );
-
+                
                 if (myHtmlAttribute != null)
                 {
                     if ( withoutValue )
@@ -1222,7 +540,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
                     }
                 }
             }
-
+            
             return compiledAtributes;
         }
     }
@@ -1233,15 +551,13 @@ namespace BuckshotPlusPlus.Compiler.HTML
 ### File: Compiler\HTML\Events.cs
 
 ```csharp
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace BuckshotPlusPlus.Compiler.HTML
 {
     class Events
     {
-        static List<String> _props = new()
-        {
+        static List<string> props = [
             // Window Events
             "onafterprint",
             "onbeforeprint",
@@ -1329,7 +645,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
 
             // Misc Events
             "ontoggle"
-        };
+        ];
 
         public static string GetHtmlEvents(List<Token> serverSideTokens, Token myToken)
         {
@@ -1356,7 +672,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
                 {
                     if (childToken.Data is TokenDataVariable var && var.VariableName.StartsWith("on"))
                     {
-                        if (_props.Contains(var.VariableName))
+                        if (props.Contains(var.VariableName))
                         {
                             Token myJsEvent = TokenUtils.FindTokenByName(
                                 myToken.MyTokenizer.FileTokens,
@@ -1385,7 +701,7 @@ namespace BuckshotPlusPlus.Compiler.HTML
 ### File: Compiler\HTML\View.cs
 
 ```csharp
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace BuckshotPlusPlus.Compiler.HTML
@@ -1466,11 +782,22 @@ namespace BuckshotPlusPlus.Compiler.HTML
                     case "multiple":
                         return viewContent.GetCompiledVariableData(serverSideTokens);
 
+                    case "viewcall":
+                        // Handle view calls directly
+                        return viewContent.GetCompiledVariableData(serverSideTokens);
+
                     case "ref":
                         Token foundToken = TokenUtils.FindTokenByName(serverSideTokens, viewContent.GetCompiledVariableData(serverSideTokens));
                         if (foundToken?.Data is TokenDataContainer)
                         {
                             return CompileView(serverSideTokens, foundToken);
+                        }
+                        // If it's a parameterized view, handle it
+                        else if (foundToken?.Data is TokenDataParameterizedView parameterizedView)
+                        {
+                            // This handles the case where a view is referenced directly without parameters
+                            var viewCall = new TokenDataViewCall(parameterizedView.ViewName, new List<string>(), viewContent.VariableToken);
+                            return viewCall.CompileViewCall(serverSideTokens);
                         }
                         return viewContent.GetCompiledVariableData(serverSideTokens, true);
 
@@ -1480,10 +807,18 @@ namespace BuckshotPlusPlus.Compiler.HTML
                         {
                             if (childViewToken?.Data is TokenDataVariable childView)
                             {
-                                var childToken = TokenUtils.FindTokenByName(serverSideTokens, childView.GetCompiledVariableData(serverSideTokens));
-                                if (childToken != null)
+                                if (childView.VariableType == "viewcall")
                                 {
-                                    result.Append(CompileView(serverSideTokens, childToken));
+                                    // Handle direct view calls in arrays
+                                    result.Append(childView.GetCompiledVariableData(serverSideTokens));
+                                }
+                                else
+                                {
+                                    var childToken = TokenUtils.FindTokenByName(serverSideTokens, childView.GetCompiledVariableData(serverSideTokens));
+                                    if (childToken != null)
+                                    {
+                                        result.Append(CompileView(serverSideTokens, childToken));
+                                    }
                                 }
                             }
                         }
@@ -1758,7 +1093,7 @@ namespace BuckshotPlusPlus
         public Dictionary<string, string> DatabaseParameters { get; set; }
         public Tokenizer MyTokenizer { get; set; }
 
-        public BaseDatabase(Dictionary<string, string> parameters, Tokenizer myTokenizer) {
+        public BaseDatabase(Dictionary<string, string> parameters, Tokenizer myTokenizer) { 
             DatabaseParameters = parameters;
             this.MyTokenizer = myTokenizer;
         }
@@ -1883,7 +1218,7 @@ namespace BuckshotPlusPlus
 ### File: Formater.cs
 
 ```csharp
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Spectre.Console;
@@ -1939,6 +1274,38 @@ namespace BuckshotPlusPlus
         {
             if (_debugEnabled) DebugMessage($"Formatting file data of length: {fileData.Length}");
 
+            // First handle // comments
+            StringBuilder result = new StringBuilder();
+            string[] lines = fileData.Split('\n');
+            
+            foreach (string line in lines)
+            {
+                string processedLine = line.Trim();
+                
+                // Handle // comments
+                int commentIndex = processedLine.IndexOf("//");
+                if (commentIndex >= 0)
+                {
+                    if (commentIndex == 0)
+                    {
+                        // Skip pure comment lines
+                        continue;
+                    }
+                    else
+                    {
+                        // Strip comment from end of line
+                        processedLine = processedLine.Substring(0, commentIndex).TrimEnd();
+                    }
+                }
+                
+                if (!string.IsNullOrWhiteSpace(processedLine))
+                {
+                    result.AppendLine(processedLine);
+                }
+            }
+            
+            // Then process the rest of the formatting
+            string cleanedData = result.ToString();
             int i = 0;
             int spaceCount = 0;
             bool isQuote = false;
@@ -1950,7 +1317,7 @@ namespace BuckshotPlusPlus
                 new() { Character = ':', CleanLeft = true, CleanRight = true }
             };
 
-            StringBuilder result = new(fileData);
+            result = new StringBuilder(cleanedData);
 
             while (i < result.Length)
             {
@@ -1994,7 +1361,19 @@ namespace BuckshotPlusPlus
                 i++;
             }
 
-            return result.ToString();
+            return result.ToString().TrimEnd();
+        }
+
+        public static string StripComments(string line)
+        {
+            if (string.IsNullOrEmpty(line)) return line;
+            
+            int commentIndex = line.IndexOf("//");
+            if (commentIndex >= 0)
+            {
+                return line.Substring(0, commentIndex).TrimEnd();
+            }
+            return line;
         }
 
         public static string SafeRemoveSpacesFromString(string content)
@@ -2038,7 +1417,7 @@ namespace BuckshotPlusPlus
         public static bool SafeContains(string value, char c)
         {
             if (_debugEnabled) DebugMessage($"Checking if '{value}' contains '{c}'");
-            return StringHandler.SafeContains(value, c);
+            return StringHandler.SafeContains(StripComments(value), c);
         }
 
         public struct UnsafeCharStruct
@@ -2078,7 +1457,7 @@ namespace BuckshotPlusPlus
         public static List<string> SafeSplit(string value, char c, bool onlyStrings = false)
         {
             if (_debugEnabled) DebugMessage($"Splitting: '{value}' on character: '{c}'");
-            var result = StringHandler.SafeSplit(value, c);
+            var result = StringHandler.SafeSplit(StripComments(value), c);
             if (_debugEnabled) DebugMessage($"Split result: {string.Join(" | ", result)}");
             return result;
         }
@@ -2185,7 +1564,7 @@ namespace BuckshotPlusPlus
             string[] values = logicTestString.Split(LogicTestType);
             LeftValue = values[0];
             LeftValueType = TokenDataVariable.FindVariableType(LeftValue, myToken);
-
+            
             RightValue = values[1];
             RightValueType = TokenDataVariable.FindVariableType(RightValue, myToken);
 
@@ -2195,10 +1574,10 @@ namespace BuckshotPlusPlus
         {
             if(LeftValueType == "ref")
             {
-                Token foundToken = TokenUtils.FindTokenByName(tokenList, LeftValue);
-                if(foundToken != null)
+                Token foundTokenGlobal = TokenUtils.FindTokenByName(tokenList, LeftValue);
+                if(foundTokenGlobal != null)
                 {
-                    TokenDataVariable foundVar = (TokenDataVariable)foundToken.Data;
+                    TokenDataVariable foundVar = (TokenDataVariable)foundTokenGlobal.Data;
                     LeftValue = foundVar.VariableData;
                     LeftValueType = foundVar.VariableType;
                     if(LeftValueType == "string")
@@ -2206,6 +1585,8 @@ namespace BuckshotPlusPlus
                         LeftValue = '"' + LeftValue + "\"";
                     }
                 }
+                
+                
             }
             if(RightValueType == "ref")
             {
@@ -2274,7 +1655,7 @@ namespace BuckshotPlusPlus
                             return localLogicTestType;
                         }
                     }
-
+                    
                 }
             }
 
@@ -2306,7 +1687,6 @@ BuckshotPlusPlus - A simple and efficient web development language
 
 Usage:
   bpp <file>              Run a BuckshotPlusPlus file (e.g., bpp main.bpp)
-  bpp -master             Start BPP in multi-tenant master server mode
   bpp export <file> <dir> Export your website to static files
   bpp merge <file>        Merge all includes into a single file
   bpp -h                  Show this help message
@@ -2314,20 +1694,18 @@ Usage:
 
 Examples:
   bpp main.bpp           Start server with main.bpp
-  bpp -master            Start multi-tenant master server
   bpp export main.bpp ./dist   Export website to ./dist directory
   bpp merge main.bpp     Create a merged version of your project
 
 Options:
   -h, --help            Show this help message
   -v, --version         Show version information
-  -master              Start in multi-tenant master server mode
 ");
         }
 
         private static void ShowVersion()
         {
-            Console.WriteLine("BuckshotPlusPlus v0.4.0");
+            Console.WriteLine("BuckshotPlusPlus v0.5.0");
         }
 
         private static async Task Main(string[] args)
@@ -2336,13 +1714,13 @@ Options:
 
             if (args.Length == 0)
             {
-                ShowHelp();
                 Formater.CriticalError("No input file provided. Use -h for help.");
                 return;
             }
 
             // Handle command line arguments
-            string arg = args[0].ToLower();
+            string path = args[0];
+            string arg = path.ToLower();
             if (arg == "-h" || arg == "--help")
             {
                 ShowHelp();
@@ -2352,12 +1730,6 @@ Options:
             if (arg == "-v" || arg == "--version")
             {
                 ShowVersion();
-                return;
-            }
-
-            if (arg == "-master")
-            {
-                await StartMasterServer();
                 return;
             }
 
@@ -2392,60 +1764,7 @@ Options:
             }
 
             // Regular BPP server startup
-            await StartRegularServer(args[0]);
-        }
-
-        private static async Task StartMasterServer()
-        {
-            try
-            {
-                // Load environment variables
-                var envPath = Path.Combine(Directory.GetCurrentDirectory(), ".env");
-                Console.WriteLine(envPath);
-                if (File.Exists(envPath))
-                {
-                    DotEnv.Load(envPath);
-                }
-
-                var mongoUri = Environment.GetEnvironmentVariable("MONGODB_URI");
-                var stripeKey = Environment.GetEnvironmentVariable("STRIPE_API_KEY");
-                var defaultHost = Environment.GetEnvironmentVariable("DEFAULT_HOST");
-
-                if (string.IsNullOrEmpty(mongoUri))
-                {
-                    Formater.CriticalError("MONGODB_URI not set in .env file");
-                    return;
-                }
-
-                if (string.IsNullOrEmpty(stripeKey))
-                {
-                    Formater.CriticalError("STRIPE_API_KEY not set in .env file");
-                    return;
-                }
-
-                defaultHost ??= "localhost";
-
-                // Create and start the multi-tenant server
-                var server = new MultiTenantServer(mongoUri, stripeKey, defaultHost);
-                server.Start();
-
-                Formater.SuccessMessage("Multi-tenant master server started successfully!");
-                Console.WriteLine("Press Ctrl+C to stop the server");
-
-                // Wait for shutdown signal
-                var cts = new CancellationTokenSource();
-                Console.CancelKeyPress += (s, e) =>
-                {
-                    e.Cancel = true;
-                    cts.Cancel();
-                };
-
-                await Task.Delay(-1, cts.Token);
-            }
-            catch (Exception ex)
-            {
-                Formater.CriticalError($"Error starting master server: {ex.Message}");
-            }
+            await StartRegularServer(path);
         }
 
         private static async Task StartRegularServer(string filePath)
@@ -2482,7 +1801,7 @@ Options:
                     DotEnv.Load(dotenv);
                 }
 
-                WebServer.WebServer myWebServer = new WebServer.WebServer { };
+                WebServer.WebServer myWebServer = new() { };
                 myWebServer.Start(myTokenizer);
 
                 // Wait for Ctrl+C
@@ -2490,6 +1809,7 @@ Options:
                 Console.CancelKeyPress += (s, e) =>
                 {
                     e.Cancel = true;
+
                     cts.Cancel();
                 };
 
@@ -2506,47 +1826,23 @@ Options:
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            Tokenizer myTokenizer = new Tokenizer(filePath);
+            Tokenizer myTokenizer = new(filePath);
 
             stopwatch.Stop();
             Formater.SuccessMessage($"Successfully compiled in {stopwatch.ElapsedMilliseconds} ms");
             return myTokenizer;
         }
 
-        public static void DeleteDirectory(string targetDir)
-        {
-            if (!Directory.Exists(targetDir))
-                return;
-
-            string[] files = Directory.GetFiles(targetDir);
-            string[] dirs = Directory.GetDirectories(targetDir);
-
-            foreach (string file in files)
-            {
-                File.SetAttributes(file, FileAttributes.Normal);
-                File.Delete(file);
-            }
-
-            foreach (string dir in dirs)
-            {
-                DeleteDirectory(dir);
-            }
-
-            Directory.Delete(targetDir, false);
-        }
-
         public static void ExportWebsite(string filePath, string exportDirectory)
         {
             // For now export directory is absolute only
             Tokenizer myTokenizer = CompileMainFile(filePath);
-
             if (Path.Exists(exportDirectory))
             {
-                DeleteDirectory(exportDirectory);
+                Directory.Delete(exportDirectory, true);
             }
 
             Directory.CreateDirectory(exportDirectory);
-
             foreach (Token pageToken in myTokenizer.PagesTokens)
             {
                 TokenDataContainer myPageData = (TokenDataContainer)pageToken.Data;
@@ -2554,8 +1850,9 @@ Options:
                 var icon = TokenUtils.FindTokenByName(myPageData.ContainerData, "icon");
                 if (icon != null)
                 {
-                    var data = icon.Data;
-                    var fileName = ((data as TokenDataVariable)!).VariableData;
+                    var data = icon.Data as TokenDataVariable;
+                    var fileName = data.VariableData;
+
                     string icoPath = Path.Combine(filePath, @"..\" + fileName);
                     File.WriteAllBytes(exportDirectory + "/" + fileName, File.ReadAllBytes(icoPath));
                 }
@@ -2927,7 +2224,7 @@ namespace BuckshotPlusPlus.Source
 
         protected BaseSource(TokenDataContainer container, Tokenizer tokenizer)
         {
-            SourceParameters = new Dictionary<string, string>();
+            SourceParameters = [];
             SourceContainer = container;
             SourceTokenizer = tokenizer;
 
@@ -2988,7 +2285,7 @@ namespace BuckshotPlusPlus.Source
     public class HttpSource : BaseSource
     {
         private readonly HttpClient _httpClient;
-        private const int DEFAULT_TIMEOUT = 30;
+        private const int DEFAULT_TIMEOUT = 30; // TODO: Configure timeout
 
         public HttpSource(TokenDataContainer container, Tokenizer tokenizer) : base(container, tokenizer)
         {
@@ -3470,6 +2767,101 @@ namespace BuckshotPlusPlus
 }
 ```
 
+### File: Tokenizer\ParameterParser.cs
+
+```csharp
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+
+namespace BuckshotPlusPlus
+{
+    public static class ParameterParser
+    {
+        public static bool IsParameterizedView(string lineData)
+        {
+            // Matches: view ViewName(param1, param2, ...) {
+            // Or: view ViewName:Parent(param1, param2, ...) {
+            string pattern = @"^view\s+\w+(\s*:\s*\w+)?\s*\([^)]*\)\s*(\{\s*)?$";
+            return Regex.IsMatch(lineData.Trim(), pattern);
+        }
+
+        public static bool IsViewCall(string variableData)
+        {
+            // Matches: ViewName(arg1, arg2, ...)
+            return Regex.IsMatch(variableData.Trim(), @"^\w+\s*\([^)]*\)\s*$");
+        }
+
+        public static (string viewName, string parentViewName, List<string> parameters) ParseParameterizedViewDefinition(string lineData)
+        {
+            // Extract view name, parent view name, and parameters from: 
+            // view ViewName:ParentView(param1, param2, ...) {
+            // or view ViewName(param1, param2, ...) {
+            var match = Regex.Match(lineData.Trim(), 
+                @"^view\s+(\w+)(?:\s*:\s*(\w+))?\s*\(([^)]*)\)\s*(\{\s*)?$");
+            
+            if (!match.Success)
+            {
+                Formater.DebugMessage($"Failed to parse parameterized view definition: {lineData}");
+                return (null, null, new List<string>());
+            }
+
+            string viewName = match.Groups[1].Value.Trim();
+            string parentViewName = match.Groups[2].Success ? match.Groups[2].Value.Trim() : null;
+            string parametersString = match.Groups[3].Value.Trim();
+
+            var parameters = new List<string>();
+            if (!string.IsNullOrEmpty(parametersString))
+            {
+                foreach (var param in parametersString.Split(','))
+                {
+                    string trimmedParam = param.Trim();
+                    if (!string.IsNullOrEmpty(trimmedParam))
+                    {
+                        parameters.Add(trimmedParam);
+                    }
+                }
+            }
+
+
+            return (viewName, parentViewName, parameters);
+        }
+
+
+        public static (string viewName, List<string> arguments) ParseViewCall(string variableData)
+        {
+            // Extract view name and arguments from: ViewName(arg1, arg2, ...)
+            var match = Regex.Match(variableData.Trim(), @"^(\w+)\s*\(([^)]*)\)\s*$");
+            
+            if (!match.Success)
+            {
+                return (null, new List<string>());
+            }
+
+            string viewName = match.Groups[1].Value;
+            string argumentsString = match.Groups[2].Value.Trim();
+
+            var arguments = new List<string>();
+            if (!string.IsNullOrEmpty(argumentsString))
+            {
+                foreach (var arg in argumentsString.Split(','))
+                {
+                    string trimmedArg = arg.Trim();
+                    // Remove quotes if it's a string literal
+                    if (trimmedArg.StartsWith("\"") && trimmedArg.EndsWith("\""))
+                    {
+                        trimmedArg = trimmedArg.Substring(1, trimmedArg.Length - 2);
+                    }
+                    arguments.Add(trimmedArg);
+                }
+            }
+
+            return (viewName, arguments);
+        }
+    }
+}
+
+```
+
 ### File: Tokenizer\Token.cs
 
 ```csharp
@@ -3606,7 +2998,7 @@ namespace BuckshotPlusPlus
                         }
 
                         // CHECK AND STORE CONTAINER TYPE (OBJECT, FUNCTION)
-
+                        
                         foreach (string containerType in SupportedContainerTypes)
                         {
                             if (myArgs[0] == containerType)
@@ -3616,14 +3008,14 @@ namespace BuckshotPlusPlus
                                     this.ContainerType = "logic";
                                     myToken.Type = this.ContainerType;
                                     ContainerMetaData = new TokenDataLogic(myToken);
-
+                                    
                                 }
                                 else
                                 {
                                     this.ContainerType = containerType;
                                     myToken.Type = this.ContainerType;
                                 }
-
+                                
                             }
                         }
                         if (this.ContainerType == "")
@@ -3724,7 +3116,7 @@ namespace BuckshotPlusPlus
                                     previousToken
                                 );
 
-
+                            
                             AddChildToContainerData(ContainerData, newContainerToken);
                             break;
                         }
@@ -3787,7 +3179,7 @@ namespace BuckshotPlusPlus
                     containerData,
                     TokenUtils.GetTokenName(newChild)
                 );
-
+                
                 if (foundToken != null)
                 {
                     containerData.Remove(foundToken);
@@ -3800,7 +3192,7 @@ namespace BuckshotPlusPlus
         public static bool IsTokenDataContainer(Token myToken)
         {
             string localType = Formater.SafeSplit(myToken.LineData, ' ')[0];
-
+            
             foreach (string type in SupportedContainerTypes)
             {
                 if (localType == type)
@@ -3814,7 +3206,7 @@ namespace BuckshotPlusPlus
                     {
                         return false;
                     }
-
+                    
                 }
             }
 
@@ -3845,7 +3237,7 @@ namespace BuckshotPlusPlus
             this.FuncName = GetFunctionCallName(myToken.LineData, myToken);
             this.FuncArgs = GetFunctionArgs(myToken.LineData, myToken);
         }
-
+        
 
         public static bool IsTokenDataFunctionCall(Token myToken)
         {
@@ -3964,7 +3356,7 @@ namespace BuckshotPlusPlus
                 {
                     myToken.PreviousToken.NextToken = myToken;
                 }
-
+                
             }
         }
 
@@ -4024,7 +3416,7 @@ namespace BuckshotPlusPlus
                 {
                     LastLogicTestResult = false;
                 }
-
+                
             }else if(LogicType == "else")
             {
                 Token previousToken = ParentToken.PreviousToken;
@@ -4042,8 +3434,275 @@ namespace BuckshotPlusPlus
                     }
                 }else { LastLogicTestResult = false; }
             }
-
+            
             return LastLogicTestResult;
+        }
+    }
+}
+
+```
+
+### File: Tokenizer\TokenDataParameterizedView.cs
+
+```csharp
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace BuckshotPlusPlus
+{
+    public class TokenDataParameterizedView : TokenData
+    {
+        public string ViewName { get; set; }
+        public string ParentViewName { get; set; }
+        public List<string> Parameters { get; set; }
+        public List<Token> ViewContent { get; set; }
+        public Token ViewToken { get; set; }
+        public TokenDataParameterizedView ParentView { get; private set; }
+
+        public TokenDataParameterizedView(string viewName, string parentViewName, List<string> parameters, List<Token> content, Token token, List<Token> serverSideTokens = null)
+        {
+            if (string.IsNullOrWhiteSpace(viewName))
+            {
+                throw new ArgumentNullException(nameof(viewName), "View name cannot be null or empty");
+            }
+            
+            ViewName = viewName.Trim();
+            ParentViewName = parentViewName?.Trim();
+            Parameters = parameters ?? new List<string>();
+            ViewContent = content ?? new List<Token>();
+            ViewToken = token ?? throw new ArgumentNullException(nameof(token));
+            
+            // Try to find the parent view in the server tokens
+            if (!string.IsNullOrEmpty(parentViewName))
+            {
+                ParentView = TokenUtils.FindParameterizedView(serverSideTokens, parentViewName);
+                if (ParentView == null)
+                {
+                    Formater.TokenCriticalError($"Parent view '{parentViewName}' not found for view '{ViewName}'", ViewToken);
+                }
+                else
+                {
+                    Formater.DebugMessage($"View '{ViewName}' inherits from '{ParentViewName}' with {Parameters.Count} parameters");
+                    
+                    // Merge parent parameters with child parameters
+                    if (ParentView.Parameters.Count > 0)
+                    {
+                        var allParameters = new List<string>(ParentView.Parameters);
+                        allParameters.AddRange(Parameters);
+                        Parameters = allParameters;
+                    }
+                }
+            }
+            else
+            {
+                Formater.DebugMessage($"Created parameterized view '{ViewName}' with {Parameters.Count} parameters");
+            }
+        }
+
+        public TokenDataContainer InstantiateView(List<string> arguments, List<Token> serverSideTokens)
+        {
+            try
+            {
+                if (arguments == null)
+                {
+                    Formater.RuntimeError("Arguments list is null", ViewToken);
+                    return null;
+                }
+
+                if (arguments.Count != Parameters.Count)
+                {
+                    Formater.RuntimeError($"Parameter count mismatch for view '{ViewName}'. Expected {Parameters.Count}, got {arguments.Count}", ViewToken);
+                    return null;
+                }
+
+
+                // Create a unique instance identifier
+                string uniqueInstanceId = Guid.NewGuid().ToString("N")[..8]; // Short GUID
+                string uniqueInstanceName = $"{ViewName}_instance_{uniqueInstanceId}";
+
+                // Process each token in the view content
+                var instantiatedContent = new List<Token>();
+
+                // Create a dictionary to store the variables from parent and child views
+                var viewVariables = new Dictionary<string, Token>();
+
+                // First, process parent view content if this view inherits from another
+                if (ParentView != null)
+                {
+                    Formater.DebugMessage($"Including content from parent view '{ParentView.ViewName}' in view '{ViewName}'");
+                    
+                    // Only pass arguments to the parent if it expects parameters
+                    var parentArguments = ParentView.Parameters.Count > 0 ? arguments : new List<string>();
+                    var parentContent = ParentView.InstantiateView(parentArguments, serverSideTokens)?.ContainerData;
+                    
+                    if (parentContent != null)
+                    {
+                        // Add parent's content first, but don't add to instantiatedContent yet
+                        foreach (var token in parentContent)
+                        {
+                            if (token?.Data is TokenDataVariable varData)
+                            {
+                                viewVariables[varData.VariableName] = token;
+                            }
+                        }
+                    }
+                }
+
+
+                // Process current view's content, which will override parent's content
+                foreach (var token in ViewContent)
+                {
+                    try
+                    {
+                        var clonedToken = CloneTokenWithParameterSubstitution(token, arguments, serverSideTokens);
+                        if (clonedToken != null && clonedToken.Data is TokenDataVariable varData)
+                        {
+                            // Store or update the variable in our dictionary
+                            viewVariables[varData.VariableName] = clonedToken;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Formater.RuntimeError($"Error cloning token in view '{ViewName}': {ex.Message}", token);
+                        Formater.DebugMessage($"Stack trace in token at line {token?.LineNumber}: {ex.StackTrace}");
+                    }
+                }
+
+
+                // Instead of creating a container, we'll create a special token that represents the view instance
+                var viewInstanceToken = new Token(
+                    fileName: ViewToken?.FileName ?? "unknown",
+                    lineData: $"view {uniqueInstanceName}",
+                    lineNumber: ViewToken?.LineNumber ?? 0,
+                    myTokenizer: ViewToken?.MyTokenizer,
+                    parent: null,
+                    previousToken: null
+                );
+                
+                // Add all variables to the final content
+                var finalContent = new List<Token>(viewVariables.Values);
+                
+                // Create a custom container that will handle the view content
+                var viewContainer = new TokenDataContainer(viewInstanceToken)
+                {
+                    // Add all variables to the container
+                    ContainerData = finalContent
+                };
+                
+                // Set the container name to indicate it's a view instance
+                viewContainer.ContainerName = uniqueInstanceName;
+                viewContainer.ContainerType = "view";
+                
+                return viewContainer;
+            }
+            catch (Exception ex)
+            {
+                Formater.RuntimeError($"Error instantiating view '{ViewName}': {ex.Message}", ViewToken);
+                Formater.DebugMessage($"Stack trace in view '{ViewName}': {ex.StackTrace}");
+                return null;
+            }
+        }
+
+        private Token CloneTokenWithParameterSubstitution(Token originalToken, List<string> arguments, List<Token> serverSideTokens)
+        {
+            var clonedToken = new Token(
+                fileName: originalToken.FileName,
+                lineData: originalToken.LineData,
+                lineNumber: originalToken.LineNumber,
+                myTokenizer: originalToken.MyTokenizer,
+                parent: null,
+                previousToken: null
+            );
+
+            if (originalToken.Data is TokenDataVariable variable)
+            {
+                // Handle parameter references in variable data
+                string newVariableData = variable.VariableData;
+                string trimmedValue = variable.VariableData.Trim();
+                
+                // If the variable data exactly matches a parameter name, replace it with the argument
+                if (Parameters.Contains(trimmedValue))
+                {
+                    int paramIndex = Parameters.IndexOf(trimmedValue);
+                    if (paramIndex >= 0 && paramIndex < arguments.Count)
+                    {
+                        newVariableData = arguments[paramIndex];
+                        // If the original was a reference, keep it as a reference
+                        if (variable.VariableType == "ref")
+                        {
+                            clonedToken.Data = new TokenDataVariable(clonedToken)
+                            {
+                                VariableName = variable.VariableName,
+                                VariableData = newVariableData,
+                                VariableType = "string"  // Change to string since we're substituting the value directly
+                            };
+                            return clonedToken;
+                        }
+                    }
+                }
+                
+                clonedToken.Data = new TokenDataVariable(clonedToken)
+                {
+                    VariableName = variable.VariableName,
+                    VariableData = newVariableData,
+                    VariableType = variable.VariableType
+                };
+            }
+            else if (originalToken.Data is TokenDataContainer container)
+            {
+                // For containers, we need to create a new container with the same type and content
+                // but with parameters substituted in the content
+                clonedToken.Data = new TokenDataContainer(clonedToken);
+                var newContainer = (TokenDataContainer)clonedToken.Data;
+                
+                // Copy container properties
+                newContainer.ContainerName = container.ContainerName;
+                newContainer.ContainerType = container.ContainerType;
+                
+                // Clone and substitute parameters in container data
+                foreach (var childToken in container.ContainerData)
+                {
+                    var clonedChild = CloneTokenWithParameterSubstitution(childToken, arguments, serverSideTokens);
+                    if (clonedChild != null)
+                    {
+                        newContainer.ContainerData.Add(clonedChild);
+                    }
+                }
+            }
+            else
+            {
+                clonedToken.Data = originalToken.Data;
+            }
+
+            return clonedToken;
+        }
+
+        private string SubstituteParameters(string content, List<string> arguments)
+        {
+            if (content == null)
+                return string.Empty;
+
+            try
+            {
+                // If the content exactly matches a parameter, replace it
+                for (int i = 0; i < Math.Min(Parameters.Count, arguments.Count); i++)
+                {
+                    if (Parameters[i] != null && arguments[i] != null && content.Trim() == Parameters[i])
+                    {
+                        return arguments[i];
+                    }
+                }
+                
+                // If we get here, no exact match was found
+                return content;
+            }
+            catch (Exception ex)
+            {
+                Formater.RuntimeError($"Error substituting parameters in view '{ViewName}': {ex.Message}", ViewToken);
+                Formater.DebugMessage($"Parameter substitution error in view '{ViewName}':\nContent: {content}\nParameters: {string.Join(", ", Parameters)}\nArguments: {string.Join(", ", arguments)}");
+                return content; // Return original content on error
+            }
         }
     }
 }
@@ -4053,7 +3712,7 @@ namespace BuckshotPlusPlus
 ### File: Tokenizer\TokenDataVariable.cs
 
 ```csharp
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace BuckshotPlusPlus
@@ -4160,6 +3819,10 @@ namespace BuckshotPlusPlus
             // Trim the value first
             value = value.Trim();
 
+            // Check for view call first
+            if (ParameterParser.IsViewCall(value))
+                return "viewcall";
+
             // Check for array first
             if (value.StartsWith("[") && value.EndsWith("]"))
                 return "array";
@@ -4199,7 +3862,14 @@ namespace BuckshotPlusPlus
 
         public string GetCompiledVariableData(List<Token> fileTokens, bool compileRef = false)
         {
-            if (this.VariableType == "multiple")
+            // Handle view calls
+            if (this.VariableType == "viewcall")
+            {
+                var (viewName, arguments) = ParameterParser.ParseViewCall(this.VariableData);
+                var viewCall = new TokenDataViewCall(viewName, arguments, this.VariableToken);
+                return viewCall.CompileViewCall(fileTokens);
+            }
+            else if (this.VariableType == "multiple")
             {
                 List<string> variables = Formater.SafeSplit(this.VariableData, '+');
                 string result = "";
@@ -4267,10 +3937,128 @@ namespace BuckshotPlusPlus
 
 ```
 
+### File: Tokenizer\TokenDataViewCall.cs
+
+```csharp
+using System;
+using System.Collections.Generic;
+
+namespace BuckshotPlusPlus
+{
+    public class TokenDataViewCall : TokenData
+    {
+        public string ViewName { get; set; }
+        public List<string> Arguments { get; set; }
+        public Token ViewCallToken { get; set; }
+
+        public TokenDataViewCall(string viewName, List<string> arguments, Token token)
+        {
+            ViewName = viewName?.Trim() ?? throw new ArgumentNullException(nameof(viewName));
+            Arguments = arguments ?? new List<string>();
+            ViewCallToken = token ?? throw new ArgumentNullException(nameof(token));
+        }
+
+        public string CompileViewCall(List<Token> fileTokens)
+        {
+            try
+            {
+                if (fileTokens == null)
+                {
+                    Formater.RuntimeError("File tokens list is null", ViewCallToken);
+                    return "";
+                }
+                
+                Formater.DebugMessage($"Looking for parameterized view '{ViewName}' with {Arguments.Count} arguments");
+
+                // Find the parameterized view definition
+                var paramView = FindParameterizedView(fileTokens, ViewName);
+                if (paramView == null)
+                {
+                    // The error is already logged in FindParameterizedView
+                    return string.Empty;
+                }
+
+                // Instantiate the view with arguments
+                var viewInstance = paramView.InstantiateView(Arguments, fileTokens);
+                if (viewInstance == null)
+                {
+                    Formater.RuntimeError($"Failed to instantiate view '{ViewName}'", ViewCallToken);
+                    return "";
+                }
+
+                // Compile the view content directly
+                var result = new System.Text.StringBuilder();
+                
+                // Process the view instance to ensure all properties (like color) are properly handled
+                if (viewInstance.ContainerData != null)
+                {
+                    // Create a token for the view instance and compile it
+                    var viewToken = new Token(
+                        fileName: ViewCallToken.FileName,
+                        lineData: $"view {viewInstance.ContainerName} {{ ... }}",
+                        lineNumber: ViewCallToken.LineNumber,
+                        myTokenizer: ViewCallToken.MyTokenizer,
+                        parent: null,
+                        previousToken: null
+                    );
+                    viewToken.Data = viewInstance;
+                    
+                    // Compile the view which will handle all its children
+                    string compiledView = Compiler.HTML.View.CompileView(fileTokens, viewToken);
+                    
+                    // Only append if we have content
+                    if (!string.IsNullOrEmpty(compiledView))
+                    {
+                        result.Append(compiledView);
+                    }
+                }
+                
+                if (result.Length == 0)
+                {
+                    Formater.DebugMessage($"Empty result when compiling view '{ViewName}' at line {ViewCallToken?.LineNumber}");
+                }
+                
+                return result.ToString().Trim();
+            }
+            catch (Exception ex)
+            {
+                Formater.RuntimeError($"Error compiling view call '{ViewName}': {ex.Message}", ViewCallToken);
+                Formater.DebugMessage($"Stack trace: {ex.StackTrace}");
+                return $"<!-- Error compiling view '{ViewName}': {ex.Message} -->";
+            }
+        }
+
+        private TokenDataParameterizedView FindParameterizedView(List<Token> fileTokens, string viewName)
+        {
+            if (fileTokens == null || string.IsNullOrEmpty(viewName))
+            {
+                Formater.DebugMessage($"Invalid parameters - fileTokens: {fileTokens?.Count ?? 0} items, viewName: '{viewName}'");
+                return null;
+            }
+
+            // Use the TokenUtils helper method to find the parameterized view
+            var paramView = TokenUtils.FindParameterizedView(fileTokens, viewName);
+            
+            if (paramView != null)
+            {
+                Formater.DebugMessage($"Found parameterized view '{paramView.ViewName}'");
+                return paramView;
+            }
+            
+            string errorMessage = $"View '{viewName}' not found in current scope";
+            Formater.DebugMessage(errorMessage);
+            Formater.TokenCriticalError(errorMessage, ViewCallToken);
+            return null;
+        }
+    }
+}
+
+```
+
 ### File: Tokenizer\Tokenizer.cs
 
 ```csharp
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -4280,7 +4068,7 @@ using File = System.IO.File;
 namespace BuckshotPlusPlus
 {
     // TokenData is the main class for all tokens
-    public abstract class TokenData {
+    public abstract class TokenData { 
     }
 
     public enum LineType
@@ -4289,7 +4077,8 @@ namespace BuckshotPlusPlus
         Comment,
         Variable,
         Include,
-        Empty
+        Empty,
+        ParameterizedView
     }
 
     public struct UnprocessedLine
@@ -4383,6 +4172,106 @@ namespace BuckshotPlusPlus
             return filePath;
         }
 
+        private void ProcessParameterizedViewLine(ProcessedLine processedLine, List<string> fileLines, ref int currentLineNumber, string fileName)
+        {
+            var (viewName, parentViewName, parameters) = ParameterParser.ParseParameterizedViewDefinition(processedLine.LineData);
+            
+            if (string.IsNullOrEmpty(viewName))
+            {
+                Formater.RuntimeError($"Invalid parameterized view syntax at line {processedLine.CurrentLine}", null);
+                return;
+            }
+            
+            Formater.DebugMessage($"Processing parameterized view '{viewName}'{(parentViewName != null ? $" inheriting from '{parentViewName}'" : "")} with {parameters.Count} parameters at line {processedLine.CurrentLine}");
+
+            // Read the view content (similar to container processing)
+            var viewContent = new List<Token>();
+            int startLine = currentLineNumber;
+            int braceCount = 1; // We already have the opening brace
+            currentLineNumber++;
+            
+            // Process the view's content tokens
+            while (currentLineNumber < fileLines.Count && braceCount > 0)
+            {
+                string currentLine = fileLines[currentLineNumber].Trim();
+                
+                // Update brace count
+                braceCount += currentLine.Count(c => c == '{');
+                braceCount -= currentLine.Count(c => c == '}');
+                
+                if (braceCount == 0)
+                {
+                    currentLineNumber++;
+                    break;
+                }
+                
+                // Process the current line
+                var nextProcessedLine = ProcessLineData(new UnprocessedLine(fileLines, currentLineNumber));
+                
+                // Skip empty lines and comments
+                if (nextProcessedLine.LineType != LineType.Empty && 
+                    nextProcessedLine.LineType != LineType.Comment)
+                {
+                    // For container lines, we need to process them as containers
+                    if (nextProcessedLine.LineType == LineType.Container && nextProcessedLine.ContainerData != null)
+                    {
+                        // Create a container token for the content
+                        var containerToken = new Token(
+                            fileName,
+                            nextProcessedLine.LineData,
+                            currentLineNumber,
+                            this
+                        );
+                        
+                        // Set the container data
+                        containerToken.Data = new TokenDataContainer(containerToken);
+                        viewContent.Add(containerToken);
+                    }
+                    else if (nextProcessedLine.LineType == LineType.Variable)
+                    {
+                        // Process as a regular variable
+                        var contentToken = new Token(
+                            fileName, 
+                            nextProcessedLine.LineData, 
+                            currentLineNumber, 
+                            this,
+                            null,
+                            null
+                        );
+                        
+                        if (contentToken != null && contentToken.Data != null)
+                        {
+                            viewContent.Add(contentToken);
+                        }
+                    }
+                }
+                
+                currentLineNumber++;
+            }
+
+            // Create the parameterized view token
+            var token = new Token(
+                fileName: fileName,
+                lineData: $"view {viewName}({string.Join(", ", parameters)})",
+                lineNumber: startLine,
+                myTokenizer: this,
+                parent: null,
+                previousToken: null
+            );
+            
+            try
+            {
+                // Set the token data with parent view support
+                token.Data = new TokenDataParameterizedView(viewName, parentViewName, parameters, viewContent, token, FileTokens);
+                FileTokens.Add(token);
+                Formater.DebugMessage($"Successfully created parameterized view '{viewName}'{(parentViewName != null ? $" inheriting from '{parentViewName}'" : "")} with {viewContent.Count} content tokens");
+            }
+            catch (Exception ex)
+            {
+                Formater.RuntimeError($"Failed to create parameterized view '{viewName}': {ex.Message}", token);
+            }
+        }
+
         public void AnalyzeFileData(string fileName, string fileData)
         {
             if (UnprocessedFileDataDictionary.ContainsKey(fileName))
@@ -4405,54 +4294,59 @@ namespace BuckshotPlusPlus
 
                     switch (currentLine.LineType)
                     {
-                            case LineType.Include:
-                            {
-                                string includePath = Formater.SafeSplit(currentLine.LineData, ' ')[1];
-                                includePath = GetIncludeValue(includePath);
+                        case LineType.ParameterizedView:
+                            Formater.DebugMessage($"Found parameterized view definition at line {currentLineNumber}");
+                            ProcessParameterizedViewLine(currentLine, myFileLines, ref currentLineNumber, fileName);
+                            // Skip the lines that were processed by ProcessParameterizedViewLine
+                            currentLineNumber--; // Decrement because the loop will increment it
+                            break;
+                        case LineType.Include:
+                        {
+                            string includePath = Formater.SafeSplit(currentLine.LineData, ' ')[1];
+                            includePath = GetIncludeValue(includePath);
 
-                                if (IsHttp(includePath))
-                                {
-                                    IncludeFile(
+                            if (IsHttp(includePath))
+                            {
+                                IncludeFile(
+                                    includePath.Substring(
+                                        1,
+                                        includePath.Length - 2
+                                    )
+                                );
+                            }
+                            else
+                            {
+                                IncludeFile(
+                                    Path.Combine(
+                                        RelativePath,
                                         includePath.Substring(
                                             1,
                                             includePath.Length - 2
                                         )
-                                    );
-                                }
-                                else
-                                {
-                                    IncludeFile(
-                                        Path.Combine(
-                                            RelativePath,
-                                            includePath.Substring(
-                                                1,
-                                                includePath.Length - 2
-                                            )
-                                        )
-                                    );
-                                }
-                                break;
+                                    )
+                                );
                             }
-                            case LineType.Container:
-                            {
-                                AddContainerToken(fileName, currentLine.ContainerData, currentLineNumber);
-                                break;
-                            }
-                            case LineType.Variable:
-                            {
-                                Token myNewToken = new Token(fileName, currentLine.LineData, currentLineNumber, this);
+                            break;
+                        }
+                        case LineType.Container:
+                        {
+                            AddContainerToken(fileName, currentLine.ContainerData, currentLineNumber);
+                            break;
+                        }
+                        case LineType.Variable:
+                        {
+                            Token myNewToken = new Token(fileName, currentLine.LineData, currentLineNumber, this);
 
-                                if (!TokenUtils.SafeEditTokenData(currentLine.LineData, FileTokens, myNewToken))
-                                {
-                                    FileTokens.Add(myNewToken);
-                                }
-                                break;
+                            if (!TokenUtils.SafeEditTokenData(currentLine.LineData, FileTokens, myNewToken))
+                            {
+                                FileTokens.Add(myNewToken);
                             }
+                            break;
+                        }
                         case LineType.Empty:
                             break;
-                            case LineType.Comment: {
-                                break;
-                            }
+                        case LineType.Comment:
+                            break;
                     }
 
                 }
@@ -4494,15 +4388,43 @@ namespace BuckshotPlusPlus
 
         public static ProcessedLine ProcessLineData(UnprocessedLine uLine)
         {
-
             string lineData = uLine.Lines[uLine.CurrentLine];
             int currentLineNumber = uLine.CurrentLine;
+            
+            // Handle // comments first
+            int commentIndex = lineData.IndexOf("//");
+            if (commentIndex >= 0)
+            {
+                if (commentIndex == 0)
+                {
+                    // Pure comment line
+                    return new ProcessedLine(currentLineNumber + 1, LineType.Comment, lineData);
+                }
+                // Strip comment from end of line
+                lineData = lineData.Substring(0, commentIndex).TrimEnd();
+                
+                // If line is empty after stripping comment, treat as empty line
+                if (string.IsNullOrWhiteSpace(lineData))
+                {
+                    return new ProcessedLine(currentLineNumber + 1, LineType.Empty, lineData);
+                }
+            }
+            
+            // Check for parameterized view definition
+            string trimmedLine = lineData.Trim();
+            if (ParameterParser.IsParameterizedView(trimmedLine))
+            {
+                Formater.DebugMessage($"Found potential parameterized view: {trimmedLine}");
+                return new ProcessedLine(currentLineNumber, LineType.ParameterizedView, trimmedLine);
+            }
+            
             if (lineData.Length >= 2)
             {
 
                 if (lineData.Length > 3)
                 {
-                    if (lineData[0] + "" + lineData[1] + lineData[2] == "###")
+                    // Handle block comments (###)
+                if (lineData.Length > 2 && lineData[0] + "" + lineData[1] + lineData[2] == "###")
                     {
                         while (currentLineNumber < uLine.Lines.Count)
                         {
@@ -4522,6 +4444,7 @@ namespace BuckshotPlusPlus
                     }
                 }
 
+                // Handle single-line comments (##)
                 if (lineData[0] + "" + lineData[1] == "##")
                 {
                     currentLineNumber++;
@@ -4565,7 +4488,7 @@ namespace BuckshotPlusPlus
                                     {
                                         continue;
                                     }
-
+                                    
                                     if (lineData[^1] == 13)
                                     {
                                         lineData = lineData.Substring(0, lineData.Length - 1);
@@ -4638,7 +4561,7 @@ namespace BuckshotPlusPlus
 ### File: Tokenizer\TokenUtils.cs
 
 ```csharp
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -4660,6 +4583,53 @@ namespace BuckshotPlusPlus
                 return myContainer.ContainerName;
             }
 
+            return null;
+        }
+
+        public static TokenDataParameterizedView FindParameterizedView(List<Token> tokens, string viewName)
+        {
+            if (tokens == null || string.IsNullOrEmpty(viewName))
+            {
+                return null;
+            }
+
+            foreach (var token in tokens)
+            {
+                // Check for parameterized view
+                if (token?.Data is TokenDataParameterizedView paramView && 
+                    string.Equals(paramView.ViewName, viewName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return paramView;
+                }
+                
+                // Check for regular view (TokenDataContainer with ContainerType "view")
+                if (token?.Data is TokenDataContainer container)
+                {
+                    if (container.ContainerType == "view" && 
+                        string.Equals(container.ContainerName, viewName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Convert the regular view to a parameterized view with no parameters
+                        return new TokenDataParameterizedView(
+                            container.ContainerName,
+                            null, // No parent view
+                            new List<string>(), // No parameters
+                            container.ContainerData,
+                            token
+                        );
+                    }
+                    
+                    // Recursively search in container data
+                    if (container.ContainerData != null)
+                    {
+                        var foundInContainer = FindParameterizedView(container.ContainerData, viewName);
+                        if (foundInContainer != null)
+                        {
+                            return foundInContainer;
+                        }
+                    }
+                }
+            }
+            
             return null;
         }
 
@@ -4719,7 +4689,7 @@ namespace BuckshotPlusPlus
         private static bool ShouldLogTokenSearch(string tokenName)
         {
             // Don't log CSS properties
-            if (Compiler.CSS.Properties._props.Contains(tokenName))
+            if (Compiler.CSS.Properties.props.Contains(tokenName))
                 return false;
 
             // Don't log common HTML attributes
@@ -4781,13 +4751,9 @@ namespace BuckshotPlusPlus
 
         public static void EditAllTokensOfContainer(List<Token> fileTokens,Token myContainer)
         {
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-
             TokenDataContainer pageTokenDataContainer = (TokenDataContainer)myContainer.Data;
             if (pageTokenDataContainer == null)
             {
-                stopwatch.Stop();
                 Formater.TokenCriticalError("The provided token is not a container!", myContainer);
             }
             else
@@ -4822,12 +4788,9 @@ namespace BuckshotPlusPlus
 
                         }
                     }
-
+                    
                 }
             }
-
-            stopwatch.Stop();
-            //Formater.SuccessMessage($"It took {stopwatch.ElapsedMilliseconds} ms to run EditAllTokensOfContainer of container {PageTokenDataContainer.ContainerName}");
         }
 
         public static TokenDataVariable FindTokenDataVariableByName(List<Token> myTokenList, string tokenName)
@@ -4856,7 +4819,7 @@ namespace BuckshotPlusPlus
         private static bool IsStyleProperty(string name)
         {
             // List of common CSS properties to avoid logging
-            return Compiler.CSS.Properties._props.Contains(name);
+            return Compiler.CSS.Properties.props.Contains(name);
         }
 
         private static bool IsHtmlAttribute(string name)
@@ -5053,339 +5016,18 @@ namespace BuckshotPlusPlus.WebServer
 
 ```
 
-### File: WebServer\MultiTenantServer.cs
-
-```csharp
-﻿using System.Net;
-using System.Text;
-using Serilog;
-using BuckshotPlusPlus.Services;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using System;
-
-namespace BuckshotPlusPlus.WebServer
-{
-    public class MultiTenantServer
-    {
-        private HttpListener _listener;
-        private readonly TenantManager _tenantManager;
-        private readonly MongoDbService _mongoDb;
-        private readonly StripeService _stripe;
-        private readonly ILogger _logger;
-        private readonly string _defaultHost;
-        private bool _isRunning;
-        private Tokenizer _defaultTokenizer;
-
-        public MultiTenantServer(string mongoConnectionString, string stripeApiKey, string defaultHost)
-        {
-            _mongoDb = new MongoDbService(mongoConnectionString);
-            _stripe = new StripeService(stripeApiKey, _mongoDb);
-            _logger = new LoggerConfiguration()
-                .WriteTo.Console()
-                .WriteTo.File("logs/bpp.log", rollingInterval: RollingInterval.Day)
-                .CreateLogger();
-            _tenantManager = new TenantManager(_mongoDb, _stripe, _logger);
-            _defaultHost = defaultHost;
-        }
-
-        public void Start()
-        {
-            if (_isRunning) return;
-
-            var port = Environment.GetEnvironmentVariable("BPP_PORT") ?? "8080";
-            var bindingAttempts = new[]
-            {
-                $"http://*:{port}/",
-                $"http://+:{port}/",
-                $"http://localhost:{port}/",
-                $"http://127.0.0.1:{port}/"
-            };
-
-            Exception lastException = null;
-            bool started = false;
-
-            // Load default site if configured
-            try
-            {
-                var defaultSitePath = Environment.GetEnvironmentVariable("DEFAULT_SITE_PATH");
-                if (!string.IsNullOrEmpty(defaultSitePath))
-                {
-                    _defaultTokenizer = new Tokenizer(defaultSitePath);
-                    _logger.Information("Loaded default site from {Path}", defaultSitePath);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Failed to load default site");
-            }
-
-            foreach (var prefix in bindingAttempts)
-            {
-                try
-                {
-                    _listener = new HttpListener();
-                    _listener.Prefixes.Add(prefix);
-                    _listener.Start();
-                    _isRunning = true;
-                    started = true;
-
-                    _logger.Information("Server started successfully on {Prefix}", prefix);
-                    if (prefix.Contains("localhost") || prefix.Contains("127.0.0.1"))
-                    {
-                        _logger.Warning("Server is bound to localhost only. To bind to all interfaces, run as administrator.");
-                    }
-
-                    _ = HandleConnections();
-                    break;
-                }
-                catch (HttpListenerException ex)
-                {
-                    lastException = ex;
-                    _logger.Debug($"Failed to bind to {prefix}: {ex.Message}");
-                    try { _listener?.Close(); } catch { }
-                }
-                catch (Exception ex)
-                {
-                    lastException = ex;
-                    _logger.Error(ex, "Unexpected error while starting server on {Prefix}", prefix);
-                    try { _listener?.Close(); } catch { }
-                }
-            }
-
-            if (!started)
-            {
-                var message = "Failed to start server on any interface.";
-                if (lastException != null)
-                {
-                    message += $"\nLast error: {lastException.Message}";
-                    if (lastException is HttpListenerException && lastException.Message.Contains("Access"))
-                    {
-                        message += "\nTry:\n" +
-                            "1. Run as administrator, or\n" +
-                            "2. Use the command: netsh http add urlacl url=http://*:8080/ user=YOUR_USERNAME";
-                    }
-                }
-                throw new Exception(message);
-            }
-        }
-
-        private async Task HandleConnections()
-        {
-            while (_isRunning)
-            {
-                try
-                {
-                    var context = await _listener.GetContextAsync();
-                    _ = ProcessRequestAsync(context);
-                }
-                catch (Exception ex)
-                {
-                    _logger.Error(ex, "Error handling connection");
-                }
-            }
-        }
-
-        private async Task ProcessRequestAsync(HttpListenerContext context)
-        {
-            try
-            {
-                var req = context.Request;
-                var resp = context.Response;
-                var domain = req.Url.Host.ToLower();
-
-                // Handle health check
-                if (req.Url.PathAndQuery == "/health")
-                {
-                    await SendResponse(resp, "OK", "text/plain", 200);
-                    return;
-                }
-
-                // Get tenant-specific tokenizer
-                try
-                {
-                    var siteTokenizer = await _tenantManager.GetTenantTokenizer(domain, req);
-                    if (siteTokenizer == null)
-                    {
-                        // If no tenant found and no default tokenizer, return 404
-                        if (_defaultTokenizer == null || domain != "localhost")
-                        {
-                            await SendResponse(resp, "Site not found", "text/plain", 404);
-                            return;
-                        }
-                        // Use default tokenizer for localhost if no tenant configured
-                        siteTokenizer = _defaultTokenizer;
-                    }
-
-                    // Handle the request based on the path
-                    if (req.Url.AbsolutePath.EndsWith(".ico"))
-                    {
-                        await HandleFaviconRequest(req, resp, siteTokenizer);
-                    }
-                    else if (req.Url.AbsolutePath.StartsWith("/source/"))
-                    {
-                        await HandleSourceRequest(req, resp, siteTokenizer);
-                    }
-                    else
-                    {
-                        await HandlePageRequest(req, resp, siteTokenizer);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.Error(ex, "Error processing request for {Domain}", domain);
-                    await SendResponse(resp, "Error processing request", "text/plain", 500);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Unhandled error processing request");
-                try
-                {
-                    await SendResponse(context.Response, "Internal Server Error", "text/plain", 500);
-                }
-                catch
-                {
-                    // Ignore errors in error handling
-                }
-            }
-        }
-
-        private async Task HandlePageRequest(HttpListenerRequest req, HttpListenerResponse resp, Tokenizer siteTokenizer)
-        {
-            var path = req.Url.AbsolutePath;
-            var pageName = path == "/" ? "index" : path.TrimStart('/');
-            var pageToken = siteTokenizer.PagesTokens.FirstOrDefault(t =>
-                ((TokenDataContainer)t.Data).ContainerName == pageName);
-
-            if (pageToken == null)
-            {
-                await SendResponse(resp, "Page not found", "text/plain", 404);
-                return;
-            }
-
-            var html = Page.RenderWebPage(siteTokenizer.FileTokens, pageToken);
-            await SendResponse(resp, html, "text/html", 200);
-        }
-
-        private async Task HandleFaviconRequest(HttpListenerRequest req, HttpListenerResponse resp, Tokenizer siteTokenizer)
-        {
-            try
-            {
-                var iconPath = Path.Combine(siteTokenizer.RelativePath, req.Url.AbsolutePath.TrimStart('/'));
-                if (File.Exists(iconPath))
-                {
-                    var iconData = await File.ReadAllBytesAsync(iconPath);
-                    resp.ContentType = "image/x-icon";
-                    resp.ContentLength64 = iconData.Length;
-                    await resp.OutputStream.WriteAsync(iconData);
-                }
-                else
-                {
-                    await SendResponse(resp, "Favicon not found", "text/plain", 404);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error handling favicon request");
-                await SendResponse(resp, "Error processing favicon", "text/plain", 500);
-            }
-        }
-
-        private async Task HandleSourceRequest(HttpListenerRequest req, HttpListenerResponse resp, Tokenizer siteTokenizer)
-        {
-            try
-            {
-                var sourceName = req.Url.AbsolutePath.Split('/').Last();
-                var sourceData = TokenUtils.FindTokenByName(siteTokenizer.FileTokens, sourceName);
-
-                if (sourceData?.Data is TokenDataContainer container && container.ContainerType == "source")
-                {
-                    var data = await Source.BaseSource.CreateSource(container, siteTokenizer)?.FetchDataAsync();
-                    if (data != null)
-                    {
-                        var jsonResponse = Newtonsoft.Json.JsonConvert.SerializeObject(new { success = true, data });
-                        await SendResponse(resp, jsonResponse, "application/json", 200);
-                        return;
-                    }
-                }
-
-                await SendResponse(resp,
-                    Newtonsoft.Json.JsonConvert.SerializeObject(new { success = false, error = "Source not found" }),
-                    "application/json",
-                    404);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error handling source request");
-                await SendResponse(resp,
-                    Newtonsoft.Json.JsonConvert.SerializeObject(new { success = false, error = ex.Message }),
-                    "application/json",
-                    500);
-            }
-        }
-
-        private async Task SendResponse(HttpListenerResponse resp, string content, string contentType, int statusCode)
-        {
-            try
-            {
-                resp.StatusCode = statusCode;
-                resp.ContentType = contentType;
-                if (contentType == "application/json")
-                {
-                    resp.AddHeader("Access-Control-Allow-Origin", "*");
-                    resp.AddHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-                    resp.AddHeader("Access-Control-Allow-Headers", "Content-Type");
-                }
-                var buffer = Encoding.UTF8.GetBytes(content);
-                resp.ContentLength64 = buffer.Length;
-                await resp.OutputStream.WriteAsync(buffer);
-            }
-            finally
-            {
-                try
-                {
-                    resp.Close();
-                }
-                catch (Exception ex)
-                {
-                    _logger.Error(ex, "Error closing response stream");
-                }
-            }
-        }
-
-        public void Stop()
-        {
-            if (!_isRunning) return;
-
-            _isRunning = false;
-            try
-            {
-                _listener.Stop();
-                _listener.Close();
-                _logger.Information("Server stopped");
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error stopping server");
-            }
-        }
-    }
-}
-```
-
 ### File: WebServer\Page.cs
 
 ```csharp
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace BuckshotPlusPlus.WebServer
 {
     internal class Page
     {
-        static string _basicPage = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF - 8\"> <meta http-equiv=\"X - UA - Compatible\" content =\"IE = edge\" > <meta name=\"viewport\" content =\"width=device-width, height=device-height, initial-scale=1.0, user-scalable=yes\" ><title>";
+        // TODO: hardcoded things
+        static string _basicPage = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>";
 
         public static string RenderWebPage(List<Token> serverSideTokens, Token myPage)
         {
@@ -5411,7 +5053,7 @@ namespace BuckshotPlusPlus.WebServer
                 false
             );
 
-            string page = (String)_basicPage.Clone();
+            string page = _basicPage;
             if (myPageTitle != null)
             {
                 page += myPageTitle.GetCompiledVariableData(serverSideTokens);
@@ -5437,19 +5079,13 @@ namespace BuckshotPlusPlus.WebServer
                             arrayVar.VariableData
                         );
 
-                        string metaArgs = "";
-
-                        foreach(Token metaVarToken in meta.ContainerData)
-                        {
-                            TokenDataVariable localMetaVar = (TokenDataVariable)metaVarToken.Data;
-                            metaArgs += " " + localMetaVar.VariableName + "=" + '"';
-                            metaArgs += localMetaVar.GetCompiledVariableData(serverSideTokens, true);
-                            metaArgs += '"';
-                        }
+                        string metaArgs = string.Join(" ", meta.ContainerData.Select(n => {
+                            TokenDataVariable localMetaVar = (TokenDataVariable)n.Data;
+                            return localMetaVar.VariableName + "=" + '"' +  localMetaVar.GetCompiledVariableData(serverSideTokens, true) + '"';
+                        }));
 
                         page += "<meta " + metaArgs + ">";
                     }
-                    //Page += $"<script src=\"{ArrayVar.VariableData}\">";
                 }
             }
 
@@ -5501,10 +5137,7 @@ namespace BuckshotPlusPlus.WebServer
                 page += customHead.VariableData;
             }
 
-
-
             page += "</head>";
-
             if (myPageBody != null)
             {
                 page += Compiler.HTML.View.CompileContent(serverSideTokens, myPageBody, myPageContainer);
@@ -5567,7 +5200,7 @@ namespace BuckshotPlusPlus.WebServer
             // Save the XML document to a file
             doc.Save(myTokenizer.RelativePath + "/sitemap.xml");
         }
-
+        
         /// <summary>
         /// Generates an XML sitemap from a list of Tokens.
         /// </summary>
@@ -5575,7 +5208,7 @@ namespace BuckshotPlusPlus.WebServer
         public static void GenerateSitemapFromTokens(Tokenizer myTokenizer)
         {
             List<string> urls = new List<string>();
-
+            
             foreach (Token token in myTokenizer.FileTokens)
             {
                 if (token.Data.GetType() == typeof(TokenDataContainer))
@@ -5591,7 +5224,7 @@ namespace BuckshotPlusPlus.WebServer
                         {
                             envBaseUrl = "http://localhost:8080";
                         }
-
+                        
                         if (pageName == "index")
                         {
                             urls.Add( envBaseUrl + "/");
@@ -5600,11 +5233,11 @@ namespace BuckshotPlusPlus.WebServer
                         {
                             urls.Add(envBaseUrl+"/" + pageName);
                         }
-
+                        
                     }
                 }
             }
-
+            
             GenerateSitemap(myTokenizer, urls);
         }
     }
@@ -5659,203 +5292,6 @@ namespace BuckshotPlusPlus.WebServer
 }
 ```
 
-### File: WebServer\TenantManager.cs
-
-```csharp
-﻿using System.Collections.Concurrent;
-using BuckshotPlusPlus.Models;
-using BuckshotPlusPlus.Services;
-using Serilog;
-using BuckshotPlusPlus.WebServer.Extensions;
-using System.Net;
-using MongoDB.Bson;
-using MongoDB.Driver;
-using System.IO;
-using System.Threading.Tasks;
-using System;
-
-namespace BuckshotPlusPlus.WebServer
-{
-    public class TenantManager
-    {
-        private readonly ConcurrentDictionary<string, Tenant> _tenantCache;
-        private readonly MongoDbService _mongoDb;
-        private readonly StripeService _stripe;
-        private readonly string _sitesBasePath;
-        private readonly ILogger _logger;
-
-        public TenantManager(MongoDbService mongoDb, StripeService stripe, ILogger logger)
-        {
-            _mongoDb = mongoDb;
-            _stripe = stripe;
-            _logger = logger;
-            _tenantCache = new ConcurrentDictionary<string, Tenant>();
-            _sitesBasePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "sites");
-            Directory.CreateDirectory(_sitesBasePath);
-            StartCacheCleanupTimer();
-        }
-
-        public async Task<Tokenizer> GetTenantTokenizer(string domain, HttpListenerRequest request)
-        {
-            try
-            {
-                // Get tenant from cache or database
-                var tenant = await _tenantCache.GetOrAddAsync(domain, async (d) =>
-                {
-                    try
-                    {
-                        var t = await _mongoDb.GetTenantByDomain(d);
-                        if (t != null)
-                        {
-                            _logger.Information("Found tenant configuration for domain: {Domain}", d);
-                            t.LastUpdated = DateTime.MinValue; // Force update on first load
-                            return t;
-                        }
-                        _logger.Warning("No tenant configuration found for domain: {Domain}", d);
-                        return null;
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.Error(ex, "Error retrieving tenant for domain: {Domain}", d);
-                        return null;
-                    }
-                });
-
-                if (tenant == null)
-                {
-                    _logger.Warning("No tenant found for domain: {Domain}", domain);
-                    return null;
-                }
-
-                // Track page view
-                await TrackPageView(tenant, request);
-
-                // Check if we need to update the site
-                var siteDir = Path.Combine(_sitesBasePath, tenant.CacheKey);
-                bool needsUpdate = !Directory.Exists(siteDir) ||
-                                 (DateTime.UtcNow - tenant.LastUpdated).TotalMinutes > 5;
-
-                if (needsUpdate)
-                {
-                    _logger.Information("Updating site for domain: {Domain}", domain);
-                    await UpdateSite(tenant, siteDir);
-                }
-
-                // Return cached tokenizer if available and up to date
-                if (tenant.SiteTokenizer != null && !needsUpdate)
-                {
-                    return tenant.SiteTokenizer;
-                }
-
-                // Create new tokenizer
-                var entryFile = Path.Combine(siteDir, tenant.EntryFile);
-                if (!File.Exists(entryFile))
-                {
-                    _logger.Error("Entry file not found: {EntryFile} for domain: {Domain}", entryFile, domain);
-                    return null;
-                }
-
-                _logger.Information("Creating new tokenizer for domain: {Domain}", domain);
-                tenant.SiteTokenizer = new Tokenizer(entryFile);
-                tenant.LastUpdated = DateTime.UtcNow;
-
-                var update = Builders<Tenant>.Update
-                    .Set(t => t.LastUpdated, tenant.LastUpdated);
-                await _mongoDb._tenants.UpdateOneAsync(t => t.Id == tenant.Id, update);
-
-                return tenant.SiteTokenizer;
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error getting tenant tokenizer for domain: {Domain}", domain);
-                throw;
-            }
-        }
-
-        private async Task TrackPageView(Tenant tenant, HttpListenerRequest request)
-        {
-            try
-            {
-                var pageView = new PageView
-                {
-                    TenantId = tenant.Id.ToString(),
-                    Path = request.Url.PathAndQuery,
-                    UserAgent = request.UserAgent ?? "Unknown",
-                    IpAddress = request.RemoteEndPoint.Address.ToString(),
-                    Timestamp = DateTime.UtcNow,
-                    SessionId = request.Cookies["bpp_session_id"]?.Value ?? Guid.NewGuid().ToString(),
-                    Country = request.Headers["CF-IPCountry"] ?? "Unknown",
-                    Region = request.Headers["CF-Region"] ?? "Unknown"
-                };
-
-                await _mongoDb.TrackPageView(pageView);
-
-                // Check if we need to process overage charges
-                var monthlyViews = await _mongoDb.GetMonthlyPageViews(tenant.Id.ToString());
-                if (monthlyViews > tenant.MonthlyPageViewLimit)
-                {
-                    try
-                    {
-                        await _stripe.ProcessOverageCharges(tenant.Id);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.Error(ex, "Error processing overage charges for tenant: {Domain}", tenant.Domain);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error tracking page view for tenant: {Domain}", tenant.Domain);
-                // Don't throw - we don't want to break the site over analytics
-            }
-        }
-
-        private async Task UpdateSite(Tenant tenant, string siteDir)
-        {
-            try
-            {
-                _logger.Information("Starting repository update for: {Domain}", tenant.Domain);
-                await GitService.UpdateRepository(tenant, siteDir);
-
-                // Update the timestamp
-                tenant.LastUpdated = DateTime.UtcNow;
-
-                // Use filters and update definitions explicitly
-                var filter = Builders<Tenant>.Filter.Eq(t => t.Id, tenant.Id);
-                var update = Builders<Tenant>.Update
-                    .Set("lastUpdated", tenant.LastUpdated);
-
-                await _mongoDb._tenants.UpdateOneAsync(filter, update);
-                _logger.Information("Successfully updated site for: {Domain}", tenant.Domain);
-            }
-            catch (Exception ex)
-            {
-                _logger.Error(ex, "Error updating site for tenant: {Domain}", tenant.Domain);
-                throw;
-            }
-        }
-
-        private void StartCacheCleanupTimer()
-        {
-            var timer = new System.Timers.Timer(TimeSpan.FromHours(1).TotalMilliseconds);
-            timer.Elapsed += async (s, e) =>
-            {
-                foreach (var tenant in _tenantCache)
-                {
-                    if ((DateTime.UtcNow - tenant.Value.LastUpdated).TotalHours > 24)
-                    {
-                        _tenantCache.TryRemove(tenant.Key, out _);
-                        _logger.Information("Removed expired cache entry for domain: {Domain}", tenant.Key);
-                    }
-                }
-            };
-            timer.Start();
-        }
-    }
-}
-```
-
 ### File: WebServer\WebServer.cs
 
 ```csharp
@@ -5866,7 +5302,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using BuckshotPlusPlus.Security;
 
@@ -5875,18 +5310,15 @@ namespace BuckshotPlusPlus.WebServer
     internal class WebServer
     {
         public HttpListener Listener;
-        public int RequestCount = 0;
-        public bool RunServer = true;
-
 
         public async Task HandleIncomingConnections(Tokenizer myTokenizer)
         {
-            UserSessionManager userSessions = new UserSessionManager();
-
+            UserSessionManager userSessions = new();
+            
             SitemapGenerator.GenerateSitemapFromTokens(myTokenizer);
 
             // While a user hasn't visited the `shutdown` url, keep on handling requests
-            while (RunServer)
+            while (true)
             {
                 // Will wait here until we hear from a connection
                 HttpListenerContext ctx = await Listener.GetContextAsync();
@@ -5895,9 +5327,7 @@ namespace BuckshotPlusPlus.WebServer
                 HttpListenerRequest req = ctx.Request;
                 HttpListenerResponse resp = ctx.Response;
 
-
                 string absolutePath = req.Url!.AbsolutePath;
-
                 if (absolutePath.StartsWith("/source/"))
                 {
                     await HandleSourceRequest(ctx, myTokenizer);
@@ -5906,6 +5336,8 @@ namespace BuckshotPlusPlus.WebServer
 
                 if (absolutePath.Contains(".ico"))
                 {
+                    // TODO: put file in cache
+
                     string path = "." + absolutePath;
                     if (File.Exists(path))
                     {
@@ -5946,18 +5378,14 @@ namespace BuckshotPlusPlus.WebServer
 
                                     string clientIp = ctx.Request.RemoteEndPoint.ToString();
 
-                                    List<Token> serverSideTokenList = new List<Token>();
-
-                                    serverSideTokenList.AddRange(myTokenizer.FileTokens);
+                                    List<Token> serverSideTokenList = [.. myTokenizer.FileTokens];
 
                                     UserSession foundUserSession = userSessions.AddOrUpdateUserSession(req, resp);
-
                                     foundUserSession.AddUrl(req.Url.AbsolutePath);
 
                                     serverSideTokenList.Add(foundUserSession.GetToken(myTokenizer));
 
                                     // Write the response info
-                                    string disableSubmit = !RunServer ? "disabled" : "";
                                     string pageData = Page.RenderWebPage(serverSideTokenList, myToken);
 
                                     byte[] data = Encoding.UTF8.GetBytes(
@@ -5971,8 +5399,6 @@ namespace BuckshotPlusPlus.WebServer
                                     // Write out to the response stream (asynchronously), then close it
                                     await resp.OutputStream.WriteAsync(data, 0, data.Length);
 
-
-
                                     resp.Close();
 
                                     stopwatch.Stop();
@@ -5984,12 +5410,10 @@ namespace BuckshotPlusPlus.WebServer
 
                     if (!pageFound)
                     {
-                        string disableSubmit = !RunServer ? "disabled" : "";
-                        string pageData = "404 not found";
-
                         byte[] data = Encoding.UTF8.GetBytes(
-                            pageData
+                            "404 not found"
                         );
+
                         resp.ContentType = "text";
                         resp.ContentEncoding = Encoding.UTF8;
                         resp.ContentLength64 = data.LongLength;
@@ -6034,7 +5458,7 @@ namespace BuckshotPlusPlus.WebServer
                             data = responseData
                         });
 
-                        byte[] buffer = System.Text.Encoding.UTF8.GetBytes(jsonResponse);
+                        byte[] buffer = Encoding.UTF8.GetBytes(jsonResponse);
                         resp.ContentType = "application/json";
                         resp.ContentLength64 = buffer.Length;
                         await resp.OutputStream.WriteAsync(buffer, 0, buffer.Length);
@@ -6050,7 +5474,7 @@ namespace BuckshotPlusPlus.WebServer
                 success = false,
                 error = "Source not found or failed to fetch data"
             });
-            byte[] errorBuffer = System.Text.Encoding.UTF8.GetBytes(errorResponse);
+            byte[] errorBuffer = Encoding.UTF8.GetBytes(errorResponse);
             resp.ContentType = "application/json";
             resp.ContentLength64 = errorBuffer.Length;
             await resp.OutputStream.WriteAsync(errorBuffer, 0, errorBuffer.Length);
@@ -6067,9 +5491,9 @@ namespace BuckshotPlusPlus.WebServer
                 Listener = new HttpListener();
                 Listener.Prefixes.Add(url);
                 Listener.Start();
+
                 Formater.SuccessMessage($"Listening for connections on {url}");
-
-
+                
                 // Handle requests
                 Task listenTask = HandleIncomingConnections(myTokenizer);
                 listenTask.GetAwaiter().GetResult();
@@ -6088,13 +5512,12 @@ namespace BuckshotPlusPlus.WebServer
 
 ```
 
+
 ## Project Summary
 
 ### File Count by Type
 
-- Models: 4
 - Project Files: 1
-- Services: 3
-- Source Files: 36
+- Source Files: 37
 
-Total files processed: 44
+Total files processed: 38

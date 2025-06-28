@@ -7,16 +7,25 @@ data Colors{
 view Title{
     // Attributes are properties of the view
     content = "This is a title"
+    background-color = Colors.Secondary
+    
     // You can use any valid html tag
     type = "h1"
     // You can use any valid css parameters
     color = Colors.Primary
-    background-color = Colors.Secondary
+    
 }
 
 view SubTitle:Title{
     content = "This is a subtitle"
     type = "h2"
+    if (Colors.Primary == "Blue"){
+            background-color = "Orange"
+            content = "The condition is true"
+        }
+        else {
+            content = "The condition is NOT true"
+        }
 }
 
 // Parameterized view
